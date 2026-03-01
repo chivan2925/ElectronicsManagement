@@ -271,10 +271,28 @@ Table warehouses {
   created_at datetime [default: `now()`]
 }
 
+Table warehouse_transactions {
+  id int [pk, increment]
+  warehouse_id int [Ref: > warehouses.id]
+  staff_id int [Ref: > staffs.id]
+  type transaction_type [not null]
+  status transaction_status [default: transaction_status.PENDING]
+  created_at datetime
+}
 
 // =======================
 // JOIN / RELATION TABLES
 // =======================
+
+Table warehouse_transaction_details {
+  warehouse_transaction_id int [Ref: > warehouse_transactions.id]
+  variant_id int [Ref: > variants.id]
+  quantity int [not null]
+
+  indexes {
+    (warehouse_transaction_id, variant_id) [pk]
+  }
+}
 
 Table order_details {
   order_id int [Ref: > orders.id]
@@ -306,17 +324,6 @@ Table warehouse_details {
   indexes {
     (warehouse_id, variant_id) [pk]
   }
-}
-
-Table warehouse_transactions {
-  id int [pk, increment]
-  warehouse_id int [Ref: > warehouses.id]
-  variant_id int [Ref: > variants.id]
-  staff_id int [Ref: > staffs.id]
-  type transaction_type [not null]
-  quantity int [not null]
-  status transaction_status [default: transaction_status.PENDING]
-  created_at datetime
 }
 
 Table role_permissions {
