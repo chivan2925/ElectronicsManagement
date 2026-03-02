@@ -77,6 +77,21 @@ Enum transaction_status {
   CANCELLED
 }
 
+Enum shipping_provider {
+  GHN
+  GHTK
+  VIETTELPOST
+  VNPOST
+  OTHER
+}
+
+Enum shipping_status {
+  PENDING
+  SHIPPING
+  DELIVERED
+  CANCELLED
+}
+
 // =======================
 // CORE TABLES
 // =======================
@@ -163,7 +178,7 @@ Table roles {
 
 Table permissions {
   id int [pk, increment]
-  key varchar(10) [not null]
+  key varchar(50) [not null]
   name varchar(25) [not null]
   description text
   created_at datetime [default: `now()`]
@@ -172,7 +187,7 @@ Table permissions {
 
 Table categories {
   id int [pk, increment]
-  name varchar(25) [not null]
+  name varchar(50) [not null]
   slug varchar(255) [not null]
   parent_id int [Ref: > categories.id]
   created_at datetime [default: `now()`]
@@ -181,7 +196,7 @@ Table categories {
 
 Table brands {
   id int [pk, increment]
-  name varchar(25) [not null]
+  name varchar(100) [not null]
   image_url varchar(255)
   status product_status [default: product_status.ACTIVE]
   created_at datetime [default: `now()`]
@@ -213,6 +228,7 @@ Table carts {
 Table orders {
   id int [pk, increment]
   user_id int [Ref: > users.id]
+  coupon_id int [Ref: > coupons.id]
   code varchar(10) [not null]
   address_snapshot json [not null] //Địa chỉ mặc định của user
   status order_status [default: order_status.PENDING]
@@ -223,9 +239,10 @@ Table orders {
   subtotal decimal(12,3) [not null]
   total decimal(12,3) [not null]
   created_at datetime [default: `now()`]
-  paid_at datetime 
+  paid_at datetime
   note text
-  shipping_provider varchar(255)
+  shipping_provider shipping_provider [not null]
+  shipping_status shipping_status [default: shipping_status.PENDING]
 }
 
 Table payment_transactions {
@@ -243,10 +260,13 @@ Table return_requests {
   user_id int [Ref: > users.id]
   order_id int [Ref: > orders.id]
   variant_id int [Ref: > variants.id]
+  handled_by_staff_id int [Ref: > staffs.id]
   type return_request_type [not null]
   reason text
+  refund_amount decimal(12,3)
   status return_request_status [default: return_request_status.PENDING]
   created_at datetime [default: `now()`]
+  resolved_at datetime
   evidence_json json
 }
 
@@ -254,6 +274,8 @@ Table reviews {
   id int [pk, increment]
   product_id int [Ref: > products.id]
   user_id int [Ref: > users.id]
+  order_id int [Ref: > orders.id]
+  variant_id int [Ref: > variants.id]
   rating_star int [not null]
   content text
   photos_json json
