@@ -187,6 +187,7 @@ Table permissions {
 
 Table categories {
   id int [pk, increment]
+  icon_url varchar(255)
   name varchar(50) [not null]
   slug varchar(255) [not null]
   parent_id int [Ref: > categories.id]
