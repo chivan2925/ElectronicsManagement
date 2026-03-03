@@ -169,9 +169,9 @@ Table addresses {
   id int [pk, increment]
   user_id int [Ref: > users.id]
   line varchar(255) [not null]
-  ward varchar(50)
-  district varchar(50)
-  province varchar(50)
+  ward varchar(50) [not null]
+  district varchar(50) [not null]
+  province varchar(50) [not null]
   is_default bool [default: true, not null]
 }
 
@@ -241,7 +241,7 @@ Table orders {
   shipping_name varchar(100) [not null]
   shipping_phone varchar(20) [not null]
   shipping_line varchar(255) [not null]
-  shipping_ward varchar(50)
+  shipping_ward varchar(50) [not null]
   shipping_district varchar(50) [not null]
   shipping_province varchar(50) [not null]
   status order_status [default: order_status.PENDING, not null]
@@ -301,9 +301,9 @@ Table warehouses {
   id int [pk, increment]
   name varchar(255) [not null]
   line varchar(255) [not null]
-  ward varchar(50)
-  district varchar(50)
-  province varchar(50)
+  ward varchar(50) [not null]
+  district varchar(50) [not null]
+  province varchar(50) [not null]
   capacity int [not null]
   current_stock int [default: 0, not null]
   status warehouse_status [default: warehouse_status.ACTIVE, not null]
