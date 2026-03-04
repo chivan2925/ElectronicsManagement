@@ -1,6 +1,7 @@
 package org.example.electronics.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.example.electronics.entity.enums.ProductStatus;
 import org.hibernate.annotations.CreationTimestamp;
@@ -21,6 +22,7 @@ public class BrandEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @NotBlank(message = "Tên thương hiệu không được để trống")
     @Column(nullable = false, length = 100)
     private String name;
 
@@ -37,6 +39,6 @@ public class BrandEntity {
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(name = "updated_at")
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 }
