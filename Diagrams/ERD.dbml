@@ -115,6 +115,11 @@ Table products {
   status product_status [default: product_status.ACTIVE, not null]
   created_at datetime [default: `now()`, not null]
   updated_at datetime [default: `now()`, not null]
+
+  checks {
+    `rating_star >= 0 AND rating_star <= 5` [name: "chk_rating_star_range"]
+    `rating_count >= 0` [name: "chk_rating_count_non_negative"]
+  }
 }
 
 Table variants {
@@ -122,13 +127,18 @@ Table variants {
   product_id int [Ref: > products.id]
   name varchar(255) [not null]
   slug varchar(255) [not null]
-  color varchar(15) [not null]
+  color varchar(50) [not null]
   specs_json json
   price decimal(12,3) [not null]
   stock int [not null]
   status product_status [default: product_status.ACTIVE]
   created_at datetime [default: `now()`, not null]
   updated_at datetime [default: `now()`, not null]
+
+  checks {
+    `price >= 0` [name: "chk_price_non_negative"]
+    `stock >= 0` [name: "chk_stock_non_negative"]
+  }
 }
 
 Table media {
@@ -225,6 +235,12 @@ Table coupons {
   status coupon_status [default: coupon_status.VALID, not null]
   created_at datetime [default: `now()`, not null]
   updated_at datetime [default: `now()`, not null]
+
+  checks {
+    `value > 0` [name: "chk_value_non_negative"]
+    `min_order >= 0` [name: "chk_min_order_non_negative"]
+    `usage_limit > 0` [name: "chk_usage_limit_non_negative"]
+  }
 }
 
 Table carts {
@@ -258,6 +274,14 @@ Table orders {
   note text
   shipping_provider shipping_provider [not null]
   shipping_status shipping_status [default: shipping_status.PENDING, not null]
+
+  checks {
+    `discount >= 0` [name: "chk_discount_non_negative"]
+    `discount <= subtotal` [name: "chk_discount_logic"]
+    `shipping_fee >= 0` [name: "chk_shipping_fee_non_negative"]
+    `subtotal >= 0` [name: "chk_subtotal_non_negative"]
+    `total >= 0` [name: "chk_total_non_negative"]
+  }
 }
 
 Table payment_transactions {
@@ -268,6 +292,10 @@ Table payment_transactions {
   amount decimal(12,3) [not null]
   status payment_transaction_status [default: payment_transaction_status.PENDING, not null]
   created_at datetime [default: `now()`, not null]
+
+  checks {
+    `amount >= 0` [name: "chk_amount_non_negative"]
+  }
 }
 
 Table return_requests {
@@ -284,6 +312,10 @@ Table return_requests {
   updated_at datetime [default: `now()`, not null]
   resolved_at datetime
   evidence_json json
+
+  checks {
+    `refund_amount >= 0` [name: "chk_refund_amount_non_negative"]
+  }
 }
 
 Table reviews {
@@ -297,6 +329,10 @@ Table reviews {
   photos_json json
   created_at datetime [default: `now()`, not null]
   updated_at datetime [default: `now()`, not null]
+
+  checks {
+    `rating_star >= 1 AND rating_star <= 5` [name: "chk_rating_star_range"]
+  }
 }
 
 Table warehouses {
@@ -311,6 +347,12 @@ Table warehouses {
   status warehouse_status [default: warehouse_status.ACTIVE, not null]
   created_at datetime [default: `now()`, not null]
   updated_at datetime [default: `now()`, not null]
+
+  checks {
+    `capacity >= 0` [name: "chk_capacity_non_negative"]
+    `current_stock >= 0` [name: "chk_current_stock_non_negative"]
+    `current_stock <= capacity` [name: "chk_stock_within_capacity"]
+  }
 }
 
 Table warehouse_transactions {
@@ -335,6 +377,10 @@ Table warehouse_transaction_details {
   indexes {
     (warehouse_transaction_id, variant_id) [pk]
   }
+
+  checks {
+    `quantity > 0` [name: "chk_quantity_positive"]
+  }
 }
 
 Table order_details {
@@ -346,6 +392,11 @@ Table order_details {
   indexes {
     (order_id, variant_id) [pk]
   }
+
+  checks {
+    `price >= 0` [name: "chk_price_non_negative"]
+    `quantity > 0` [name: "chk_quantity_positive"]
+  }
 }
 
 Table cart_details {
@@ -356,6 +407,10 @@ Table cart_details {
   indexes {
     (cart_id, variant_id) [pk]
   }
+
+  checks {
+    `quantity > 0` [name: "chk_quantity_positive"]
+  }
 }
 
 Table warehouse_details {
@@ -365,6 +420,10 @@ Table warehouse_details {
 
   indexes {
     (warehouse_id, variant_id) [pk]
+  }
+
+  checks {
+    `quantity >= 0` [name: "chk_quantity_non_negative"]
   }
 }
 
