@@ -1,7 +1,6 @@
 package org.example.electronics.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.example.electronics.entity.enums.ProductStatus;
 import org.hibernate.annotations.CreationTimestamp;
@@ -30,7 +29,7 @@ public class CategoryEntity {
     @Column(name = "icon_url")
     private String iconUrl;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String slug;
 
     @ManyToOne(fetch = FetchType.LAZY)

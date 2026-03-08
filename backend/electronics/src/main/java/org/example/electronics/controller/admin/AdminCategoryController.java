@@ -1,0 +1,89 @@
+package org.example.electronics.controller.admin;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import org.example.electronics.dto.request.CategoryRequestDTO;
+import org.example.electronics.dto.response.CategoryResponseDTO;
+import org.example.electronics.service.admin.AdminCategoryService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/admin/categories")
+@Tag(name = "1. Category Management", description = "Các API dùng để quản lý Danh mục sản phẩm")
+public class AdminCategoryController {
+
+    private final AdminCategoryService adminCategoryService;
+
+    public AdminCategoryController(AdminCategoryService adminCategoryService) {
+        this.adminCategoryService = adminCategoryService;
+    }
+
+    @PostMapping
+    @Operation(summary = "Tạo mới danh mục", description = "Thêm một danh mục mới (Cha hoặc Con). Để parentId = null nếu tạo danh mục gốc.")
+    public ResponseEntity<CategoryResponseDTO> createCategory(
+            @Valid @RequestBody CategoryRequestDTO categoryRequestDTO
+    ) {
+        CategoryResponseDTO categoryResponseDTO = adminCategoryService.createCategory(categoryRequestDTO);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(categoryResponseDTO);
+    }
+
+    @PutMapping("/{categoryId}")
+    @Operation(summary = "Cập nhật danh mục", description = "Chỉnh sửa thông tin danh mục hiện có theo ID.")
+    public ResponseEntity<CategoryResponseDTO> updateCategory(
+            @PathVariable Integer categoryId,
+            @Valid @RequestBody CategoryRequestDTO categoryRequestDTO
+    ) {
+        CategoryResponseDTO categoryResponseDTO = adminCategoryService.updateCategory(categoryId, categoryRequestDTO);
+
+        return ResponseEntity.ok(categoryResponseDTO);
+    }
+
+    @DeleteMapping("/{categoryId}")
+    @Operation(summary = "Xóa danh mục (Soft Delete)", description = "Chuyển trạng thái danh mục sang DELETED. Sẽ báo lỗi nếu danh mục này đang chứa danh mục con.")
+    public ResponseEntity<Void> deleteCategory(
+            @PathVariable Integer categoryId
+    ) {
+        adminCategoryService.deleteCategory(categoryId);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    //Size mặc định (số lượng phần tử 1 trang) của @PageableDefault là 10
+    @GetMapping
+    @Operation(summary = "Lấy danh sách danh mục Cha", description = "Trả về danh sách danh mục gốc (không có parentId) kèm theo thông tin phân trang.")
+    public ResponseEntity<Page<CategoryResponseDTO>> getAllParentCategoriesPage (
+            @PageableDefault(sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable
+    ) {
+        Page<CategoryResponseDTO> allParentCategoriesPage = adminCategoryService.getAllParentCategoriesPage(pageable);
+
+        return ResponseEntity.ok(allParentCategoriesPage);
+    }
+
+    @GetMapping("/{parentId}/subcategories")
+    @Operation(summary = "Lấy danh sách danh mục Con", description = "Trả về danh sách các danh mục con thuộc về một danh mục cha cụ thể, có phân trang.")
+    public ResponseEntity<Page<CategoryResponseDTO>> getAllSubCategoriesPage(
+            @PathVariable Integer parentId,
+            @PageableDefault(sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable
+    ) {
+        Page<CategoryResponseDTO> allSubCategoriesPage = adminCategoryService.getAllSubCategoriesPage(parentId, pageable);
+
+        return ResponseEntity.ok(allSubCategoriesPage);
+    }
+
+    @GetMapping("/{categoryId}")
+    @Operation(summary = "Lấy chi tiết danh mục", description = "Lấy thông tin của 1 danh mục cụ thể dựa vào ID.")
+    public ResponseEntity<CategoryResponseDTO> getCategoryById(
+            @PathVariable Integer categoryId
+    ) {
+        CategoryResponseDTO categoryResponseDTO = adminCategoryService.getCategoryById(categoryId);
+
+        return ResponseEntity.ok(categoryResponseDTO);
+    }
+}

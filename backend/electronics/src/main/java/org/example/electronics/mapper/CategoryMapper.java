@@ -5,6 +5,7 @@ import org.example.electronics.dto.response.CategoryResponseDTO;
 import org.example.electronics.entity.CategoryEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface CategoryMapper {
@@ -14,4 +15,7 @@ public interface CategoryMapper {
 
     @Mapping(source = "parent.id", target = "parentId")
     CategoryResponseDTO toResponseDTO(CategoryEntity categoryEntity);
+
+    void updateEntityFromDTO(CategoryRequestDTO categoryRequestDTO,
+                             @MappingTarget CategoryEntity categoryEntity);
 }

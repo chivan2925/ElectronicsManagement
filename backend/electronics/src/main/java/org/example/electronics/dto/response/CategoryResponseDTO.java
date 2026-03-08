@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import org.example.electronics.entity.enums.ProductStatus;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record CategoryResponseDTO(
         Integer id,
@@ -14,6 +15,7 @@ public record CategoryResponseDTO(
         @Schema(description = "ID của danh mục cha. Để null nếu đây là danh mục gốc", example = "1")
         Integer parentId,
         ProductStatus status,
+        List<CategoryResponseDTO> subCategoryList,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {
