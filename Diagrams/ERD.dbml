@@ -133,7 +133,7 @@ Enum handling_measure_type {
 Table products {
   id int [pk, increment]
   name varchar(255) [not null]
-  slug varchar(255) [not null]
+  slug varchar(255) [unique, not null]
   category_id int [Ref: > categories.id, not null]
   brand_id int [Ref: > brands.id, not null]
   description text
@@ -156,7 +156,7 @@ Table variants {
   id int [pk, increment]
   product_id int [Ref: > products.id, not null]
   name varchar(255) [not null]
-  slug varchar(255) [not null]
+  slug varchar(255) [unique, not null]
   color varchar(50)
   specs_json json
   price decimal(12,3) [not null]
@@ -244,7 +244,7 @@ Table categories {
   id int [pk, increment]
   name varchar(50) [not null]
   icon_url varchar(255)
-  slug varchar(255) [not null]
+  slug varchar(255) [unique, not null]
   parent_id int [Ref: > categories.id]
   status product_status [default: product_status.ACTIVE, not null]
   created_at datetime [default: `now()`, not null]
