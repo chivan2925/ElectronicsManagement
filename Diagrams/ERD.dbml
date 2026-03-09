@@ -222,8 +222,8 @@ Table addresses {
   province varchar(50) [not null]
   note text
   is_default bool [default: false, not null]
-  created_at [default: `now()`, not null]
-  updated_at [default: `now()`, not null]
+  created_at datetime [default: `now()`, not null]
+  updated_at datetime [default: `now()`, not null]
 }
 
 Table roles {
