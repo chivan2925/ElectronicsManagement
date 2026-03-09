@@ -108,14 +108,14 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
     }
 
     @Override
-    public Page<CategoryResponseDTO> getAllParentCategoriesPage(Pageable pageable) {
+    public Page<CategoryResponseDTO> getAllParentCategories(Pageable pageable) {
         Page<CategoryEntity> categoryEntityPage = categoryRepository.findByParentIdIsNull(pageable);
 
         return categoryEntityPage.map(categoryMapper::toResponseDTO);
     }
 
     @Override
-    public Page<CategoryResponseDTO> getAllSubCategoriesPage(Integer parentId, Pageable pageable) {
+    public Page<CategoryResponseDTO> getAllSubCategories(Integer parentId, Pageable pageable) {
         if(parentId == null) {
             throw new IllegalArgumentException("Tham số truyền vào parentId không được null");
         }

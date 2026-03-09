@@ -12,7 +12,7 @@ public interface AdminCategoryService {
     CategoryResponseDTO createCategory(CategoryRequestDTO categoryRequestDTO);
     CategoryResponseDTO updateCategory(Integer categoryId, CategoryRequestDTO categoryRequestDTO);
     void deleteCategory(Integer categoryId);
-    Page<CategoryResponseDTO> getAllParentCategoriesPage(Pageable pageable);
-    Page<CategoryResponseDTO> getAllSubCategoriesPage(Integer parentId, Pageable pageable);
+    Page<CategoryResponseDTO> getAllParentCategories(Pageable pageable);
+    Page<CategoryResponseDTO> getAllSubCategories(Integer parentId, Pageable pageable);
     CategoryResponseDTO getCategoryById(Integer categoryId);
 }

@@ -57,11 +57,14 @@ public class AdminCategoryController {
 
     //Size mặc định (số lượng phần tử 1 trang) của @PageableDefault là 10
     @GetMapping
-    @Operation(summary = "Lấy danh sách danh mục Cha", description = "Trả về danh sách danh mục gốc (không có parentId) kèm theo thông tin phân trang.")
+    @Operation(
+            summary = "Lấy danh sách danh mục Cha",
+            description = "Trả về danh sách danh mục gốc (không có parentId) kèm theo thông tin phân trang."
+    )
     public ResponseEntity<Page<CategoryResponseDTO>> getAllParentCategoriesPage (
             @PageableDefault(sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable
     ) {
-        Page<CategoryResponseDTO> allParentCategoriesPage = adminCategoryService.getAllParentCategoriesPage(pageable);
+        Page<CategoryResponseDTO> allParentCategoriesPage = adminCategoryService.getAllParentCategories(pageable);
 
         return ResponseEntity.ok(allParentCategoriesPage);
     }
@@ -72,7 +75,7 @@ public class AdminCategoryController {
             @PathVariable Integer parentId,
             @PageableDefault(sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable
     ) {
-        Page<CategoryResponseDTO> allSubCategoriesPage = adminCategoryService.getAllSubCategoriesPage(parentId, pageable);
+        Page<CategoryResponseDTO> allSubCategoriesPage = adminCategoryService.getAllSubCategories(parentId, pageable);
 
         return ResponseEntity.ok(allSubCategoriesPage);
     }
