@@ -183,12 +183,12 @@ Table media {
 Table users {
   id int [pk, increment]
   full_name varchar(100) [not null]
-  gender gender_type [not null]
-  date_of_birth datetime
-  username varchar(25) [not null]
+  gender gender_type [default: gender_type.PREFER_NOT_TO_SAY, not null]
+  date_of_birth date
+  username varchar(25) [unique, not null]
   avatar_url varchar(255)
-  email varchar(255) [not null]
-  phone_number varchar(10) [not null]
+  email varchar(255) [unique, not null]
+  phone_number varchar(10) [unique, not null]
   hashed_password varchar(60) [not null] //BCrypt
   status user_status [default: user_status.ACTIVE, not null]
   created_at datetime [default: `now()`, not null]
@@ -222,6 +222,8 @@ Table addresses {
   province varchar(50) [not null]
   note text
   is_default bool [default: false, not null]
+  created_at datetime [default: `now()`, not null]
+  updated_at datetime [default: `now()`, not null]
 }
 
 Table roles {
