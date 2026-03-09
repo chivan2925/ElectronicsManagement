@@ -57,7 +57,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            System.err.println("JwtAuthFilter User loading error: " + e.getMessage());
+            e.printStackTrace();
             // Invalid token — let the request proceed unauthenticated
         }
 

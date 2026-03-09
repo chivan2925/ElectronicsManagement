@@ -7,6 +7,7 @@ import org.example.electronics.service.MediaService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.MediaType;
 
 import java.io.IOException;
 
@@ -19,7 +20,7 @@ public class MediaController {
         this.mediaService = mediaService;
     }
 
-    @PostMapping("/api/admin/products/{productId}/media")
+    @PostMapping(value = "/api/admin/products/{productId}/media", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @RequirePermission("MANAGE_PRODUCT")
     public ResponseEntity<ApiResponse<MediaResponseDTO>> upload(
             @PathVariable Integer productId,

@@ -37,7 +37,8 @@ public class MediaService {
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm"));
 
         // Save file to disk
-        Path uploadPath = Paths.get(uploadDir, "products", productId.toString());
+        String userDirectory = System.getProperty("user.dir");
+        Path uploadPath = Paths.get(userDirectory, uploadDir, "products", productId.toString());
         Files.createDirectories(uploadPath);
 
         String originalFilename = file.getOriginalFilename();
