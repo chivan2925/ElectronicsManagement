@@ -1,53 +1,53 @@
-import { useState } from "react";
+import React, { useRef } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Scrollbar } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/scrollbar";
 import { products } from "./products";
 import SlideCard from "./SlideCard";
-import SlideNavigation from "./SlideNavigation";
+import { GrPrevious, GrNext } from "react-icons/gr";
 
 export default function Slideshow() {
-  const [current, setCurrent] = useState(Math.floor(products.length / 2));
-
-  const setStyle = (chiSo) => {
-    let khoangCach = chiSo - current;
-    const tongSo = products.length;
-
-    if (khoangCach > tongSo / 2) khoangCach -= tongSo;
-    else if (khoangCach < -tongSo / 2) khoangCach += tongSo;
-
-    const khoangCachTuyetDoi = Math.abs(khoangCach);
-
-    return {
-      transform: `
-        translateX(${khoangCach * 200}px) 
-        scale(${1 - khoangCachTuyetDoi * 0.2})
-      `,
-      zIndex: 10 - khoangCachTuyetDoi,
-      opacity: 1 - khoangCachTuyetDoi * 0,
-      filter: khoangCach === 0 ? "none" : "brightness(60%)",
-    };
-  };
-
-  const handlePrev = () => {
-    setCurrent((v) => (v === 0 ? products.length - 1 : v - 1));
-  };
-
-  const handleNext = () => {
-    setCurrent((v) => (v === products.length - 1 ? 0 : v + 1));
-  };
+  const swiperRef = useRef(null);
 
   return (
-    <div className="flex flex-col items-center justify-center bg-dark w-full h-screen overflow-hidden">
-      <div className="relative w-full h-[500px] flex justify-center items-center">
-        {products.map((product, index) => (
-          <SlideCard
-            key={product.id}
-            product={product}
-            style={setStyle(index)}
-            onClick={() => setCurrent(index)}
-          />
+    <div className="w-full relative py-6">
+      <Swiper
+        modules={[Navigation, Scrollbar]}
+        spaceBetween={20}
+        slidesPerView={2.5}
+        breakpoints={{
+          640: { slidesPerView: 3.5 },
+          768: { slidesPerView: 4.5 },
+          1024: { slidesPerView: 5.5 },
+        }}
+        scrollbar={{ draggable: true, el: '.custom-scrollbar', hide: false }}
+        onBeforeInit={(swiper) => {
+          swiperRef.current = swiper;
+        }}
+        className="!pb-6"
+      >
+        {products.map((product) => (
+          <SwiperSlide key={product.id}>
+            <SlideCard product={product} />
+          </SwiperSlide>
         ))}
-      </div>
+      </Swiper>
 
-      <SlideNavigation onPrev={handlePrev} onNext={handleNext} />
+      {/* Custom Scrollbar and Nav container */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mt-6 gap-6 px-1">
+        <div className="custom-scrollbar h-[2px] bg-gray-200 flex-grow relative overflow-visible mr-0 sm:mr-10">
+          {/* Swiper injects the scrollbar progress here as a div with absolute positioning */}
+        </div>
+        <div className="flex gap-2 shrink-0 self-end sm:self-auto">
+          <button onClick={() => swiperRef.current?.slidePrev()} className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 hover:border-gray-400 hover:text-black transition-colors bg-white text-gray-500">
+            <GrPrevious className="text-[14px] ml-[-2px]" />
+          </button>
+          <button onClick={() => swiperRef.current?.slideNext()} className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 hover:border-gray-400 hover:text-black transition-colors bg-white text-gray-500">
+            <GrNext className="text-[14px]" />
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

@@ -9,13 +9,18 @@ export default {
         sans: ['Inter', 'system-ui', 'sans-serif'],
       },
       colors: {
-        primary: '#E1FF17',
-        secondary: '#3b82f6',
-        dark: '#161616',
-        dark1: '#1e1e1e',
+        primary: '#0066cc', /* Phoncachxanh Blue Accent */
+        secondary: '#000000',
+        dark: '#111111',
+        dark1: '#222222',
         light: '#ffffff',
         muted: '#9ca3af',
-        danger: '#ef4444',
+        danger: '#dc2626',
+        pcx: {
+          blue: '#1d4ed8',
+          gray: '#f5f5f5',
+          text: '#111111'
+        }
       },
     },
   },
