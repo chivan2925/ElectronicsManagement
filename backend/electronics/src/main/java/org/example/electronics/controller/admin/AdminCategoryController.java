@@ -3,8 +3,9 @@ package org.example.electronics.controller.admin;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.example.electronics.dto.request.CategoryRequestDTO;
-import org.example.electronics.dto.response.CategoryResponseDTO;
+import org.example.electronics.dto.request.admin.AdminCategoryRequestDTO;
+import org.example.electronics.dto.request.admin.AdminUpdateProductStatusRequestDTO;
+import org.example.electronics.dto.response.admin.AdminCategoryResponseDTO;
 import org.example.electronics.service.admin.AdminCategoryService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,23 +27,37 @@ public class AdminCategoryController {
 
     @PostMapping
     @Operation(summary = "Tạo mới danh mục", description = "Thêm một danh mục mới (Cha hoặc Con). Để parentId = null nếu tạo danh mục gốc.")
-    public ResponseEntity<CategoryResponseDTO> createCategory(
-            @Valid @RequestBody CategoryRequestDTO categoryRequestDTO
+    public ResponseEntity<AdminCategoryResponseDTO> createCategory(
+            @Valid @RequestBody AdminCategoryRequestDTO adminCategoryRequestDTO
     ) {
-        CategoryResponseDTO categoryResponseDTO = adminCategoryService.createCategory(categoryRequestDTO);
+        AdminCategoryResponseDTO adminCategoryResponseDTO = adminCategoryService.createCategory(adminCategoryRequestDTO);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(categoryResponseDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(adminCategoryResponseDTO);
     }
 
     @PutMapping("/{categoryId}")
     @Operation(summary = "Cập nhật danh mục", description = "Chỉnh sửa thông tin danh mục hiện có theo ID.")
-    public ResponseEntity<CategoryResponseDTO> updateCategory(
+    public ResponseEntity<AdminCategoryResponseDTO> updateCategory(
             @PathVariable Integer categoryId,
-            @Valid @RequestBody CategoryRequestDTO categoryRequestDTO
+            @Valid @RequestBody AdminCategoryRequestDTO adminCategoryRequestDTO
     ) {
-        CategoryResponseDTO categoryResponseDTO = adminCategoryService.updateCategory(categoryId, categoryRequestDTO);
+        AdminCategoryResponseDTO adminCategoryResponseDTO = adminCategoryService.updateCategory(categoryId, adminCategoryRequestDTO);
 
-        return ResponseEntity.ok(categoryResponseDTO);
+        return ResponseEntity.ok(adminCategoryResponseDTO);
+    }
+
+    @PatchMapping("/{categoryId}/status")
+    @Operation(
+            summary = "Cập nhật trạng thái Danh mục",
+            description = "Dùng để kích hoạt (ACTIVE) hoặc Ẩn (HIDDEN) một danh mục cụ thể."
+    )
+    public ResponseEntity<AdminCategoryResponseDTO> updateStatusCategory(
+            @PathVariable Integer categoryId,
+            @Valid @RequestBody AdminUpdateProductStatusRequestDTO adminUpdateProductStatusRequestDTO
+    ) {
+        AdminCategoryResponseDTO adminCategoryResponseDTO = adminCategoryService.updateStatusCategory(categoryId, adminUpdateProductStatusRequestDTO);
+
+        return ResponseEntity.ok(adminCategoryResponseDTO);
     }
 
     @DeleteMapping("/{categoryId}")
@@ -61,32 +76,32 @@ public class AdminCategoryController {
             summary = "Lấy danh sách danh mục Cha",
             description = "Trả về danh sách danh mục gốc (không có parentId) kèm theo thông tin phân trang."
     )
-    public ResponseEntity<Page<CategoryResponseDTO>> getAllParentCategoriesPage (
+    public ResponseEntity<Page<AdminCategoryResponseDTO>> getAllParentCategoriesPage (
             @PageableDefault(sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable
     ) {
-        Page<CategoryResponseDTO> allParentCategoriesPage = adminCategoryService.getAllParentCategories(pageable);
+        Page<AdminCategoryResponseDTO> allParentCategoriesPage = adminCategoryService.getAllParentCategories(pageable);
 
         return ResponseEntity.ok(allParentCategoriesPage);
     }
 
     @GetMapping("/{parentId}/subcategories")
     @Operation(summary = "Lấy danh sách danh mục Con", description = "Trả về danh sách các danh mục con thuộc về một danh mục cha cụ thể, có phân trang.")
-    public ResponseEntity<Page<CategoryResponseDTO>> getAllSubCategoriesPage(
+    public ResponseEntity<Page<AdminCategoryResponseDTO>> getAllSubCategoriesPage(
             @PathVariable Integer parentId,
             @PageableDefault(sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable
     ) {
-        Page<CategoryResponseDTO> allSubCategoriesPage = adminCategoryService.getAllSubCategories(parentId, pageable);
+        Page<AdminCategoryResponseDTO> allSubCategoriesPage = adminCategoryService.getAllSubCategories(parentId, pageable);
 
         return ResponseEntity.ok(allSubCategoriesPage);
     }
 
     @GetMapping("/{categoryId}")
     @Operation(summary = "Lấy chi tiết danh mục", description = "Lấy thông tin của 1 danh mục cụ thể dựa vào ID.")
-    public ResponseEntity<CategoryResponseDTO> getCategoryById(
+    public ResponseEntity<AdminCategoryResponseDTO> getCategoryById(
             @PathVariable Integer categoryId
     ) {
-        CategoryResponseDTO categoryResponseDTO = adminCategoryService.getCategoryById(categoryId);
+        AdminCategoryResponseDTO adminCategoryResponseDTO = adminCategoryService.getCategoryById(categoryId);
 
-        return ResponseEntity.ok(categoryResponseDTO);
+        return ResponseEntity.ok(adminCategoryResponseDTO);
     }
 }

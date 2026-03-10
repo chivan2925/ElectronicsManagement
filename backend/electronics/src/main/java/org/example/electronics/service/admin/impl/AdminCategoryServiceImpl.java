@@ -1,8 +1,9 @@
 package org.example.electronics.service.admin.impl;
 
 import jakarta.persistence.EntityNotFoundException;
-import org.example.electronics.dto.request.CategoryRequestDTO;
-import org.example.electronics.dto.response.CategoryResponseDTO;
+import org.example.electronics.dto.request.admin.AdminCategoryRequestDTO;
+import org.example.electronics.dto.request.admin.AdminUpdateProductStatusRequestDTO;
+import org.example.electronics.dto.response.admin.AdminCategoryResponseDTO;
 import org.example.electronics.entity.CategoryEntity;
 import org.example.electronics.entity.enums.ProductStatus;
 import org.example.electronics.mapper.CategoryMapper;
@@ -27,22 +28,22 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
     //Admin
     @Transactional
     @Override
-    public CategoryResponseDTO createCategory(CategoryRequestDTO categoryRequestDTO) {
-        if(categoryRequestDTO == null){
-            throw new IllegalArgumentException("Tham số truyền vào categoryRequestDTO không được null");
+    public AdminCategoryResponseDTO createCategory(AdminCategoryRequestDTO adminCategoryRequestDTO) {
+        if(adminCategoryRequestDTO == null){
+            throw new IllegalArgumentException("Tham số truyền vào adminCategoryRequestDTO không được null");
         }
 
-        if(categoryRepository.existsBySlug(categoryRequestDTO.slug())) {
+        if(categoryRepository.existsBySlug(adminCategoryRequestDTO.slug())) {
             throw new IllegalArgumentException("Slug này đã tồn tại. Vui lòng chọn slug khác");
         }
 
-        if(categoryRequestDTO.parentId() != null) {
-            if(!categoryRepository.existsById(categoryRequestDTO.parentId())) {
+        if(adminCategoryRequestDTO.parentId() != null) {
+            if(!categoryRepository.existsById(adminCategoryRequestDTO.parentId())) {
                 throw new IllegalArgumentException("Không tồn tại danh mục cha với ID này");
             }
         }
 
-        CategoryEntity newCategoryEntity = categoryMapper.toEntity(categoryRequestDTO);
+        CategoryEntity newCategoryEntity = categoryMapper.toEntity(adminCategoryRequestDTO);
 
         newCategoryEntity = categoryRepository.save(newCategoryEntity);
 
@@ -51,21 +52,18 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
 
     @Transactional
     @Override
-    public CategoryResponseDTO updateCategory(Integer categoryId, CategoryRequestDTO categoryRequestDTO) {
-        if(categoryId == null || categoryRequestDTO == null) {
-            throw new IllegalArgumentException("Tham số truyền vào categoryId, categoryRequestDTO không được null");
+    public AdminCategoryResponseDTO updateCategory(Integer categoryId, AdminCategoryRequestDTO adminCategoryRequestDTO) {
+        if(categoryId == null || adminCategoryRequestDTO == null) {
+            throw new IllegalArgumentException("Tham số truyền vào categoryId, adminCategoryRequestDTO không được null");
         }
 
-        if(categoryRepository.existsBySlugAndIdNot(categoryRequestDTO.slug(), categoryId)) {
+        if(categoryRepository.existsBySlugAndIdNot(adminCategoryRequestDTO.slug(), categoryId)) {
             throw new IllegalArgumentException("Slug này đã bị danh mục khác sử dụng. Vui lòng chọn slug khác");
         }
 
-        if(categoryRequestDTO.parentId() != null) {
-            if(categoryRequestDTO.parentId().equals(categoryId)) {
+        if(adminCategoryRequestDTO.parentId() != null) {
+            if(adminCategoryRequestDTO.parentId().equals(categoryId)) {
                 throw new IllegalArgumentException("Không thể chọn chính danh mục này làm danh mục cha");
-            }
-            if(!categoryRepository.existsById(categoryRequestDTO.parentId())) {
-                throw new IllegalArgumentException("Không tồn tại danh mục cha với ID này");
             }
         }
 
@@ -74,11 +72,41 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
                         "Không tìm thấy danh mục với id: " + categoryId
                 ));
 
-        categoryMapper.updateEntityFromDTO(categoryRequestDTO, existingCategoryEntity);
+        categoryMapper.updateEntityFromDTO(adminCategoryRequestDTO, existingCategoryEntity);
+
+        if(adminCategoryRequestDTO.parentId() != null) {
+            CategoryEntity newParentCategoryEntity = categoryRepository.findById(adminCategoryRequestDTO.parentId())
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            "Không tìm thấy danh mục cha với id: " + adminCategoryRequestDTO.parentId()
+                    ));
+            existingCategoryEntity.setParent(newParentCategoryEntity);
+        }
+        else {
+            existingCategoryEntity.setParent(null);
+        }
 
         existingCategoryEntity = categoryRepository.save(existingCategoryEntity);
 
         return categoryMapper.toResponseDTO(existingCategoryEntity);
+    }
+
+    @Transactional
+    @Override
+    public AdminCategoryResponseDTO updateStatusCategory(Integer categoryId, AdminUpdateProductStatusRequestDTO adminUpdateProductStatusRequestDTO) {
+        if(categoryId == null || adminUpdateProductStatusRequestDTO == null) {
+            throw new IllegalArgumentException("Tham số truyền vào categoryId, adminUpdateProductStatusRequestDTO không được null");
+        }
+
+        CategoryEntity categoryEntity = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Không tìm thấy danh mục với id: " + categoryId
+                ));
+
+        categoryEntity.setStatus(adminUpdateProductStatusRequestDTO.status());
+
+        categoryEntity = categoryRepository.save(categoryEntity);
+
+        return categoryMapper.toResponseDTO(categoryEntity);
     }
 
     @Override
@@ -107,15 +135,17 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         categoryRepository.save(existingCategoryEntity);
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public Page<CategoryResponseDTO> getAllParentCategories(Pageable pageable) {
+    public Page<AdminCategoryResponseDTO> getAllParentCategories(Pageable pageable) {
         Page<CategoryEntity> categoryEntityPage = categoryRepository.findByParentIdIsNull(pageable);
 
         return categoryEntityPage.map(categoryMapper::toResponseDTO);
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public Page<CategoryResponseDTO> getAllSubCategories(Integer parentId, Pageable pageable) {
+    public Page<AdminCategoryResponseDTO> getAllSubCategories(Integer parentId, Pageable pageable) {
         if(parentId == null) {
             throw new IllegalArgumentException("Tham số truyền vào parentId không được null");
         }
@@ -129,8 +159,9 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         return categoryEntityPage.map(categoryMapper::toResponseDTO);
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public CategoryResponseDTO getCategoryById(Integer categoryId) {
+    public AdminCategoryResponseDTO getCategoryById(Integer categoryId) {
         if(categoryId == null) {
             throw new IllegalArgumentException("Tham số truyền vào categoryId không được null");
         }

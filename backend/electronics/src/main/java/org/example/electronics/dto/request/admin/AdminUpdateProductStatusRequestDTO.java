@@ -1,9 +1,9 @@
-package org.example.electronics.dto;
+package org.example.electronics.dto.request.admin;
 
 import jakarta.validation.constraints.NotNull;
 import org.example.electronics.entity.enums.ProductStatus;
 
-public record ProductStatusChangeDTO(
+public record AdminUpdateProductStatusRequestDTO(
         @NotNull(message = "Trạng thái sản phẩm/biến thể/danh mục/thương hiệu không được để trống")
         ProductStatus status
 ) {

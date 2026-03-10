@@ -1,7 +1,8 @@
 package org.example.electronics.service.admin;
 
-import org.example.electronics.dto.request.CategoryRequestDTO;
-import org.example.electronics.dto.response.CategoryResponseDTO;
+import org.example.electronics.dto.request.admin.AdminUpdateProductStatusRequestDTO;
+import org.example.electronics.dto.request.admin.AdminCategoryRequestDTO;
+import org.example.electronics.dto.response.admin.AdminCategoryResponseDTO;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,10 +10,11 @@ import org.springframework.data.domain.Pageable;
 public interface AdminCategoryService {
 
     //Admin
-    CategoryResponseDTO createCategory(CategoryRequestDTO categoryRequestDTO);
-    CategoryResponseDTO updateCategory(Integer categoryId, CategoryRequestDTO categoryRequestDTO);
+    AdminCategoryResponseDTO createCategory(AdminCategoryRequestDTO adminCategoryRequestDTO);
+    AdminCategoryResponseDTO updateCategory(Integer categoryId, AdminCategoryRequestDTO adminCategoryRequestDTO);
+    AdminCategoryResponseDTO updateStatusCategory(Integer categoryId, AdminUpdateProductStatusRequestDTO adminUpdateProductStatusRequestDTO);
     void deleteCategory(Integer categoryId);
-    Page<CategoryResponseDTO> getAllParentCategories(Pageable pageable);
-    Page<CategoryResponseDTO> getAllSubCategories(Integer parentId, Pageable pageable);
-    CategoryResponseDTO getCategoryById(Integer categoryId);
+    Page<AdminCategoryResponseDTO> getAllParentCategories(Pageable pageable);
+    Page<AdminCategoryResponseDTO> getAllSubCategories(Integer parentId, Pageable pageable);
+    AdminCategoryResponseDTO getCategoryById(Integer categoryId);
 }

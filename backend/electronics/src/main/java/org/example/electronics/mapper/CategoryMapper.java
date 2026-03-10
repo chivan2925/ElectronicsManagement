@@ -1,7 +1,7 @@
 package org.example.electronics.mapper;
 
-import org.example.electronics.dto.request.CategoryRequestDTO;
-import org.example.electronics.dto.response.CategoryResponseDTO;
+import org.example.electronics.dto.request.admin.AdminCategoryRequestDTO;
+import org.example.electronics.dto.response.admin.AdminCategoryResponseDTO;
 import org.example.electronics.entity.CategoryEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -12,11 +12,12 @@ import org.mapstruct.ReportingPolicy;
 public interface CategoryMapper {
 
     @Mapping(source = "parentId", target = "parent.id")
-    CategoryEntity toEntity(CategoryRequestDTO categoryRequestDTO);
+    CategoryEntity toEntity(AdminCategoryRequestDTO adminCategoryRequestDTO);
 
     @Mapping(source = "parent.id", target = "parentId")
-    CategoryResponseDTO toResponseDTO(CategoryEntity categoryEntity);
+    AdminCategoryResponseDTO toResponseDTO(CategoryEntity categoryEntity);
 
-    void updateEntityFromDTO(CategoryRequestDTO categoryRequestDTO,
+    @Mapping(target = "parent", ignore = true)
+    void updateEntityFromDTO(AdminCategoryRequestDTO adminCategoryRequestDTO,
                              @MappingTarget CategoryEntity categoryEntity);
 }

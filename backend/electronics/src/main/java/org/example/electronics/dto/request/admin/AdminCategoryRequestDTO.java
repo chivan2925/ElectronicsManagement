@@ -1,4 +1,4 @@
-package org.example.electronics.dto.request;
+package org.example.electronics.dto.request.admin;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import org.example.electronics.entity.enums.ProductStatus;
 
-public record CategoryRequestDTO(
+public record AdminCategoryRequestDTO(
         @NotBlank(message = "Tên danh mục không được để trống")
         @Size(max = 50, message = "Tên danh mục không được vượt quá 50 ký tự")
         String name,

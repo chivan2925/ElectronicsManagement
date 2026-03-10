@@ -1,4 +1,4 @@
-package org.example.electronics.dto.request;
+package org.example.electronics.dto.request.admin;
 
 import jakarta.validation.constraints.*;
 import org.example.electronics.entity.enums.GenderType;
@@ -6,7 +6,7 @@ import org.example.electronics.entity.enums.UserStatus;
 
 import java.time.LocalDate;
 
-public record UserRequestDTO(
+public record AdminUserRequestDTO(
         @NotBlank(message = "Họ tên đầy đủ của người dùng không được bỏ trống")
         @Size(max = 100, message = "Họ tên đầy đủ của người dùng không được vượt quá 25 kí tự")
         String fullName,
