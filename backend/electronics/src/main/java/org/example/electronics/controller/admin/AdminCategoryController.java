@@ -76,7 +76,7 @@ public class AdminCategoryController {
             summary = "Lấy danh sách danh mục Cha",
             description = "Trả về danh sách danh mục gốc (không có parentId) kèm theo thông tin phân trang."
     )
-    public ResponseEntity<Page<AdminCategoryResponseDTO>> getAllParentCategoriesPage (
+    public ResponseEntity<Page<AdminCategoryResponseDTO>> getAllParentCategories(
             @PageableDefault(sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable
     ) {
         Page<AdminCategoryResponseDTO> allParentCategoriesPage = adminCategoryService.getAllParentCategories(pageable);
@@ -86,7 +86,7 @@ public class AdminCategoryController {
 
     @GetMapping("/{parentId}/subcategories")
     @Operation(summary = "Lấy danh sách danh mục Con", description = "Trả về danh sách các danh mục con thuộc về một danh mục cha cụ thể, có phân trang.")
-    public ResponseEntity<Page<AdminCategoryResponseDTO>> getAllSubCategoriesPage(
+    public ResponseEntity<Page<AdminCategoryResponseDTO>> getAllSubCategories(
             @PathVariable Integer parentId,
             @PageableDefault(sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable
     ) {

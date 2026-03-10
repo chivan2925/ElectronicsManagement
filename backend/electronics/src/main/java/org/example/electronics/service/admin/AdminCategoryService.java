@@ -9,7 +9,6 @@ import org.springframework.data.domain.Pageable;
 
 public interface AdminCategoryService {
 
-    //Admin
     AdminCategoryResponseDTO createCategory(AdminCategoryRequestDTO adminCategoryRequestDTO);
     AdminCategoryResponseDTO updateCategory(Integer categoryId, AdminCategoryRequestDTO adminCategoryRequestDTO);
     AdminCategoryResponseDTO updateStatusCategory(Integer categoryId, AdminUpdateProductStatusRequestDTO adminUpdateProductStatusRequestDTO);
