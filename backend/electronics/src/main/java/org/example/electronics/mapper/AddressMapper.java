@@ -1,15 +1,11 @@
 package org.example.electronics.mapper;
 
-import org.example.electronics.dto.request.AddressRequestDTO;
-import org.example.electronics.dto.response.AddressResponseDTO;
+import org.example.electronics.dto.response.admin.AdminAddressResponseDTO;
 import org.example.electronics.entity.AddressEntity;
 import org.mapstruct.Mapper;
-import org.mapstruct.ReportingPolicy;
 
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
+@Mapper(componentModel = "spring")
 public interface AddressMapper {
 
-    AddressEntity toEntity(AddressRequestDTO addressRequestDTO);
-
-    AddressResponseDTO toResponseDTO(AddressEntity addressEntity);
+    AdminAddressResponseDTO toResponseDTO(AddressEntity addressEntity);
 }

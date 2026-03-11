@@ -1,8 +1,8 @@
-package org.example.electronics.dto.response;
+package org.example.electronics.dto.response.admin;
 
 import java.time.LocalDateTime;
 
-public record AddressResponseDTO(
+public record AdminAddressResponseDTO(
         Integer id,
         Integer userId,
         String label,

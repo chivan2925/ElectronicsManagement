@@ -25,14 +25,9 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         this.categoryMapper = categoryMapper;
     }
 
-    //Admin
     @Transactional
     @Override
     public AdminCategoryResponseDTO createCategory(AdminCategoryRequestDTO adminCategoryRequestDTO) {
-        if(adminCategoryRequestDTO == null){
-            throw new IllegalArgumentException("Tham số truyền vào adminCategoryRequestDTO không được null");
-        }
-
         if(categoryRepository.existsBySlug(adminCategoryRequestDTO.slug())) {
             throw new IllegalArgumentException("Slug này đã tồn tại. Vui lòng chọn slug khác");
         }
@@ -53,10 +48,6 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
     @Transactional
     @Override
     public AdminCategoryResponseDTO updateCategory(Integer categoryId, AdminCategoryRequestDTO adminCategoryRequestDTO) {
-        if(categoryId == null || adminCategoryRequestDTO == null) {
-            throw new IllegalArgumentException("Tham số truyền vào categoryId, adminCategoryRequestDTO không được null");
-        }
-
         if(categoryRepository.existsBySlugAndIdNot(adminCategoryRequestDTO.slug(), categoryId)) {
             throw new IllegalArgumentException("Slug này đã bị danh mục khác sử dụng. Vui lòng chọn slug khác");
         }
@@ -93,10 +84,6 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
     @Transactional
     @Override
     public AdminCategoryResponseDTO updateStatusCategory(Integer categoryId, AdminUpdateProductStatusRequestDTO adminUpdateProductStatusRequestDTO) {
-        if(categoryId == null || adminUpdateProductStatusRequestDTO == null) {
-            throw new IllegalArgumentException("Tham số truyền vào categoryId, adminUpdateProductStatusRequestDTO không được null");
-        }
-
         CategoryEntity categoryEntity = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Không tìm thấy danh mục với id: " + categoryId
@@ -109,12 +96,9 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         return categoryMapper.toResponseDTO(categoryEntity);
     }
 
+    @Transactional
     @Override
     public void deleteCategory(Integer categoryId) {
-        if(categoryId == null) {
-            throw new IllegalArgumentException("Tham số truyền vào categoryId không được null");
-        }
-
         CategoryEntity existingCategoryEntity = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Không tìm thấy danh mục với id: " + categoryId
@@ -146,10 +130,6 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
     @Transactional(readOnly = true)
     @Override
     public Page<AdminCategoryResponseDTO> getAllSubCategories(Integer parentId, Pageable pageable) {
-        if(parentId == null) {
-            throw new IllegalArgumentException("Tham số truyền vào parentId không được null");
-        }
-
         if(!categoryRepository.existsById(parentId)) {
             throw new IllegalArgumentException("Không tìm thấy danh mục cha với ID: " + parentId);
         }
@@ -162,10 +142,6 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
     @Transactional(readOnly = true)
     @Override
     public AdminCategoryResponseDTO getCategoryById(Integer categoryId) {
-        if(categoryId == null) {
-            throw new IllegalArgumentException("Tham số truyền vào categoryId không được null");
-        }
-
         CategoryEntity categoryEntity = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Không tìm thấy danh mục với id: " + categoryId

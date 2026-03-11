@@ -27,10 +27,6 @@ public class AdminUserServiceImpl implements AdminUserService {
     @Transactional
     @Override
     public AdminUserResponseDTO updateStatusUser(Integer userId, AdminUpdateUserStatusRequestDTO adminUpdateUserStatusRequestDTO) {
-        if(userId == null) {
-            throw new IllegalArgumentException("Tham số truyền vào userId khoong được null");
-        }
-
         UserEntity userEntity = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Không tìm thấy user với id: " + userId
@@ -46,10 +42,6 @@ public class AdminUserServiceImpl implements AdminUserService {
     @Transactional
     @Override
     public void deleteUser(Integer userId) {
-        if(userId == null) {
-            throw new IllegalArgumentException("Tham số truyền vào userId khoong được null");
-        }
-
         UserEntity userEntity = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Không tìm thấy user với id: " + userId
@@ -71,10 +63,6 @@ public class AdminUserServiceImpl implements AdminUserService {
     @Transactional(readOnly = true)
     @Override
     public AdminUserResponseDTO getUserById(Integer userId) {
-        if(userId == null) {
-            throw new IllegalArgumentException("Tham số truyền vào userId không được null");
-        }
-
         UserEntity userEntity = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Không tìm thấy user với id: " + userId
