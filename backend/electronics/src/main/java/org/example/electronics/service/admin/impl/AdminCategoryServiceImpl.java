@@ -9,10 +9,15 @@ import org.example.electronics.entity.enums.ProductStatus;
 import org.example.electronics.mapper.CategoryMapper;
 import org.example.electronics.repository.CategoryRepository;
 import org.example.electronics.service.admin.AdminCategoryService;
+import org.example.electronics.util.DateTimeUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Service
 public class AdminCategoryServiceImpl implements AdminCategoryService {
@@ -121,20 +126,30 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
 
     @Transactional(readOnly = true)
     @Override
-    public Page<AdminCategoryResponseDTO> getAllParentCategories(String keyword, ProductStatus status, Pageable pageable) {
-        Page<CategoryEntity> categoryEntityPage = categoryRepository.findParentCategoriesWithFilter(keyword, status, pageable);
+    public Page<AdminCategoryResponseDTO> getAllParentCategories(String keyword, ProductStatus status, LocalDate fromDate, LocalDate toDate, Pageable pageable) {
+        LocalDateTime startDateTime = DateTimeUtils.getStartOfDay(fromDate);
+        LocalDateTime endDateTime = DateTimeUtils.getEndOfDay(toDate);
+
+        String finalKeyword = StringUtils.hasText(keyword) ? keyword.trim() : null;
+
+        Page<CategoryEntity> categoryEntityPage = categoryRepository.findParentCategoriesWithFilter(finalKeyword, status, startDateTime, endDateTime, pageable);
 
         return categoryEntityPage.map(categoryMapper::toResponseDTO);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public Page<AdminCategoryResponseDTO> getAllSubCategories(Integer parentId, String keyword, ProductStatus status, Pageable pageable) {
+    public Page<AdminCategoryResponseDTO> getAllSubCategories(Integer parentId, String keyword, ProductStatus status, LocalDate fromDate, LocalDate toDate, Pageable pageable) {
         if(!categoryRepository.existsById(parentId)) {
-            throw new IllegalArgumentException("Không tìm thấy danh mục cha với ID: " + parentId);
+            throw new EntityNotFoundException("Không tìm thấy danh mục cha với ID: " + parentId);
         }
 
-        Page<CategoryEntity> categoryEntityPage = categoryRepository.findSubCategoriesWithFilter(parentId, keyword, status, pageable);
+        LocalDateTime startDateTime = DateTimeUtils.getStartOfDay(fromDate);
+        LocalDateTime endDateTime = DateTimeUtils.getEndOfDay(toDate);
+
+        String finalKeyword = StringUtils.hasText(keyword) ? keyword.trim() : null;
+
+        Page<CategoryEntity> categoryEntityPage = categoryRepository.findSubCategoriesWithFilter(parentId, finalKeyword, status, startDateTime, endDateTime, pageable);
 
         return categoryEntityPage.map(categoryMapper::toResponseDTO);
     }

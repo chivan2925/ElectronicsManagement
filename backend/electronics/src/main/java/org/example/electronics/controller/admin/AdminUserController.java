@@ -14,6 +14,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+
 @RestController
 @RequestMapping("/api/admin/users")
 @Tag(name = "2. User Management", description = "Các API dành cho Admin để quản lý người dùng")
@@ -59,9 +61,11 @@ public class AdminUserController {
     public ResponseEntity<Page<AdminUserResponseDTO>> getAllUsers(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) UserStatus status,
+            @RequestParam(required = false) LocalDate fromDate,
+            @RequestParam(required = false) LocalDate toDate,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        Page<AdminUserResponseDTO> adminUserResponseDTOPage = adminUserService.getAllUsers(keyword, status, pageable);
+        Page<AdminUserResponseDTO> adminUserResponseDTOPage = adminUserService.getAllUsers(keyword, status, fromDate, toDate, pageable);
 
         return ResponseEntity.ok(adminUserResponseDTOPage);
     }

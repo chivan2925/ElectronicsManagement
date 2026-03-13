@@ -6,12 +6,12 @@ import org.example.electronics.entity.enums.UserStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public interface AdminUserService {
 
     AdminUserResponseDTO updateStatusUser(Integer userId, AdminUpdateUserStatusRequestDTO adminUpdateUserStatusRequestDTO);
     void deleteUser(Integer userId);
-    Page<AdminUserResponseDTO> getAllUsers(String keyword, UserStatus status, LocalDateTime fromDate, LocalDateTime toDate, Pageable pageable);
+    Page<AdminUserResponseDTO> getAllUsers(String keyword, UserStatus status, LocalDate fromDate, LocalDate toDate, Pageable pageable);
     AdminUserResponseDTO getUserById(Integer userId);
 }

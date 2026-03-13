@@ -15,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+
 @RestController
 @RequestMapping("/api/admin/categories")
 @Tag(name = "1. Category Management", description = "Các API dùng để quản lý Danh mục sản phẩm")
@@ -89,9 +91,11 @@ public class AdminCategoryController {
     public ResponseEntity<Page<AdminCategoryResponseDTO>> getAllParentCategories(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) ProductStatus status,
+            @RequestParam(required = false) LocalDate fromDate,
+            @RequestParam(required = false) LocalDate toDate,
             @PageableDefault(sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable
     ) {
-        Page<AdminCategoryResponseDTO> allParentCategoriesPage = adminCategoryService.getAllParentCategories(keyword, status, pageable);
+        Page<AdminCategoryResponseDTO> allParentCategoriesPage = adminCategoryService.getAllParentCategories(keyword, status, fromDate, toDate, pageable);
 
         return ResponseEntity.ok(allParentCategoriesPage);
     }
@@ -102,12 +106,14 @@ public class AdminCategoryController {
             description = "Trả về danh sách các danh mục con thuộc về một danh mục cha cụ thể, có phân trang."
     )
     public ResponseEntity<Page<AdminCategoryResponseDTO>> getAllSubCategories(
+            @PathVariable Integer parentId,
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) ProductStatus status,
-            @PathVariable Integer parentId,
+            @RequestParam(required = false) LocalDate fromDate,
+            @RequestParam(required = false) LocalDate toDate,
             @PageableDefault(sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable
     ) {
-        Page<AdminCategoryResponseDTO> allSubCategoriesPage = adminCategoryService.getAllSubCategories(parentId, keyword, status, pageable);
+        Page<AdminCategoryResponseDTO> allSubCategoriesPage = adminCategoryService.getAllSubCategories(parentId, keyword, status, fromDate, toDate, pageable);
 
         return ResponseEntity.ok(allSubCategoriesPage);
     }
