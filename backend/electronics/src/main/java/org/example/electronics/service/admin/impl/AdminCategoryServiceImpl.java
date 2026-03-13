@@ -121,20 +121,20 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
 
     @Transactional(readOnly = true)
     @Override
-    public Page<AdminCategoryResponseDTO> getAllParentCategories(Pageable pageable) {
-        Page<CategoryEntity> categoryEntityPage = categoryRepository.findByParentIdIsNull(pageable);
+    public Page<AdminCategoryResponseDTO> getAllParentCategories(String keyword, ProductStatus status, Pageable pageable) {
+        Page<CategoryEntity> categoryEntityPage = categoryRepository.findParentCategoriesWithFilter(keyword, status, pageable);
 
         return categoryEntityPage.map(categoryMapper::toResponseDTO);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public Page<AdminCategoryResponseDTO> getAllSubCategories(Integer parentId, Pageable pageable) {
+    public Page<AdminCategoryResponseDTO> getAllSubCategories(Integer parentId, String keyword, ProductStatus status, Pageable pageable) {
         if(!categoryRepository.existsById(parentId)) {
             throw new IllegalArgumentException("Không tìm thấy danh mục cha với ID: " + parentId);
         }
 
-        Page<CategoryEntity> categoryEntityPage = categoryRepository.findByParentId(parentId, pageable);
+        Page<CategoryEntity> categoryEntityPage = categoryRepository.findSubCategoriesWithFilter(parentId, keyword, status, pageable);
 
         return categoryEntityPage.map(categoryMapper::toResponseDTO);
     }

@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.example.electronics.dto.request.admin.AdminUpdateUserStatusRequestDTO;
 import org.example.electronics.dto.response.admin.AdminUserResponseDTO;
+import org.example.electronics.entity.enums.UserStatus;
 import org.example.electronics.service.admin.AdminUserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,7 +26,10 @@ public class AdminUserController {
     }
 
     @PatchMapping("/{userId}/status")
-    @Operation(summary = "Cập nhật trạng thái User", description = "Dùng để Khóa (BLOCKED) hoặc Mở khóa (ACTIVE) tài khoản khách hàng.")
+    @Operation(
+            summary = "Cập nhật trạng thái User",
+            description = "Dùng để Khóa (BLOCKED) hoặc Mở khóa (ACTIVE) tài khoản khách hàng."
+    )
     public ResponseEntity<AdminUserResponseDTO> updateUserStatus (
             @PathVariable Integer userId,
             @Valid @RequestBody AdminUpdateUserStatusRequestDTO adminUpdateUserStatusRequestDTO
@@ -36,7 +40,9 @@ public class AdminUserController {
     }
 
     @DeleteMapping("/{userId}")
-    @Operation(summary = "Xóa User (Soft Delete)", description = "Chuyển trạng thái của User thành DELETED.")
+    @Operation(summary = "Xóa User (Soft Delete)",
+            description = "Chuyển trạng thái của User thành DELETED."
+    )
     public ResponseEntity<Void> deleteUser (
             @PathVariable Integer userId
     ) {
@@ -46,17 +52,25 @@ public class AdminUserController {
     }
 
     @GetMapping
-    @Operation(summary = "Lấy danh sách User", description = "Lấy danh sách người dùng có phân trang. Mặc định sắp xếp ngày tạo mới nhất lên đầu.")
+    @Operation(
+            summary = "Lấy danh sách User (Có tìm kiếm và lọc)",
+            description = "Lấy danh sách người dùng có phân trang. Mặc định sắp xếp ngày tạo mới nhất lên đầu."
+    )
     public ResponseEntity<Page<AdminUserResponseDTO>> getAllUsers(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) UserStatus status,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        Page<AdminUserResponseDTO> adminUserResponseDTOPage = adminUserService.getAllUsers(pageable);
+        Page<AdminUserResponseDTO> adminUserResponseDTOPage = adminUserService.getAllUsers(keyword, status, pageable);
 
         return ResponseEntity.ok(adminUserResponseDTOPage);
     }
 
     @GetMapping("/{userId}")
-    @Operation(summary = "Xem chi tiết 1 User", description = "Lấy toàn bộ thông tin công khai của User dựa vào ID.")
+    @Operation(
+            summary = "Xem chi tiết 1 User",
+            description = "Lấy toàn bộ thông tin công khai của User dựa vào ID."
+    )
     public ResponseEntity<AdminUserResponseDTO> getUserById(
             @PathVariable Integer userId
     ) {

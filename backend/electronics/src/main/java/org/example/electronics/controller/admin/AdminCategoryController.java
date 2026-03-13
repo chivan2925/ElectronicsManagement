@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import org.example.electronics.dto.request.admin.AdminCategoryRequestDTO;
 import org.example.electronics.dto.request.admin.AdminUpdateProductStatusRequestDTO;
 import org.example.electronics.dto.response.admin.AdminCategoryResponseDTO;
+import org.example.electronics.entity.enums.ProductStatus;
 import org.example.electronics.service.admin.AdminCategoryService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,7 +27,10 @@ public class AdminCategoryController {
     }
 
     @PostMapping
-    @Operation(summary = "Tạo mới danh mục", description = "Thêm một danh mục mới (Cha hoặc Con). Để parentId = null nếu tạo danh mục gốc.")
+    @Operation(
+            summary = "Tạo mới danh mục",
+            description = "Thêm một danh mục mới (Cha hoặc Con). Để parentId = null nếu tạo danh mục gốc."
+    )
     public ResponseEntity<AdminCategoryResponseDTO> createCategory(
             @Valid @RequestBody AdminCategoryRequestDTO adminCategoryRequestDTO
     ) {
@@ -36,7 +40,10 @@ public class AdminCategoryController {
     }
 
     @PutMapping("/{categoryId}")
-    @Operation(summary = "Cập nhật danh mục", description = "Chỉnh sửa thông tin danh mục hiện có theo ID.")
+    @Operation(
+            summary = "Cập nhật danh mục",
+            description = "Chỉnh sửa thông tin danh mục hiện có theo ID."
+    )
     public ResponseEntity<AdminCategoryResponseDTO> updateCategory(
             @PathVariable Integer categoryId,
             @Valid @RequestBody AdminCategoryRequestDTO adminCategoryRequestDTO
@@ -61,7 +68,10 @@ public class AdminCategoryController {
     }
 
     @DeleteMapping("/{categoryId}")
-    @Operation(summary = "Xóa danh mục (Soft Delete)", description = "Chuyển trạng thái danh mục sang DELETED. Sẽ báo lỗi nếu danh mục này đang chứa danh mục con.")
+    @Operation(
+            summary = "Xóa danh mục (Soft Delete)",
+            description = "Chuyển trạng thái danh mục sang DELETED. Sẽ báo lỗi nếu danh mục này đang chứa danh mục con."
+    )
     public ResponseEntity<Void> deleteCategory(
             @PathVariable Integer categoryId
     ) {
@@ -73,30 +83,40 @@ public class AdminCategoryController {
     //Size mặc định (số lượng phần tử 1 trang) của @PageableDefault là 10
     @GetMapping
     @Operation(
-            summary = "Lấy danh sách danh mục Cha",
+            summary = "Lấy danh sách danh mục Cha (Có tìm kiếm và lọc)",
             description = "Trả về danh sách danh mục gốc (không có parentId) kèm theo thông tin phân trang."
     )
     public ResponseEntity<Page<AdminCategoryResponseDTO>> getAllParentCategories(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) ProductStatus status,
             @PageableDefault(sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable
     ) {
-        Page<AdminCategoryResponseDTO> allParentCategoriesPage = adminCategoryService.getAllParentCategories(pageable);
+        Page<AdminCategoryResponseDTO> allParentCategoriesPage = adminCategoryService.getAllParentCategories(keyword, status, pageable);
 
         return ResponseEntity.ok(allParentCategoriesPage);
     }
 
     @GetMapping("/{parentId}/subcategories")
-    @Operation(summary = "Lấy danh sách danh mục Con", description = "Trả về danh sách các danh mục con thuộc về một danh mục cha cụ thể, có phân trang.")
+    @Operation(
+            summary = "Lấy danh sách danh mục Con (Có tìm kiếm và lọc)",
+            description = "Trả về danh sách các danh mục con thuộc về một danh mục cha cụ thể, có phân trang."
+    )
     public ResponseEntity<Page<AdminCategoryResponseDTO>> getAllSubCategories(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) ProductStatus status,
             @PathVariable Integer parentId,
             @PageableDefault(sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable
     ) {
-        Page<AdminCategoryResponseDTO> allSubCategoriesPage = adminCategoryService.getAllSubCategories(parentId, pageable);
+        Page<AdminCategoryResponseDTO> allSubCategoriesPage = adminCategoryService.getAllSubCategories(parentId, keyword, status, pageable);
 
         return ResponseEntity.ok(allSubCategoriesPage);
     }
 
     @GetMapping("/{categoryId}")
-    @Operation(summary = "Lấy chi tiết danh mục", description = "Lấy thông tin của 1 danh mục cụ thể dựa vào ID.")
+    @Operation(
+            summary = "Lấy chi tiết danh mục",
+            description = "Lấy thông tin của 1 danh mục cụ thể dựa vào ID."
+    )
     public ResponseEntity<AdminCategoryResponseDTO> getCategoryById(
             @PathVariable Integer categoryId
     ) {

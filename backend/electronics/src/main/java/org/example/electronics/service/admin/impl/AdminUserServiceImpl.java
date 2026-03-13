@@ -13,6 +13,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @Service
 public class AdminUserServiceImpl implements AdminUserService {
 
@@ -54,8 +56,14 @@ public class AdminUserServiceImpl implements AdminUserService {
 
     @Transactional(readOnly = true)
     @Override
-    public Page<AdminUserResponseDTO> getAllUsers(Pageable pageable) {
-        Page<UserEntity> userEntityPage = userRepository.findAll(pageable);
+    public Page<AdminUserResponseDTO> getAllUsers(String keyword, UserStatus status, LocalDateTime fromDate, LocalDateTime toDate, Pageable pageable) {
+        LocalDateTime startDateTime = (fromDate != null) ? fromDate.toLocalDate().atStartOfDay() : null;
+        LocalDateTime endDateTime = (toDate != null) ? toDate.toLocalDate().atTime(23, 59, 59, 999999999) : null;
+
+        // 2. Chặn lỗi Frontend gửi chuỗi rỗng "" (Gửi rỗng thì biến thành null để DB bỏ qua)
+        String finalKeyword = (keyword != null && !keyword.trim().isEmpty()) ? keyword.trim() : null;
+
+        Page<UserEntity> userEntityPage = userRepository.findUsersWithFilter(finalKeyword, status, startDateTime, endDateTime, pageable);
 
         return userEntityPage.map(userMapper::toResponseDTO);
     }

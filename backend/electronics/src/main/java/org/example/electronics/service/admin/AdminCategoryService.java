@@ -4,6 +4,7 @@ import org.example.electronics.dto.request.admin.AdminUpdateProductStatusRequest
 import org.example.electronics.dto.request.admin.AdminCategoryRequestDTO;
 import org.example.electronics.dto.response.admin.AdminCategoryResponseDTO;
 
+import org.example.electronics.entity.enums.ProductStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -13,7 +14,7 @@ public interface AdminCategoryService {
     AdminCategoryResponseDTO updateCategory(Integer categoryId, AdminCategoryRequestDTO adminCategoryRequestDTO);
     AdminCategoryResponseDTO updateStatusCategory(Integer categoryId, AdminUpdateProductStatusRequestDTO adminUpdateProductStatusRequestDTO);
     void deleteCategory(Integer categoryId);
-    Page<AdminCategoryResponseDTO> getAllParentCategories(Pageable pageable);
-    Page<AdminCategoryResponseDTO> getAllSubCategories(Integer parentId, Pageable pageable);
+    Page<AdminCategoryResponseDTO> getAllParentCategories(String keyword, ProductStatus status, Pageable pageable);
+    Page<AdminCategoryResponseDTO> getAllSubCategories(Integer parentId, String keyword, ProductStatus status, Pageable pageable);
     AdminCategoryResponseDTO getCategoryById(Integer categoryId);
 }
