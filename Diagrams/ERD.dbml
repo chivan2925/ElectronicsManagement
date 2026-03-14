@@ -239,7 +239,6 @@ Table permissions {
   code varchar(50) [unique, not null] //Naming convention: PRODUCT_VIEW, PRODUCT_CREATE, PRODUCT_UPDATE, PRODUCT_DELETE, etc.
   name varchar(50) [unique, not null]
   description text
-  status user_status [default: user_status.ACTIVE, not null]
   created_at datetime [default: `now()`, not null]
   updated_at datetime [default: `now()`, not null]
 }
