@@ -32,7 +32,7 @@ public class AdminAddressServiceImpl implements AdminAddressService {
             throw new EntityNotFoundException("Không tìm thấy User với id: " + userId);
         }
 
-        Page<AddressEntity> addressEntityPage = addressRepository.findByUserId(userId, pageable);
+        Page<AddressEntity> addressEntityPage = addressRepository.findByUser_Id(userId, pageable);
 
         return addressEntityPage.map(addressMapper::toResponseDTO);
     }

@@ -19,7 +19,7 @@ public interface CategoryRepository extends JpaRepository<CategoryEntity, Intege
 
     boolean existsBySlugAndIdNot(String slug, Integer id);
 
-    boolean existsByParentId(Integer parentId);
+    boolean existsByParent_Id(Integer parentId);
 
     @Query("SELECT c FROM CategoryEntity c WHERE c.parent IS NULL " +
 

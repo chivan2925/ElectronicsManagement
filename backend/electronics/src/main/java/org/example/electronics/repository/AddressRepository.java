@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AddressRepository extends JpaRepository<AddressEntity, Integer> {
 
-    Page<AddressEntity> findByUserId(Integer userId, Pageable pageable);
+    Page<AddressEntity> findByUser_Id(Integer userId, Pageable pageable);
 }

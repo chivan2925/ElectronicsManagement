@@ -109,7 +109,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
                         "Không tìm thấy danh mục với id: " + categoryId
                 ));
 
-        if(categoryRepository.existsByParentId(existingCategoryEntity.getId())) {
+        if(categoryRepository.existsByParent_Id(existingCategoryEntity.getId())) {
             throw new IllegalStateException("Không thể xóa! Danh mục này đang chứa các danh mục con bên trong. Vui lòng xóa hoặc di chuyển danh mục con trước.");
         }
 

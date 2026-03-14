@@ -8,43 +8,26 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "addresses")
+@Table(name = "permissions")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AddressEntity {
+public class PermissionEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private UserEntity user;
+    @Column(unique = true, nullable = false, length = 50)
+    private String code;
 
-    @Column(nullable = false, length = 50)
-    private String label;
-
-    @Column(nullable = false)
-    private String line;
-
-    @Column(nullable = false, length = 50)
-    private String ward;
-
-    @Column(nullable = false, length = 50)
-    private String district;
-
-    @Column(nullable = false, length = 50)
-    private String province;
+    @Column(unique = true, nullable = false, length = 50)
+    private String name;
 
     @Column(columnDefinition = "TEXT")
-    private String note;
-
-    @Column(name = "is_default", nullable = false)
-    @Builder.Default
-    private boolean defaultAddress = false;
+    private String description;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false, nullable = false)

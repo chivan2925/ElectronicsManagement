@@ -228,15 +228,15 @@ Table addresses {
 
 Table roles {
   id int [pk, increment]
-  name varchar(25) [not null]
+  name varchar(50) [unique, not null]
   created_at datetime [default: `now()`, not null]
   updated_at datetime [default: `now()`, not null]
 }
 
 Table permissions {
   id int [pk, increment]
-  key varchar(50) [not null] //Naming convention: PRODUCT_VIEW, PRODUCT_CREATE, PRODUCT_UPDATE, PRODUCT_DELETE, etc.
-  name varchar(25) [not null]
+  code varchar(50) [unique, not null] //Naming convention: PRODUCT_VIEW, PRODUCT_CREATE, PRODUCT_UPDATE, PRODUCT_DELETE, etc.
+  name varchar(50) [unique, not null]
   description text
   created_at datetime [default: `now()`, not null]
   updated_at datetime [default: `now()`, not null]
@@ -491,7 +491,6 @@ Table warehouse_details {
 Table role_permissions {
   role_id int [Ref: > roles.id, not null]
   permission_id int [Ref: > permissions.id, not null]
-  granted_at datetime [default: `now()`, not null]
 
   indexes {
     (role_id, permission_id) [pk]
