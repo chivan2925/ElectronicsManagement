@@ -157,11 +157,11 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
     @Transactional(readOnly = true)
     @Override
     public AdminCategoryResponseDTO getCategoryById(Integer categoryId) {
-        CategoryEntity categoryEntity = categoryRepository.findById(categoryId)
+        CategoryEntity existingCategoryEntity = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Không tìm thấy danh mục với id: " + categoryId
                 ));
 
-        return categoryMapper.toResponseDTO(categoryEntity);
+        return categoryMapper.toResponseDTO(existingCategoryEntity);
     }
 }

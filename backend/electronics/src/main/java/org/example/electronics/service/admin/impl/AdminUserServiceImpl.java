@@ -73,11 +73,11 @@ public class AdminUserServiceImpl implements AdminUserService {
     @Transactional(readOnly = true)
     @Override
     public AdminUserResponseDTO getUserById(Integer userId) {
-        UserEntity userEntity = userRepository.findById(userId)
+        UserEntity existingUserEntity = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Không tìm thấy user với id: " + userId
                 ));
 
-        return userMapper.toResponseDTO(userEntity);
+        return userMapper.toResponseDTO(existingUserEntity);
     }
 }

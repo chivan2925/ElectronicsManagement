@@ -2,6 +2,7 @@ package org.example.electronics.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.example.electronics.entity.enums.UserStatus;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -33,6 +34,11 @@ public class RoleEntity {
     )
     @Builder.Default
     private Set<PermissionEntity> permissions = new HashSet<>();
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @Builder.Default
+    private UserStatus status = UserStatus.ACTIVE;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false, nullable = false)

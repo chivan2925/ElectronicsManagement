@@ -65,9 +65,9 @@ public class AdminUserController {
             @RequestParam(required = false) LocalDate toDate,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        Page<AdminUserResponseDTO> adminUserResponseDTOPage = adminUserService.getAllUsers(keyword, status, fromDate, toDate, pageable);
+        Page<AdminUserResponseDTO> allUsersPage = adminUserService.getAllUsers(keyword, status, fromDate, toDate, pageable);
 
-        return ResponseEntity.ok(adminUserResponseDTOPage);
+        return ResponseEntity.ok(allUsersPage);
     }
 
     @GetMapping("/{userId}")
