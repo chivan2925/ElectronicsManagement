@@ -1,0 +1,118 @@
+package org.example.electronics.controller.admin;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import org.example.electronics.dto.request.admin.AdminStaffRequestDTO;
+import org.example.electronics.dto.request.admin.AdminUpdateUserStatusRequestDTO;
+import org.example.electronics.dto.response.admin.AdminStaffResponseDTO;
+import org.example.electronics.entity.enums.UserStatus;
+import org.example.electronics.service.admin.AdminStaffService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+
+@RestController
+@RequestMapping("/api/admin/staffs")
+@Tag(
+        name = "5. Staff Management",
+        description = "Các API dành cho Admin để quản lý tài khoản Nhân viên (Staff), phân quyền và theo dõi trạng thái hoạt động."
+)
+public class AdminStaffController {
+
+    private final AdminStaffService adminStaffService;
+
+    public AdminStaffController(AdminStaffService adminStaffService) {
+        this.adminStaffService = adminStaffService;
+    }
+
+    @PostMapping
+    @Operation(
+            summary = "Tạo mới tài khoản Nhân viên",
+            description = "Thêm một nhân viên mới vào hệ thống. Cần truyền vào đầy đủ thông tin cá nhân và ID của Chức vụ (Role) tương ứng."
+    )
+    public ResponseEntity<AdminStaffResponseDTO> createStaff(
+            @Valid @RequestBody AdminStaffRequestDTO adminStaffRequestDTO
+    ) {
+        AdminStaffResponseDTO adminStaffResponseDTO = adminStaffService.createStaff(adminStaffRequestDTO);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(adminStaffResponseDTO);
+    }
+
+    @PutMapping("/{staffId}")
+    @Operation(
+            summary = "Cập nhật thông tin Nhân viên",
+            description = "Cập nhật lại thông tin cá nhân hoặc chuyển đổi Chức vụ (Role) của nhân viên."
+    )
+    public ResponseEntity<AdminStaffResponseDTO> updateStaff(
+            @PathVariable Integer staffId,
+            @Valid @RequestBody AdminStaffRequestDTO adminStaffRequestDTO
+    ) {
+        AdminStaffResponseDTO adminStaffResponseDTO = adminStaffService.updateStaff(staffId, adminStaffRequestDTO);
+
+        return ResponseEntity.ok(adminStaffResponseDTO);
+    }
+
+    @PatchMapping("/{staffId}/status")
+    @Operation(
+            summary = "Khóa/Mở khóa Nhân viên",
+            description = "Thay đổi trạng thái (ACTIVE / BLOCKED) của tài khoản nhân viên. Nhân viên bị khóa sẽ không thể đăng nhập vào hệ thống Admin."
+    )
+    public ResponseEntity<AdminStaffResponseDTO> updateStatusStaff(
+            @PathVariable Integer staffId,
+            @Valid @RequestBody AdminUpdateUserStatusRequestDTO adminUpdateUserStatusRequestDTO
+    ) {
+        AdminStaffResponseDTO adminStaffResponseDTO = adminStaffService.updateStatusStaff(staffId, adminUpdateUserStatusRequestDTO);
+
+        return ResponseEntity.ok(adminStaffResponseDTO);
+    }
+
+    @DeleteMapping("/{staffId}")
+    @Operation(
+            summary = "Xóa tài khoản Nhân viên (Soft Delete)",
+            description = "Chuyển trạng thái của nhân viên thành DELETED. Dữ liệu vẫn được giữ lại để đảm bảo tính toàn vẹn của các hóa đơn cũ."
+    )
+    public ResponseEntity<Void> deleteStaff(
+            @PathVariable Integer staffId
+    ) {
+        adminStaffService.deleteStaff(staffId);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping
+    @Operation(
+            summary = "Lấy danh sách Nhân viên (Có phân trang & Lọc)",
+            description = "Truy xuất danh sách nhân viên. Có thể tìm kiếm theo Tên, Username, Email, Số điện thoại và lọc theo trạng thái, khoảng thời gian gia nhập."
+    )
+    public ResponseEntity<Page<AdminStaffResponseDTO>> getAllStaffs(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) UserStatus status,
+            @RequestParam(required = false) LocalDate fromDate,
+            @RequestParam(required = false) LocalDate toDate,
+            @PageableDefault(sort = "assignedAt", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        Page<AdminStaffResponseDTO> adminStaffResponseDTOPage = adminStaffService.getAllStaffs(keyword, status, fromDate, toDate, pageable);
+
+        return ResponseEntity.ok(adminStaffResponseDTOPage);
+    }
+
+    @GetMapping("/{staffId}")
+    @Operation(
+            summary = "Xem chi tiết 1 Nhân viên",
+            description = "Lấy toàn bộ thông tin chi tiết của một tài khoản nhân viên cụ thể thông qua ID."
+    )
+    public ResponseEntity<AdminStaffResponseDTO> getStaffById(
+            @PathVariable Integer staffId
+    ) {
+        AdminStaffResponseDTO adminStaffResponseDTO = adminStaffService.getStaffById(staffId);
+
+        return ResponseEntity.ok(adminStaffResponseDTO);
+    }
+}

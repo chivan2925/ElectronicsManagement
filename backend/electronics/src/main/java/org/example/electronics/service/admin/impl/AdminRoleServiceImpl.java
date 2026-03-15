@@ -4,9 +4,11 @@ import jakarta.persistence.EntityNotFoundException;
 import org.example.electronics.dto.request.admin.AdminRoleRequestDTO;
 import org.example.electronics.dto.request.admin.AdminUpdateUserStatusRequestDTO;
 import org.example.electronics.dto.response.admin.AdminRoleResponseDTO;
+import org.example.electronics.entity.PermissionEntity;
 import org.example.electronics.entity.RoleEntity;
 import org.example.electronics.entity.enums.UserStatus;
 import org.example.electronics.mapper.RoleMapper;
+import org.example.electronics.repository.PermissionRepository;
 import org.example.electronics.repository.RoleRepository;
 import org.example.electronics.repository.StaffRepository;
 import org.example.electronics.service.admin.AdminRoleService;
@@ -19,6 +21,8 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.List;
 
 @Service
 public class AdminRoleServiceImpl implements AdminRoleService {
@@ -26,11 +30,13 @@ public class AdminRoleServiceImpl implements AdminRoleService {
     private final RoleMapper roleMapper;
     private final RoleRepository roleRepository;
     private final StaffRepository staffRepository;
+    private final PermissionRepository permissionRepository;
 
-    public AdminRoleServiceImpl(RoleMapper roleMapper, RoleRepository roleRepository, StaffRepository staffRepository) {
+    public AdminRoleServiceImpl(RoleMapper roleMapper, RoleRepository roleRepository, StaffRepository staffRepository, PermissionRepository permissionRepository) {
         this.roleMapper = roleMapper;
         this.roleRepository = roleRepository;
         this.staffRepository = staffRepository;
+        this.permissionRepository = permissionRepository;
     }
 
     @Transactional
@@ -41,6 +47,9 @@ public class AdminRoleServiceImpl implements AdminRoleService {
         }
 
         RoleEntity newRoleEntity = roleMapper.toEntity(adminRoleRequestDTO);
+
+        List<PermissionEntity> permissionEntityList = permissionRepository.findAllById(adminRoleRequestDTO.permissionIds());
+        newRoleEntity.setPermissions(new HashSet<>(permissionEntityList));
 
         newRoleEntity = roleRepository.save(newRoleEntity);
 
@@ -59,6 +68,9 @@ public class AdminRoleServiceImpl implements AdminRoleService {
                 ));
 
         roleMapper.updateEntityFromDTO(adminRoleRequestDTO, existingRoleEntity);
+
+        List<PermissionEntity> permissionEntityList = permissionRepository.findAllById(adminRoleRequestDTO.permissionIds());
+        existingRoleEntity.setPermissions(new HashSet<>(permissionEntityList));
 
         existingRoleEntity = roleRepository.save(existingRoleEntity);
 
