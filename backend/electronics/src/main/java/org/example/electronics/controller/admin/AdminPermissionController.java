@@ -2,15 +2,12 @@ package org.example.electronics.controller.admin;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
-import org.example.electronics.dto.request.admin.AdminPermissionRequestDTO;
 import org.example.electronics.dto.response.admin.AdminPermissionResponseDTO;
 import org.example.electronics.service.admin.AdminPermissionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,33 +25,6 @@ public class AdminPermissionController {
 
     public AdminPermissionController(AdminPermissionService adminPermissionService) {
         this.adminPermissionService = adminPermissionService;
-    }
-
-    @PostMapping
-    @Operation(
-            summary = "Tạo mới quyền hạn",
-            description = "Thêm một mã quyền hạn mới vào hệ thống (VD: PRODUCT_VIEW, ORDER_UPDATE). Code và Tên quyền bắt buộc phải là duy nhất."
-    )
-    public ResponseEntity<AdminPermissionResponseDTO> createPermission(
-            @Valid @RequestBody AdminPermissionRequestDTO adminPermissionRequestDTO
-    ) {
-        AdminPermissionResponseDTO adminPermissionResponseDTO = adminPermissionService.createPermission(adminPermissionRequestDTO);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(adminPermissionResponseDTO);
-    }
-
-    @PutMapping("/{permissionId}")
-    @Operation(
-            summary = "Cập nhật quyền hạn",
-            description = "Chỉnh sửa thông tin của một quyền hạn (Code, Tên, Mô tả). Hệ thống sẽ tự động validate để đảm bảo không bị trùng lặp với các quyền đã có."
-    )
-    public ResponseEntity<AdminPermissionResponseDTO> updatePermission(
-            @PathVariable Integer permissionId,
-            @Valid @RequestBody AdminPermissionRequestDTO adminPermissionRequestDTO
-    ) {
-        AdminPermissionResponseDTO adminPermissionResponseDTO = adminPermissionService.updatePermission(permissionId, adminPermissionRequestDTO);
-
-        return ResponseEntity.ok(adminPermissionResponseDTO);
     }
 
     @GetMapping

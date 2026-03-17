@@ -1,7 +1,6 @@
 package org.example.electronics.service.admin.impl;
 
 import jakarta.persistence.EntityNotFoundException;
-import org.example.electronics.dto.request.admin.AdminPermissionRequestDTO;
 import org.example.electronics.dto.response.admin.AdminPermissionResponseDTO;
 import org.example.electronics.entity.PermissionEntity;
 import org.example.electronics.mapper.PermissionMapper;
@@ -26,40 +25,6 @@ public class AdminPermissionServiceImpl implements AdminPermissionService {
     public AdminPermissionServiceImpl(PermissionMapper permissionMapper, PermissionRepository permissionRepository) {
         this.permissionMapper = permissionMapper;
         this.permissionRepository = permissionRepository;
-    }
-
-    @Transactional
-    @Override
-    public AdminPermissionResponseDTO createPermission(AdminPermissionRequestDTO adminPermissionRequestDTO) {
-        if(permissionRepository.existsByCodeOrName(adminPermissionRequestDTO.code(), adminPermissionRequestDTO.name())) {
-            throw new IllegalArgumentException("Code hoặc tên của quyền hạn đã tồn tại");
-        }
-
-        PermissionEntity permissionEntity = permissionMapper.toEntity(adminPermissionRequestDTO);
-
-        permissionEntity = permissionRepository.save(permissionEntity);
-
-        return permissionMapper.toResponseDTO(permissionEntity);
-    }
-
-    @Transactional
-    @Override
-    public AdminPermissionResponseDTO updatePermission(Integer permissionId, AdminPermissionRequestDTO adminPermissionRequestDTO) {
-        if(permissionRepository.existsByCodeAndIdNot(adminPermissionRequestDTO.code(), permissionId) ||
-            permissionRepository.existsByNameAndIdNot(adminPermissionRequestDTO.name(), permissionId)) {
-            throw new IllegalArgumentException("Code hoặc tên của quyền hạn đã bị trùng với quyền hạn khác");
-        }
-
-        PermissionEntity existingPermissionEntity = permissionRepository.findById(permissionId)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "Không tìm thấy quyền hạn với id: " + permissionId
-                ));
-
-        permissionMapper.updateEntityFromDTO(adminPermissionRequestDTO, existingPermissionEntity);
-
-        existingPermissionEntity = permissionRepository.save(existingPermissionEntity);
-
-        return permissionMapper.toResponseDTO(existingPermissionEntity);
     }
 
     @Transactional(readOnly = true)

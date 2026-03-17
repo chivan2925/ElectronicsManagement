@@ -11,12 +11,6 @@ import java.time.LocalDateTime;
 
 public interface PermissionRepository extends JpaRepository<PermissionEntity, Integer> {
 
-    boolean existsByCodeOrName(String code, String name);
-
-    boolean existsByCodeAndIdNot(String code, Integer id);
-
-    boolean existsByNameAndIdNot(String name, Integer id);
-
     @Query("SELECT p FROM PermissionEntity p WHERE 1=1 " +
 
             "AND (:keyword IS NULL OR ( " +
