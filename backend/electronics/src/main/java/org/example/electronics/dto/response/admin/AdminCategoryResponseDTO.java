@@ -7,14 +7,23 @@ import java.time.LocalDateTime;
 
 public record AdminCategoryResponseDTO(
         Integer id,
+
         String name,
+
         String iconUrl,
+
         @Schema(description = "Đường dẫn thân thiện cho SEO", example = "laptop-gaming")
         String slug,
+
         @Schema(description = "ID của danh mục cha. Để null nếu đây là danh mục gốc", example = "1")
         Integer parentId,
+
+        String parentName,
+
         ProductStatus status,
+
         LocalDateTime createdAt,
+
         LocalDateTime updatedAt
 ) {
 }

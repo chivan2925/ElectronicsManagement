@@ -4,10 +4,15 @@ import java.time.LocalDateTime;
 
 public record AdminPermissionResponseDTO(
         Integer id,
+
         String code,
+
         String name,
+
         String description,
+
         LocalDateTime createdAt,
+
         LocalDateTime updatedAt
 ) {
 }

@@ -19,6 +19,7 @@ public interface StaffMapper {
     StaffEntity toEntity(AdminStaffRequestDTO adminStaffRequestDTO);
 
     @Mapping(source = "role.id", target = "roleId")
+    @Mapping(source = "role.name", target = "roleName")
     AdminStaffResponseDTO toResponseDTO(StaffEntity staffEntity);
 
     @Mapping(target = "role", ignore = true)

@@ -7,10 +7,15 @@ import java.util.Set;
 
 public record AdminRoleResponseDTO(
         Integer id,
+
         String name,
+
         Set<AdminPermissionResponseDTO> permissions,
+
         UserStatus status,
+
         LocalDateTime createdAt,
+
         LocalDateTime updatedAt
 ) {
 }

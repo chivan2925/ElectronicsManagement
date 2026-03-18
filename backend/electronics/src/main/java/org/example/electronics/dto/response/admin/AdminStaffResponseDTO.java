@@ -8,17 +8,31 @@ import java.time.LocalDateTime;
 
 public record AdminStaffResponseDTO(
         Integer id,
+
         String fullName,
+
         GenderType gender,
+
         LocalDate dateOfBirth,
+
         String username,
+
         String avatarUrl,
+
         String email,
+
         String phoneNumber,
+
         String address,
+
         Integer roleId,
+
+        String roleName,
+
         UserStatus status,
+
         LocalDateTime assignedAt,
+
         LocalDateTime updatedAt
 ) {
 }
