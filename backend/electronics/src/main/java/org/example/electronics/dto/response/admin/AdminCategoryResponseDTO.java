@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import org.example.electronics.entity.enums.ProductStatus;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record AdminCategoryResponseDTO(
         Integer id,
@@ -19,6 +20,8 @@ public record AdminCategoryResponseDTO(
         Integer parentId,
 
         String parentName,
+
+        List<AdminCategoryResponseDTO> subCategoryList,
 
         ProductStatus status,
 

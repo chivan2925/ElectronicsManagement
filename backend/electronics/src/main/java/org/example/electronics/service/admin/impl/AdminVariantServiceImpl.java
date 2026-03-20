@@ -1,0 +1,137 @@
+package org.example.electronics.service.admin.impl;
+
+import jakarta.persistence.EntityNotFoundException;
+import org.example.electronics.dto.request.admin.AdminUpdateProductStatusRequestDTO;
+import org.example.electronics.dto.request.admin.AdminVariantRequestDTO;
+import org.example.electronics.dto.response.admin.AdminVariantResponseDTO;
+import org.example.electronics.entity.ProductEntity;
+import org.example.electronics.entity.VariantEntity;
+import org.example.electronics.entity.enums.ProductStatus;
+import org.example.electronics.mapper.VariantMapper;
+import org.example.electronics.repository.ProductRepository;
+import org.example.electronics.repository.VariantRepository;
+import org.example.electronics.service.admin.AdminVariantService;
+import org.example.electronics.util.DateTimeUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+@Service
+public class AdminVariantServiceImpl implements AdminVariantService {
+
+    private final VariantMapper variantMapper;
+    private final VariantRepository variantRepository;
+    private final ProductRepository productRepository;
+
+    public AdminVariantServiceImpl(VariantMapper variantMapper, VariantRepository variantRepository, ProductRepository productRepository) {
+        this.variantMapper = variantMapper;
+        this.variantRepository = variantRepository;
+        this.productRepository = productRepository;
+    }
+
+    @Transactional
+    @Override
+    public AdminVariantResponseDTO createVariant(AdminVariantRequestDTO adminVariantRequestDTO) {
+        if(variantRepository.existsByName(adminVariantRequestDTO.name()) ||
+                variantRepository.existsBySlug(adminVariantRequestDTO.slug())) {
+            throw new IllegalArgumentException("Tên hoặc Slug biến thể này đã tồn tại.");
+        }
+
+        ProductEntity existingProductEntity = productRepository.findById(adminVariantRequestDTO.productId())
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Không tìm thấy sản phẩm với id: " + adminVariantRequestDTO.productId()
+                ));
+
+        VariantEntity newVariantEntity = variantMapper.toEntity(adminVariantRequestDTO);
+
+        newVariantEntity.setProduct(existingProductEntity);
+
+        newVariantEntity = variantRepository.save(newVariantEntity);
+
+        return variantMapper.toResponseDTO(newVariantEntity);
+    }
+
+    @Transactional
+    @Override
+    public AdminVariantResponseDTO updateVariant(Integer variantId, AdminVariantRequestDTO adminVariantRequestDTO) {
+        if(variantRepository.existsByNameAndIdNot(adminVariantRequestDTO.name(), variantId) ||
+                variantRepository.existsBySlugAndIdNot(adminVariantRequestDTO.slug(), variantId)) {
+            throw new IllegalArgumentException("Tên hoặc Slug biến thể này đã bị trùng với một biến thể khác.");
+        }
+
+        VariantEntity existingVariantEntity = variantRepository.findById(variantId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Không tìm thấy biến thể với id: " + variantId
+                ));
+
+        ProductEntity existingProductEntity = productRepository.findById(adminVariantRequestDTO.productId())
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Không tìm thấy sản phẩm với id: " + adminVariantRequestDTO.productId()
+                ));
+
+        variantMapper.updateEntityFromDTO(adminVariantRequestDTO, existingVariantEntity);
+
+        existingVariantEntity.setProduct(existingProductEntity);
+
+        existingVariantEntity = variantRepository.save(existingVariantEntity);
+
+        return variantMapper.toResponseDTO(existingVariantEntity);
+    }
+
+    @Transactional
+    @Override
+    public AdminVariantResponseDTO updateStatusVariant(Integer variantId, AdminUpdateProductStatusRequestDTO adminUpdateProductStatusRequestDTO) {
+        VariantEntity existingVariantEntity = variantRepository.findById(variantId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Không tìm thấy biến thể với id: " + variantId
+                ));
+
+        existingVariantEntity.setStatus(adminUpdateProductStatusRequestDTO.status());
+
+        existingVariantEntity = variantRepository.save(existingVariantEntity);
+
+        return variantMapper.toResponseDTO(existingVariantEntity);
+    }
+
+    @Transactional
+    @Override
+    public void deleteVariant(Integer variantId) {
+        VariantEntity existingVariantEntity = variantRepository.findById(variantId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Không tìm thấy biến thể với id: " + variantId
+                ));
+
+        existingVariantEntity.setStatus(ProductStatus.DELETED);
+
+        variantRepository.save(existingVariantEntity);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Page<AdminVariantResponseDTO> getAllVariants(String keyword, ProductStatus status, LocalDate fromDate, LocalDate toDate, Pageable pageable) {
+        LocalDateTime startDateTime = DateTimeUtils.getStartOfDay(fromDate);
+        LocalDateTime endDateTime = DateTimeUtils.getEndOfDay(toDate);
+
+        String finalKeyword = StringUtils.hasText(keyword) ? keyword.trim() : null;
+
+        Page<VariantEntity> variantEntityPage = variantRepository.findVariantsWithFilter(finalKeyword, status, startDateTime, endDateTime, pageable);
+
+        return variantEntityPage.map(variantMapper::toResponseDTO);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public AdminVariantResponseDTO getVariantById(Integer variantId) {
+        VariantEntity existingVariantEntity = variantRepository.findVariantWithDetailsById(variantId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Không tìm thấy biến thể với id: " + variantId
+                ));
+
+        return variantMapper.toResponseDTO(existingVariantEntity);
+    }
+}

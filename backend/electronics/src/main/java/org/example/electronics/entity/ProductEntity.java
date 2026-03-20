@@ -9,6 +9,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Entity
@@ -63,6 +65,10 @@ public class ProductEntity {
     @Column(name = "warranty_months", nullable = false)
     @Builder.Default
     private Integer warrantyMonths = 0;
+
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<VariantEntity> variants = new ArrayList<>();
 
     @Column(nullable = false)
     @Builder.Default

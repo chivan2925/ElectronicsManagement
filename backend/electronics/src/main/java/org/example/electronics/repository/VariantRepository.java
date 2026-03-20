@@ -1,0 +1,52 @@
+package org.example.electronics.repository;
+
+import org.example.electronics.entity.VariantEntity;
+import org.example.electronics.entity.enums.ProductStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
+
+public interface VariantRepository extends JpaRepository<VariantEntity, Integer> {
+
+    boolean existsByProductId(Integer productId);
+
+    boolean existsByName(String name);
+
+    boolean existsBySlug(String slug);
+
+    boolean existsByNameAndIdNot(String name, Integer id);
+
+    boolean existsBySlugAndIdNot(String slug, Integer id);
+
+    @Query("SELECT v FROM VariantEntity v " +
+            "LEFT JOIN FETCH v.product " +
+            "WHERE 1=1 " +
+
+            "AND (:keyword IS NULL OR ( " +
+            "    CAST(v.id AS string) LIKE CONCAT('%', :keyword, '%') " +
+            "    OR LOWER(v.name) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "    OR LOWER(v.slug) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            ")) " +
+
+            "AND (:status IS NULL OR v.status = :status) " +
+
+            "AND (:fromDate IS NULL OR v.createdAt >= :fromDate) " +
+            "AND (:toDate IS NULL OR v.createdAt <= :toDate)")
+    Page<VariantEntity> findVariantsWithFilter(
+            @Param("keyword") String keyword,
+            @Param("status") ProductStatus status,
+            @Param("fromDate") LocalDateTime fromDate,
+            @Param("toDate") LocalDateTime toDate,
+            Pageable pageable
+    );
+
+    @Query("SELECT v FROM VariantEntity v " +
+            "LEFT JOIN FETCH v.product " +
+            "WHERE v.id = :id")
+    Optional<VariantEntity> findVariantWithDetailsById(@Param("id") Integer variantId);
+}

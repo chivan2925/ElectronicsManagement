@@ -43,7 +43,7 @@ public class AdminRoleServiceImpl implements AdminRoleService {
     @Override
     public AdminRoleResponseDTO createRole(AdminRoleRequestDTO adminRoleRequestDTO) {
         if(roleRepository.existsByName(adminRoleRequestDTO.name())) {
-            throw new IllegalArgumentException("Tên chức vụ này đã tồn tại");
+            throw new IllegalArgumentException("Tên chức vụ này đã tồn tại.");
         }
 
         RoleEntity newRoleEntity = roleMapper.toEntity(adminRoleRequestDTO);

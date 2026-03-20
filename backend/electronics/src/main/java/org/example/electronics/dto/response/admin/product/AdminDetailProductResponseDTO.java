@@ -1,11 +1,13 @@
-package org.example.electronics.dto.response.admin;
+package org.example.electronics.dto.response.admin.product;
 
+import org.example.electronics.dto.response.admin.AdminVariantResponseDTO;
 import org.example.electronics.entity.enums.ProductStatus;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
-public record AdminProductResponseDTO(
+public record AdminDetailProductResponseDTO(
         Integer id,
 
         String name,
@@ -29,6 +31,8 @@ public record AdminProductResponseDTO(
         Integer ratingCount,
 
         Integer warrantyMonths,
+
+        List<AdminVariantResponseDTO> variants,
 
         ProductStatus status,
 
