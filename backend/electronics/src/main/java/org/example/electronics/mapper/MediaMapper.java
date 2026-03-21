@@ -1,6 +1,10 @@
 package org.example.electronics.mapper;
 
+import org.example.electronics.dto.request.admin.media.AdminAddMediaRequestDTO;
+import org.example.electronics.dto.response.admin.AdminMediaResponseDTO;
+import org.example.electronics.entity.MediaEntity;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
 @Mapper(
@@ -8,4 +12,12 @@ import org.mapstruct.ReportingPolicy;
         unmappedTargetPolicy = ReportingPolicy.IGNORE
 )
 public interface MediaMapper {
+
+    @Mapping(target = "product", ignore = true)
+    @Mapping(target = "variant", ignore = true)
+    MediaEntity toEntity(AdminAddMediaRequestDTO adminAddMediaRequestDTO);
+
+    @Mapping(source = "product.id", target = "productId")
+    @Mapping(source = "variant.id", target = "variantId")
+    AdminMediaResponseDTO toResponseDTO(MediaEntity mediaEntity);
 }

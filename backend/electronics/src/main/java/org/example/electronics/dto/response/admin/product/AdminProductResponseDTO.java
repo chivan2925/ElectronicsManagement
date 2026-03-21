@@ -9,6 +9,8 @@ public record AdminProductResponseDTO(
 
         String categoryName,
 
-        String brandName
+        String brandName,
+
+        String primaryImageUrl
 ) {
 }

@@ -3,11 +3,11 @@ package org.example.electronics.mapper;
 import org.example.electronics.dto.request.admin.AdminProductRequestDTO;
 import org.example.electronics.dto.response.admin.product.AdminDetailProductResponseDTO;
 import org.example.electronics.dto.response.admin.product.AdminProductResponseDTO;
+import org.example.electronics.entity.MediaEntity;
 import org.example.electronics.entity.ProductEntity;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.ReportingPolicy;
+import org.mapstruct.*;
+
+import java.util.List;
 
 @Mapper(
         componentModel = "spring",
@@ -25,6 +25,7 @@ public interface ProductMapper {
     @Mapping(source = "category.name", target = "categoryName")
     @Mapping(source = "brand.id", target = "brandId")
     @Mapping(source = "brand.name", target = "brandName")
+    @Mapping(source = "media", target = "primaryImageUrl", qualifiedByName = "getPrimaryImage")
     AdminProductResponseDTO toResponseDTO(ProductEntity productEntity);
 
     @Mapping(source = "category.id", target = "categoryId")
@@ -38,4 +39,17 @@ public interface ProductMapper {
     @Mapping(target = "media", ignore = true)
     void updateEntityFromDTO(AdminProductRequestDTO adminProductRequestDTO,
                              @MappingTarget ProductEntity productEntity);
+
+    @Named("getPrimaryImage")
+    default String getPrimaryImage(List<MediaEntity> mediaEntityList) {
+        if (mediaEntityList == null || mediaEntityList.isEmpty()) {
+            return null;
+        }
+
+        return mediaEntityList.stream()
+                .filter(media -> Boolean.TRUE.equals(media.getIsPrimary()))
+                .map(MediaEntity::getImageUrl)
+                .findFirst()
+                .orElse(mediaEntityList.getFirst().getImageUrl());
+    }
 }

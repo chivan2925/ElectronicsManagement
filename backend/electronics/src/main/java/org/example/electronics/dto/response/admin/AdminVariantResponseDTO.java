@@ -28,6 +28,8 @@ public record AdminVariantResponseDTO(
 
         Integer stock,
 
+        String primaryImageUrl,
+
         ProductStatus status,
 
         LocalDateTime createdAt,
