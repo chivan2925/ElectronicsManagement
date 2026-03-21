@@ -4,6 +4,7 @@ import org.example.electronics.entity.enums.ProductStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 public record AdminVariantResponseDTO(
@@ -12,6 +13,8 @@ public record AdminVariantResponseDTO(
         Integer productId,
 
         String productName,
+
+        List<AdminMediaResponseDTO> media,
 
         String name,
 

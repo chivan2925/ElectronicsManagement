@@ -12,12 +12,13 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(
         componentModel = "spring",
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
-        uses = {VariantMapper.class, CategoryMapper.class, BrandMapper.class}
+        uses = {VariantMapper.class, CategoryMapper.class, BrandMapper.class, MediaMapper.class}
 )
 public interface ProductMapper {
 
     @Mapping(target = "category", ignore = true)
     @Mapping(target = "brand", ignore = true)
+    @Mapping(target = "media", ignore = true)
     ProductEntity toEntity(AdminProductRequestDTO adminProductRequestDTO);
 
     @Mapping(source = "category.id", target = "categoryId")
@@ -34,6 +35,7 @@ public interface ProductMapper {
 
     @Mapping(target = "category", ignore = true)
     @Mapping(target = "brand", ignore = true)
+    @Mapping(target = "media", ignore = true)
     void updateEntityFromDTO(AdminProductRequestDTO adminProductRequestDTO,
                              @MappingTarget ProductEntity productEntity);
 }

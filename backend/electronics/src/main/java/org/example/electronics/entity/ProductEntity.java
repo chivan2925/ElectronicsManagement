@@ -70,6 +70,10 @@ public class ProductEntity {
     @Builder.Default
     private List<VariantEntity> variants = new ArrayList<>();
 
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<MediaEntity> media = new ArrayList<>();
+
     @Column(nullable = false)
     @Builder.Default
     private ProductStatus status = ProductStatus.ACTIVE;

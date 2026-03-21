@@ -1,5 +1,6 @@
 package org.example.electronics.dto.response.admin.product;
 
+import org.example.electronics.dto.response.admin.AdminMediaResponseDTO;
 import org.example.electronics.dto.response.admin.AdminVariantResponseDTO;
 import org.example.electronics.entity.enums.ProductStatus;
 
@@ -33,6 +34,8 @@ public record AdminDetailProductResponseDTO(
         Integer warrantyMonths,
 
         List<AdminVariantResponseDTO> variants,
+
+        List<AdminMediaResponseDTO> media,
 
         ProductStatus status,
 

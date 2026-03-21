@@ -10,6 +10,8 @@ import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Entity
@@ -34,6 +36,10 @@ public class VariantEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
     private ProductEntity product;
+
+    @OneToMany(mappedBy = "variant", fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<MediaEntity> media = new ArrayList<>();
 
     @Column(nullable = false)
     private String name;

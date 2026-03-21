@@ -47,6 +47,7 @@ public interface VariantRepository extends JpaRepository<VariantEntity, Integer>
 
     @Query("SELECT v FROM VariantEntity v " +
             "LEFT JOIN FETCH v.product " +
+            "LEFT JOIN FETCH v.media " +
             "WHERE v.id = :id")
     Optional<VariantEntity> findVariantWithDetailsById(@Param("id") Integer variantId);
 }

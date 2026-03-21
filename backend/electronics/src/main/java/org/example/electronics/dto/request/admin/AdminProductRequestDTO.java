@@ -1,10 +1,13 @@
 package org.example.electronics.dto.request.admin;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import org.example.electronics.dto.request.admin.media.AdminCreateMediaRequestDTO;
 import org.example.electronics.entity.enums.ProductStatus;
 
+import java.util.List;
 import java.util.Map;
 
 public record AdminProductRequestDTO (
@@ -28,6 +31,8 @@ public record AdminProductRequestDTO (
 
         @NotNull(message = "Thời hạn bảo hành sản phẩm không được để trống")
         Integer warrantyMonths,
+
+        List<@Valid AdminCreateMediaRequestDTO> media,
 
         @NotNull(message = "Trạng thái sản phẩm không được để trống")
         ProductStatus status

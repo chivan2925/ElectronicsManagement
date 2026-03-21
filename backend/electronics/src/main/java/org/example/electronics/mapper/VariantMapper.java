@@ -10,11 +10,13 @@ import org.mapstruct.ReportingPolicy;
 
 @Mapper(
         componentModel = "spring",
-        unmappedTargetPolicy = ReportingPolicy.IGNORE
+        unmappedTargetPolicy = ReportingPolicy.IGNORE,
+        uses = {MediaMapper.class}
 )
 public interface VariantMapper {
 
     @Mapping(target = "product", ignore = true)
+    @Mapping(target = "media", ignore = true)
     VariantEntity toEntity(AdminVariantRequestDTO adminVariantRequestDTO);
 
     @Mapping(source = "product.id", target = "productId")
@@ -22,6 +24,7 @@ public interface VariantMapper {
     AdminVariantResponseDTO toResponseDTO(VariantEntity variantEntity);
 
     @Mapping(target = "product", ignore = true)
+    @Mapping(target = "media", ignore = true)
     void updateEntityFromDTO(AdminVariantRequestDTO adminVariantRequestDTO,
                              @MappingTarget VariantEntity VariantEntity);
 }

@@ -1,16 +1,21 @@
 package org.example.electronics.dto.request.admin;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import org.example.electronics.dto.request.admin.media.AdminCreateMediaRequestDTO;
 import org.example.electronics.entity.enums.ProductStatus;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 
 public record AdminVariantRequestDTO(
         @NotNull(message = "ID Sản phẩm không được để trống")
         Integer productId,
+
+        List<@Valid AdminCreateMediaRequestDTO> media,
 
         @NotBlank(message = "Tên biến thể sản phẩm không được để trống")
         String name,

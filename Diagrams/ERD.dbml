@@ -32,11 +32,6 @@ Enum coupon_type {
   FIXED
 }
 
-Enum sort_order {
-  ASC
-  DESC
-}
-
 Enum payment_method_type {
   CASH
   DIGITAL
@@ -175,9 +170,11 @@ Table media {
   id int [pk, increment]
   product_id int [Ref: > products.id]
   variant_id int [Ref: > variants.id]
-  image_url varchar(255)
-  is_primary bool [default: true, not null]
-  sort_order sort_order [default: sort_order.ASC, not null]
+  image_url varchar(255) [not null]
+  is_primary bool [default: false, not null]
+  display_order int [default: 0, not null]
+  created_at datetime [default: `now()`, not null]
+  updated_at datetime [default: `now()`, not null]
 }
 
 Table users {
