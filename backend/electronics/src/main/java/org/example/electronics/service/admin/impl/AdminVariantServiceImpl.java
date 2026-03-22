@@ -3,11 +3,15 @@ package org.example.electronics.service.admin.impl;
 import jakarta.persistence.EntityNotFoundException;
 import org.example.electronics.dto.request.admin.AdminUpdateProductStatusRequestDTO;
 import org.example.electronics.dto.request.admin.AdminVariantRequestDTO;
+import org.example.electronics.dto.request.admin.media.AdminNestedMediaRequestDTO;
 import org.example.electronics.dto.response.admin.AdminVariantResponseDTO;
+import org.example.electronics.entity.MediaEntity;
 import org.example.electronics.entity.ProductEntity;
 import org.example.electronics.entity.VariantEntity;
 import org.example.electronics.entity.enums.ProductStatus;
+import org.example.electronics.mapper.MediaMapper;
 import org.example.electronics.mapper.VariantMapper;
+import org.example.electronics.repository.MediaRepository;
 import org.example.electronics.repository.ProductRepository;
 import org.example.electronics.repository.VariantRepository;
 import org.example.electronics.service.admin.AdminVariantService;
@@ -20,6 +24,7 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class AdminVariantServiceImpl implements AdminVariantService {
@@ -27,11 +32,15 @@ public class AdminVariantServiceImpl implements AdminVariantService {
     private final VariantMapper variantMapper;
     private final VariantRepository variantRepository;
     private final ProductRepository productRepository;
+    private final MediaMapper mediaMapper;
+    private final MediaRepository mediaRepository;
 
-    public AdminVariantServiceImpl(VariantMapper variantMapper, VariantRepository variantRepository, ProductRepository productRepository) {
+    public AdminVariantServiceImpl(VariantMapper variantMapper, VariantRepository variantRepository, ProductRepository productRepository, MediaMapper mediaMapper, MediaRepository mediaRepository) {
         this.variantMapper = variantMapper;
         this.variantRepository = variantRepository;
         this.productRepository = productRepository;
+        this.mediaMapper = mediaMapper;
+        this.mediaRepository = mediaRepository;
     }
 
     @Transactional
@@ -51,9 +60,23 @@ public class AdminVariantServiceImpl implements AdminVariantService {
 
         newVariantEntity.setProduct(existingProductEntity);
 
-        newVariantEntity = variantRepository.save(newVariantEntity);
+        VariantEntity savedVariantEntity = variantRepository.save(newVariantEntity);
 
-        return variantMapper.toResponseDTO(newVariantEntity);
+        List<AdminNestedMediaRequestDTO> adminNestedMediaRequestDTOList = adminVariantRequestDTO.media();
+
+        if(adminNestedMediaRequestDTOList != null && !adminNestedMediaRequestDTOList.isEmpty()) {
+            List<MediaEntity> mediaEntityList = adminNestedMediaRequestDTOList.stream()
+                    .map(mediaDTO -> {
+                        MediaEntity mediaEntity = mediaMapper.nestedDTO_toEntity(mediaDTO);
+                        mediaEntity.setVariant(savedVariantEntity);
+                        return mediaEntity;
+                    })
+                    .toList();
+
+            mediaRepository.saveAll(mediaEntityList);
+        }
+
+        return variantMapper.toResponseDTO(savedVariantEntity);
     }
 
     @Transactional

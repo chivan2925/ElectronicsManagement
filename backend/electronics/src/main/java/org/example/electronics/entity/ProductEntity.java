@@ -9,9 +9,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Entity
 @Table(
@@ -68,11 +66,11 @@ public class ProductEntity {
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     @Builder.Default
-    private List<VariantEntity> variants = new ArrayList<>();
+    private Set<VariantEntity> variants = new HashSet<>();
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     @Builder.Default
-    private List<MediaEntity> media = new ArrayList<>();
+    private Set<MediaEntity> media = new HashSet<>();
 
     @Column(nullable = false)
     @Builder.Default

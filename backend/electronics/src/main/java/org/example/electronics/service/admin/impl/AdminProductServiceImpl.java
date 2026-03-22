@@ -3,14 +3,18 @@ package org.example.electronics.service.admin.impl;
 import jakarta.persistence.EntityNotFoundException;
 import org.example.electronics.dto.request.admin.AdminProductRequestDTO;
 import org.example.electronics.dto.request.admin.AdminUpdateProductStatusRequestDTO;
+import org.example.electronics.dto.request.admin.media.AdminNestedMediaRequestDTO;
 import org.example.electronics.dto.response.admin.product.AdminDetailProductResponseDTO;
 import org.example.electronics.dto.response.admin.product.AdminProductResponseDTO;
 import org.example.electronics.entity.BrandEntity;
 import org.example.electronics.entity.CategoryEntity;
+import org.example.electronics.entity.MediaEntity;
 import org.example.electronics.entity.ProductEntity;
 import org.example.electronics.entity.enums.ProductStatus;
+import org.example.electronics.mapper.MediaMapper;
 import org.example.electronics.mapper.ProductMapper;
 import org.example.electronics.repository.CategoryRepository;
+import org.example.electronics.repository.MediaRepository;
 import org.example.electronics.repository.ProductRepository;
 import org.example.electronics.repository.VariantRepository;
 import org.example.electronics.service.admin.AdminProductService;
@@ -23,6 +27,7 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class AdminProductServiceImpl implements AdminProductService {
@@ -32,13 +37,17 @@ public class AdminProductServiceImpl implements AdminProductService {
     private final CategoryRepository categoryRepository;
     private final BrandRepository brandRepository;
     private final VariantRepository variantRepository;
+    private final MediaMapper mediaMapper;
+    private final MediaRepository mediaRepository;
 
-    public AdminProductServiceImpl(ProductMapper productMapper, ProductRepository productRepository, CategoryRepository categoryRepository, BrandRepository brandRepository, VariantRepository variantRepository) {
+    public AdminProductServiceImpl(ProductMapper productMapper, ProductRepository productRepository, CategoryRepository categoryRepository, BrandRepository brandRepository, VariantRepository variantRepository, MediaMapper mediaMapper, MediaRepository mediaRepository) {
         this.productMapper = productMapper;
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.brandRepository = brandRepository;
         this.variantRepository = variantRepository;
+        this.mediaMapper = mediaMapper;
+        this.mediaRepository = mediaRepository;
     }
 
     @Transactional
@@ -64,9 +73,23 @@ public class AdminProductServiceImpl implements AdminProductService {
         newProductEntity.setCategory(existingCategoryEntity);
         newProductEntity.setBrand(existingBrandEntity);
 
-        newProductEntity = productRepository.save(newProductEntity);
+        ProductEntity savedProductEntity = productRepository.save(newProductEntity);
 
-        return productMapper.toResponseDTO(newProductEntity);
+        List<AdminNestedMediaRequestDTO> adminNestedMediaRequestDTOList = adminProductRequestDTO.media();
+
+        if(adminNestedMediaRequestDTOList != null && !adminNestedMediaRequestDTOList.isEmpty()) {
+            List<MediaEntity> mediaEntityList = adminNestedMediaRequestDTOList.stream()
+                    .map(mediaDTO -> {
+                        MediaEntity mediaEntity = mediaMapper.nestedDTO_toEntity(mediaDTO);
+                        mediaEntity.setProduct(savedProductEntity);
+                        return mediaEntity;
+                    })
+                    .toList();
+
+            mediaRepository.saveAll(mediaEntityList);
+        }
+
+        return productMapper.toResponseDTO(savedProductEntity);
     }
 
     @Transactional

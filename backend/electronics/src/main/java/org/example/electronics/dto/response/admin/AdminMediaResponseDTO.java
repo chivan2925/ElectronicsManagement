@@ -5,6 +5,10 @@ import java.time.LocalDateTime;
 public record AdminMediaResponseDTO(
         Integer id,
 
+        Integer productId,
+
+        Integer variantId,
+
         String imageUrl,
 
         Boolean isPrimary,

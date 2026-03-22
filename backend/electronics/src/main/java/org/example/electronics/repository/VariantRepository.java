@@ -23,7 +23,7 @@ public interface VariantRepository extends JpaRepository<VariantEntity, Integer>
 
     boolean existsBySlugAndIdNot(String slug, Integer id);
 
-    @Query("SELECT v FROM VariantEntity v " +
+    @Query(value = "SELECT v FROM VariantEntity v " +
             "LEFT JOIN FETCH v.product " +
             "WHERE 1=1 " +
 
@@ -36,7 +36,19 @@ public interface VariantRepository extends JpaRepository<VariantEntity, Integer>
             "AND (:status IS NULL OR v.status = :status) " +
 
             "AND (:fromDate IS NULL OR v.createdAt >= :fromDate) " +
-            "AND (:toDate IS NULL OR v.createdAt <= :toDate)")
+            "AND (:toDate IS NULL OR v.createdAt <= :toDate)",
+
+            countQuery = "SELECT COUNT(v) FROM VariantEntity v " +
+                    "WHERE 1=1 " +
+                    "AND (:keyword IS NULL OR ( " +
+                    "    CAST(v.id AS string) LIKE CONCAT('%', :keyword, '%') " +
+                    "    OR LOWER(v.name) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+                    "    OR LOWER(v.slug) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+                    ")) " +
+                    "AND (:status IS NULL OR v.status = :status) " +
+                    "AND (:fromDate IS NULL OR v.createdAt >= :fromDate) " +
+                    "AND (:toDate IS NULL OR v.createdAt <= :toDate)"
+    )
     Page<VariantEntity> findVariantsWithFilter(
             @Param("keyword") String keyword,
             @Param("status") ProductStatus status,

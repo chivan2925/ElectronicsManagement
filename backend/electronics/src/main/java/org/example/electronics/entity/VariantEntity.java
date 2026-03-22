@@ -10,9 +10,7 @@ import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Entity
 @Table(
@@ -27,10 +25,12 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class VariantEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -39,7 +39,7 @@ public class VariantEntity {
 
     @OneToMany(mappedBy = "variant", fetch = FetchType.LAZY)
     @Builder.Default
-    private List<MediaEntity> media = new ArrayList<>();
+    private Set<MediaEntity> media = new HashSet<>();
 
     @Column(nullable = false)
     private String name;
