@@ -84,8 +84,18 @@ const ManageStaff = () => {
   ];
 
   return (
-    <div style={{ padding: '24px', background: '#f0f2f5', minHeight: '100vh' }}>
-      <Card bordered={false} style={{ borderRadius: '12px', boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}>
+    <div style={{ padding: '32px 16px 48px', minHeight: '100vh' }}>
+      <Card
+        bordered={false}
+        style={{
+          maxWidth: '1280px',
+          margin: '0 auto',
+          borderRadius: '28px',
+          boxShadow: '0 24px 90px rgba(0,0,0,0.28)',
+          background: 'linear-gradient(160deg, rgba(17,35,28,0.94), rgba(8,18,14,0.92))',
+          border: '1px solid rgba(218,238,172,0.14)',
+        }}
+      >
         
         {/* HEADER SECTION */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
@@ -112,7 +122,15 @@ const ManageStaff = () => {
             size="large" 
             icon={<PlusOutlined />} 
             onClick={() => { setEditingStaff(null); setIsModalOpen(true); }}
-            style={{ borderRadius: '8px', height: '45px', marginTop: '5px' }}
+            style={{
+              borderRadius: '999px',
+              height: '45px',
+              marginTop: '5px',
+              background: '#d7f56f',
+              borderColor: '#d7f56f',
+              color: '#07110d',
+              fontWeight: 600,
+            }}
           >
             Thêm nhân viên mới
           </Button>
