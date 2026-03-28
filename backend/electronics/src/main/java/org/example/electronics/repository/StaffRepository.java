@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 public interface StaffRepository extends JpaRepository<StaffEntity, Integer> {
 
@@ -21,6 +22,8 @@ public interface StaffRepository extends JpaRepository<StaffEntity, Integer> {
     boolean existsByUsernameAndIdNot(String username, Integer id);
     boolean existsByEmailAndIdNot(String email, Integer id);
     boolean existsByPhoneNumberAndIdNot(String phoneNumber, Integer id);
+
+    Optional<StaffEntity> findByEmail(String email);
 
     @Query("SELECT s FROM StaffEntity s WHERE 1=1 " +
 

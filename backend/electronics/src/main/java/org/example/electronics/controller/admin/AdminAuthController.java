@@ -1,0 +1,41 @@
+package org.example.electronics.controller.admin;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import org.example.electronics.dto.request.admin.AdminLoginRequestDTO;
+import org.example.electronics.dto.response.admin.AdminLoginResponseDTO;
+import org.example.electronics.service.admin.AdminAuthService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/admin/auth")
+@Tag(
+        name = "1. Admin Authentication",
+        description = "Các API liên quan đến Đăng nhập và Cấp quyền cho Ban quản trị / Nhân viên hệ thống."
+)
+public class AdminAuthController {
+
+    private final AdminAuthService adminAuthService;
+
+    public AdminAuthController(AdminAuthService adminAuthService) {
+        this.adminAuthService = adminAuthService;
+    }
+
+    @PostMapping("/login")
+    @Operation(
+            summary = "Đăng nhập hệ thống Admin",
+            description = "Hệ thống sẽ xác thực Email và Mật khẩu. Nếu hợp lệ, trả về JWT Access Token cùng thông tin phân quyền để sử dụng cho các API khác."
+    )
+    public ResponseEntity<AdminLoginResponseDTO> login(
+            @Valid @RequestBody AdminLoginRequestDTO adminLoginRequestDTO
+    ) {
+        AdminLoginResponseDTO adminLoginResponseDTO = adminAuthService.login(adminLoginRequestDTO);
+
+        return ResponseEntity.ok(adminLoginResponseDTO);
+    }
+}
