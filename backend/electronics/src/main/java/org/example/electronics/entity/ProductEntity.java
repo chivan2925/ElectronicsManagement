@@ -72,6 +72,7 @@ public class ProductEntity {
     @Builder.Default
     private Set<MediaEntity> media = new HashSet<>();
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Builder.Default
     private ProductStatus status = ProductStatus.ACTIVE;

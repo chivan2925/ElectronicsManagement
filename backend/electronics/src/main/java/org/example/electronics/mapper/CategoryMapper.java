@@ -19,6 +19,7 @@ public interface CategoryMapper {
     AdminCategoryResponseDTO toResponseDTO(CategoryEntity categoryEntity);
 
     @Mapping(target = "parent", ignore = true)
+    @Mapping(target = "subCategoryList", ignore = true)
     void updateEntityFromDTO(AdminCategoryRequestDTO adminCategoryRequestDTO,
                              @MappingTarget CategoryEntity categoryEntity);
 }

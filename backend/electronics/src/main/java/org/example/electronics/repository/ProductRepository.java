@@ -21,6 +21,8 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Integer>
 
     boolean existsBySlugAndIdNot(String slug, Integer id);
 
+    boolean existsByCategoryId(Integer categoryId);
+
     @Query(value = "SELECT p FROM ProductEntity p " +
             "LEFT JOIN FETCH p.category " +
             "LEFT JOIN FETCH p.brand " +

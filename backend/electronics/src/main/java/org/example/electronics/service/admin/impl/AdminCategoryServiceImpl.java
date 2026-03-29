@@ -8,6 +8,7 @@ import org.example.electronics.entity.CategoryEntity;
 import org.example.electronics.entity.enums.ProductStatus;
 import org.example.electronics.mapper.CategoryMapper;
 import org.example.electronics.repository.CategoryRepository;
+import org.example.electronics.repository.ProductRepository;
 import org.example.electronics.service.admin.AdminCategoryService;
 import org.example.electronics.util.DateTimeUtils;
 import org.springframework.data.domain.Page;
@@ -18,16 +19,19 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Service
 public class AdminCategoryServiceImpl implements AdminCategoryService {
 
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
+    private final ProductRepository productRepository;
 
-    public AdminCategoryServiceImpl(CategoryRepository categoryRepository, CategoryMapper categoryMapper) {
+    public AdminCategoryServiceImpl(CategoryRepository categoryRepository, CategoryMapper categoryMapper, ProductRepository productRepository) {
         this.categoryRepository = categoryRepository;
         this.categoryMapper = categoryMapper;
+        this.productRepository = productRepository;
     }
 
     @Transactional
@@ -37,13 +41,16 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
             throw new IllegalArgumentException("Slug này đã tồn tại. Vui lòng chọn slug khác");
         }
 
-        if(adminCategoryRequestDTO.parentId() != null) {
-            if(!categoryRepository.existsById(adminCategoryRequestDTO.parentId())) {
-                throw new IllegalArgumentException("Không tồn tại danh mục cha với ID này");
-            }
-        }
-
         CategoryEntity newCategoryEntity = categoryMapper.toEntity(adminCategoryRequestDTO);
+
+        if(adminCategoryRequestDTO.parentId() != null) {
+            CategoryEntity existingParentCategoryEntity = categoryRepository.findById(adminCategoryRequestDTO.parentId())
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            "Không tồn tại danh mục cha với id: " + adminCategoryRequestDTO.parentId()
+                    ));
+
+            existingParentCategoryEntity.addSubCategory(newCategoryEntity);
+        }
 
         newCategoryEntity = categoryRepository.save(newCategoryEntity);
 
@@ -70,15 +77,24 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
 
         categoryMapper.updateEntityFromDTO(adminCategoryRequestDTO, existingCategoryEntity);
 
-        if(adminCategoryRequestDTO.parentId() != null) {
-            CategoryEntity newParentCategoryEntity = categoryRepository.findById(adminCategoryRequestDTO.parentId())
-                    .orElseThrow(() -> new EntityNotFoundException(
-                            "Không tìm thấy danh mục cha với id: " + adminCategoryRequestDTO.parentId()
-                    ));
-            existingCategoryEntity.setParent(newParentCategoryEntity);
-        }
-        else {
-            existingCategoryEntity.setParent(null);
+        Integer newParentId = adminCategoryRequestDTO.parentId();
+        CategoryEntity oldParentEntity = existingCategoryEntity.getParent();
+        Integer oldParentId = (oldParentEntity != null) ? oldParentEntity.getId() : null;
+
+        boolean isParentChanged = !Objects.equals(oldParentId, newParentId);
+
+        if (isParentChanged) {
+            if (oldParentEntity != null) {
+                oldParentEntity.removeSubCategory(existingCategoryEntity);
+            }
+
+            if (newParentId != null) {
+                CategoryEntity newParentCategoryEntity = categoryRepository.findById(newParentId)
+                        .orElseThrow(() -> new EntityNotFoundException(
+                                "Không tìm thấy danh mục cha mới với id: " + newParentId
+                        ));
+                newParentCategoryEntity.addSubCategory(existingCategoryEntity);
+            }
         }
 
         existingCategoryEntity = categoryRepository.save(existingCategoryEntity);
@@ -113,11 +129,9 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
             throw new IllegalStateException("Không thể xóa! Danh mục này đang chứa các danh mục con bên trong. Vui lòng xóa hoặc di chuyển danh mục con trước.");
         }
 
-        /*
         if (productRepository.existsByCategoryId(categoryId)) {
              throw new IllegalStateException("Không thể xóa! Đang có sản phẩm thuộc danh mục này.");
         }
-        */
 
         existingCategoryEntity.setStatus(ProductStatus.DELETED);
 

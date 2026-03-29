@@ -60,6 +60,7 @@ public class VariantEntity {
     @Column(nullable = false)
     private Integer stock;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Builder.Default
     private ProductStatus status = ProductStatus.ACTIVE;
