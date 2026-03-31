@@ -3,7 +3,8 @@ package org.example.electronics.service.admin.impl;
 import jakarta.persistence.EntityNotFoundException;
 import org.example.electronics.dto.request.admin.AdminRoleRequestDTO;
 import org.example.electronics.dto.request.admin.AdminUpdateUserStatusRequestDTO;
-import org.example.electronics.dto.response.admin.AdminRoleResponseDTO;
+import org.example.electronics.dto.response.admin.role.AdminDetailRoleResponseDTO;
+import org.example.electronics.dto.response.admin.role.AdminRoleResponseDTO;
 import org.example.electronics.entity.PermissionEntity;
 import org.example.electronics.entity.RoleEntity;
 import org.example.electronics.entity.enums.UserStatus;
@@ -72,8 +73,6 @@ public class AdminRoleServiceImpl implements AdminRoleService {
         List<PermissionEntity> permissionEntityList = permissionRepository.findAllById(adminRoleRequestDTO.permissionIds());
         existingRoleEntity.setPermissions(new HashSet<>(permissionEntityList));
 
-        existingRoleEntity = roleRepository.save(existingRoleEntity);
-
         return roleMapper.toResponseDTO(existingRoleEntity);
     }
 
@@ -86,8 +85,6 @@ public class AdminRoleServiceImpl implements AdminRoleService {
                 ));
 
         existingRoleEntity.setStatus(adminUpdateUserStatusRequestDTO.status());
-
-        existingRoleEntity = roleRepository.save(existingRoleEntity);
 
         return roleMapper.toResponseDTO(existingRoleEntity);
     }
@@ -105,8 +102,6 @@ public class AdminRoleServiceImpl implements AdminRoleService {
                 ));
 
         existingRoleEntity.setStatus(UserStatus.DELETED);
-
-        roleRepository.save(existingRoleEntity);
     }
 
     @Transactional(readOnly = true)
@@ -124,12 +119,12 @@ public class AdminRoleServiceImpl implements AdminRoleService {
 
     @Transactional(readOnly = true)
     @Override
-    public AdminRoleResponseDTO getRoleById(Integer roleId) {
-        RoleEntity existingRoleEntity = roleRepository.findById(roleId)
+    public AdminDetailRoleResponseDTO getRoleById(Integer roleId) {
+        RoleEntity existingRoleEntity = roleRepository.findRoleWithDetailsById(roleId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Không tìm thấy chức vụ với id: " + roleId
                 ));
 
-        return roleMapper.toResponseDTO(existingRoleEntity);
+        return roleMapper.toDetailResponseDTO(existingRoleEntity);
     }
 }

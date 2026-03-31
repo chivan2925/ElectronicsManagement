@@ -120,8 +120,6 @@ public class AdminProductServiceImpl implements AdminProductService {
         existingProductEntity.setCategory(existingCategoryEntity);
         existingProductEntity.setBrand(existingBrandEntity);
 
-        existingProductEntity = productRepository.save(existingProductEntity);
-
         return productMapper.toResponseDTO(existingProductEntity);
     }
 
@@ -134,8 +132,6 @@ public class AdminProductServiceImpl implements AdminProductService {
                 ));
 
         existingProductEntity.setStatus(adminUpdateProductStatusRequestDTO.status());
-
-        existingProductEntity = productRepository.save(existingProductEntity);
 
         return productMapper.toResponseDTO(existingProductEntity);
     }
@@ -153,8 +149,6 @@ public class AdminProductServiceImpl implements AdminProductService {
                 ));
 
         existingProductEntity.setStatus(ProductStatus.DELETED);
-
-        productRepository.save(existingProductEntity);
     }
 
     @Transactional(readOnly = true)

@@ -5,7 +5,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.example.electronics.dto.request.admin.AdminRoleRequestDTO;
 import org.example.electronics.dto.request.admin.AdminUpdateUserStatusRequestDTO;
-import org.example.electronics.dto.response.admin.AdminRoleResponseDTO;
+import org.example.electronics.dto.response.admin.role.AdminDetailRoleResponseDTO;
+import org.example.electronics.dto.response.admin.role.AdminRoleResponseDTO;
 import org.example.electronics.entity.enums.UserStatus;
 import org.example.electronics.service.admin.AdminRoleService;
 import org.springframework.data.domain.Page;
@@ -93,7 +94,7 @@ public class AdminRoleController {
             @RequestParam(required = false) UserStatus status,
             @RequestParam(required = false) LocalDate fromDate,
             @RequestParam(required = false) LocalDate toDate,
-            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+            @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         Page<AdminRoleResponseDTO> allRolesPage = adminRoleService.getAllRoles(keyword, status, fromDate, toDate, pageable);
 
@@ -105,11 +106,11 @@ public class AdminRoleController {
             summary = "Xem chi tiết 1 chức vụ",
             description = "Lấy toàn bộ thông tin của một chức vụ cụ thể dựa vào ID."
     )
-    public ResponseEntity<AdminRoleResponseDTO> getRoleById(
+    public ResponseEntity<AdminDetailRoleResponseDTO> getRoleById(
             @PathVariable Integer roleId
     ) {
-        AdminRoleResponseDTO adminRoleResponseDTO = adminRoleService.getRoleById(roleId);
+        AdminDetailRoleResponseDTO adminDetailRoleResponseDTO = adminRoleService.getRoleById(roleId);
 
-        return ResponseEntity.ok(adminRoleResponseDTO);
+        return ResponseEntity.ok(adminDetailRoleResponseDTO);
     }
 }

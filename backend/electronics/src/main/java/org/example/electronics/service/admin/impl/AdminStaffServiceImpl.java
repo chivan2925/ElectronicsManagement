@@ -84,8 +84,6 @@ public class AdminStaffServiceImpl implements AdminStaffService {
         existingStaffEntity.setRole(newRoleEntity);
         existingStaffEntity.setHashedPassword("Chưa có BCrypt" + adminStaffRequestDTO.password());
 
-        existingStaffEntity = staffRepository.save(existingStaffEntity);
-
         return staffMapper.toResponseDTO(existingStaffEntity);
     }
 
@@ -99,8 +97,6 @@ public class AdminStaffServiceImpl implements AdminStaffService {
 
         existingStaffEntity.setStatus(adminUpdateUserStatusRequestDTO.status());
 
-        existingStaffEntity = staffRepository.save(existingStaffEntity);
-
         return staffMapper.toResponseDTO(existingStaffEntity);
     }
 
@@ -113,8 +109,6 @@ public class AdminStaffServiceImpl implements AdminStaffService {
                 ));
 
         existingStaffEntity.setStatus(UserStatus.DELETED);
-
-        staffRepository.save(existingStaffEntity);
     }
 
     @Transactional(readOnly = true)

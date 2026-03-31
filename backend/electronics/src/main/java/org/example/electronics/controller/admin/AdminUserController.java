@@ -63,7 +63,7 @@ public class AdminUserController {
             @RequestParam(required = false) UserStatus status,
             @RequestParam(required = false) LocalDate fromDate,
             @RequestParam(required = false) LocalDate toDate,
-            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+            @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         Page<AdminUserResponseDTO> allUsersPage = adminUserService.getAllUsers(keyword, status, fromDate, toDate, pageable);
 

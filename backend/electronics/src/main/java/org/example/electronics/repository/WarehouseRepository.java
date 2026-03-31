@@ -1,0 +1,44 @@
+package org.example.electronics.repository;
+
+import org.example.electronics.entity.enums.WarehouseStatus;
+import org.example.electronics.entity.warehouse.WarehouseEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
+
+public interface WarehouseRepository extends JpaRepository<WarehouseEntity, Integer> {
+
+    boolean existsByName(String name);
+
+    boolean existsByNameAndIdNot(String name, Integer id);
+
+    @Query("SELECT w FROM WarehouseEntity w WHERE 1=1 " +
+
+            "AND (:keyword IS NULL OR ( " +
+            "    CAST(w.id AS string) LIKE CONCAT('%', :keyword, '%') " +
+            "    OR LOWER(w.name) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            ")) " +
+
+            "AND (:status IS NULL OR w.status = :status) " +
+
+            "AND (:fromDate IS NULL OR w.createdAt >= :fromDate) " +
+            "AND (:toDate IS NULL OR w.createdAt <= :toDate)")
+    Page<WarehouseEntity> findWarehousesWithFilter(
+            @Param("keyword") String keyword,
+            @Param("status") WarehouseStatus status,
+            @Param("fromDate") LocalDateTime fromDate,
+            @Param("toDate") LocalDateTime toDate,
+            Pageable pageable
+    );
+
+    @Query("SELECT w FROM WarehouseEntity w " +
+            "LEFT JOIN FETCH w.warehouseDetails wD " +
+            "LEFT JOIN FETCH wD.variant " +
+            "WHERE w.id = :id")
+    Optional<WarehouseEntity> findWarehouseWithDetailsById(@Param("id") Integer warehouseId);
+}

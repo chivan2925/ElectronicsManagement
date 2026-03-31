@@ -3,7 +3,8 @@ package org.example.electronics.service.admin.impl;
 import jakarta.persistence.EntityNotFoundException;
 import org.example.electronics.dto.request.admin.AdminCategoryRequestDTO;
 import org.example.electronics.dto.request.admin.AdminUpdateProductStatusRequestDTO;
-import org.example.electronics.dto.response.admin.AdminCategoryResponseDTO;
+import org.example.electronics.dto.response.admin.category.AdminCategoryResponseDTO;
+import org.example.electronics.dto.response.admin.category.AdminDetailCategoryResponseDTO;
 import org.example.electronics.entity.CategoryEntity;
 import org.example.electronics.entity.enums.ProductStatus;
 import org.example.electronics.mapper.CategoryMapper;
@@ -97,8 +98,6 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
             }
         }
 
-        existingCategoryEntity = categoryRepository.save(existingCategoryEntity);
-
         return categoryMapper.toResponseDTO(existingCategoryEntity);
     }
 
@@ -111,8 +110,6 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
                 ));
 
         categoryEntity.setStatus(adminUpdateProductStatusRequestDTO.status());
-
-        categoryEntity = categoryRepository.save(categoryEntity);
 
         return categoryMapper.toResponseDTO(categoryEntity);
     }
@@ -134,8 +131,6 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         }
 
         existingCategoryEntity.setStatus(ProductStatus.DELETED);
-
-        categoryRepository.save(existingCategoryEntity);
     }
 
     @Transactional(readOnly = true)
@@ -170,12 +165,12 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
 
     @Transactional(readOnly = true)
     @Override
-    public AdminCategoryResponseDTO getCategoryById(Integer categoryId) {
-        CategoryEntity existingCategoryEntity = categoryRepository.findById(categoryId)
+    public AdminDetailCategoryResponseDTO getCategoryById(Integer categoryId) {
+        CategoryEntity existingCategoryEntity = categoryRepository.findCategoryWithDetailsById(categoryId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Không tìm thấy danh mục với id: " + categoryId
                 ));
 
-        return categoryMapper.toResponseDTO(existingCategoryEntity);
+        return categoryMapper.toDetailResponseDTO(existingCategoryEntity);
     }
 }

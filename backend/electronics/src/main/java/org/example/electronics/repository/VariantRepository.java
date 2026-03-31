@@ -2,6 +2,7 @@ package org.example.electronics.repository;
 
 import org.example.electronics.entity.VariantEntity;
 import org.example.electronics.entity.enums.ProductStatus;
+import org.example.electronics.entity.warehouse.WarehouseDetailEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 public interface VariantRepository extends JpaRepository<VariantEntity, Integer> {
@@ -61,5 +63,10 @@ public interface VariantRepository extends JpaRepository<VariantEntity, Integer>
             "LEFT JOIN FETCH v.product " +
             "LEFT JOIN FETCH v.media " +
             "WHERE v.id = :id")
-    Optional<VariantEntity> findVariantWithDetailsById(@Param("id") Integer variantId);
+    Optional<VariantEntity> findVariantWithBasicDetailsById(@Param("id") Integer variantId);
+
+    @Query("SELECT wD FROM WarehouseDetailEntity wD " +
+            "JOIN FETCH wD.warehouse " +
+            "WHERE wD.variant.id = :variantId AND wD.quantity > 0")
+    List<WarehouseDetailEntity> findWarehouseStocksByVariantId(@Param("variantId") Integer variantId);
 }

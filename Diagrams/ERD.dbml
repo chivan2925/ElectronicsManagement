@@ -141,7 +141,7 @@ Table variants {
   color varchar(50)
   specs_json json
   price decimal(12,3) [not null]
-  stock int [not null]
+  total_stock int [not null]
   status product_status [default: product_status.ACTIVE, not null]
   created_at datetime [default: `now()`, not null]
   updated_at datetime [default: `now()`, not null]

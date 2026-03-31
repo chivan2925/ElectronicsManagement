@@ -4,11 +4,14 @@ import jakarta.persistence.EntityNotFoundException;
 import org.example.electronics.dto.request.admin.AdminUpdateProductStatusRequestDTO;
 import org.example.electronics.dto.request.admin.AdminVariantRequestDTO;
 import org.example.electronics.dto.request.admin.media.AdminNestedMediaRequestDTO;
-import org.example.electronics.dto.response.admin.AdminVariantResponseDTO;
+import org.example.electronics.dto.response.admin.variant.AdminDetailVariantResponseDTO;
+import org.example.electronics.dto.response.admin.variant.AdminVariantResponseDTO;
+import org.example.electronics.dto.response.admin.variant.AdminVariantWarehouseStockResponseDTO;
 import org.example.electronics.entity.MediaEntity;
 import org.example.electronics.entity.ProductEntity;
 import org.example.electronics.entity.VariantEntity;
 import org.example.electronics.entity.enums.ProductStatus;
+import org.example.electronics.entity.warehouse.WarehouseDetailEntity;
 import org.example.electronics.mapper.MediaMapper;
 import org.example.electronics.mapper.VariantMapper;
 import org.example.electronics.repository.MediaRepository;
@@ -22,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -101,8 +105,6 @@ public class AdminVariantServiceImpl implements AdminVariantService {
 
         existingVariantEntity.setProduct(existingProductEntity);
 
-        existingVariantEntity = variantRepository.save(existingVariantEntity);
-
         return variantMapper.toResponseDTO(existingVariantEntity);
     }
 
@@ -116,8 +118,6 @@ public class AdminVariantServiceImpl implements AdminVariantService {
 
         existingVariantEntity.setStatus(adminUpdateProductStatusRequestDTO.status());
 
-        existingVariantEntity = variantRepository.save(existingVariantEntity);
-
         return variantMapper.toResponseDTO(existingVariantEntity);
     }
 
@@ -130,8 +130,6 @@ public class AdminVariantServiceImpl implements AdminVariantService {
                 ));
 
         existingVariantEntity.setStatus(ProductStatus.DELETED);
-
-        variantRepository.save(existingVariantEntity);
     }
 
     @Transactional(readOnly = true)
@@ -149,12 +147,30 @@ public class AdminVariantServiceImpl implements AdminVariantService {
 
     @Transactional(readOnly = true)
     @Override
-    public AdminVariantResponseDTO getVariantById(Integer variantId) {
-        VariantEntity existingVariantEntity = variantRepository.findVariantWithDetailsById(variantId)
+    public AdminDetailVariantResponseDTO getVariantById(Integer variantId) {
+        VariantEntity existingVariantEntity = variantRepository.findVariantWithBasicDetailsById(variantId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Không tìm thấy biến thể với id: " + variantId
                 ));
 
-        return variantMapper.toResponseDTO(existingVariantEntity);
+        List<WarehouseDetailEntity> warehouseDetailEntityList = variantRepository.findWarehouseStocksByVariantId(variantId);
+
+        List<AdminVariantWarehouseStockResponseDTO> warehouseStockResponseDTOList = warehouseDetailEntityList.stream()
+                .map(variantMapper::toWarehouseStockDTO)
+                .toList();
+
+        int totalStock = warehouseDetailEntityList.stream()
+                .mapToInt(WarehouseDetailEntity::getQuantity)
+                .sum();
+
+        BigDecimal totalWarehouseValue = existingVariantEntity.getPrice()
+                .multiply(BigDecimal.valueOf(totalStock));
+
+        return variantMapper.toDetailResponseDTO(
+                existingVariantEntity,
+                warehouseStockResponseDTOList,
+                totalStock,
+                totalWarehouseValue
+        );
     }
 }

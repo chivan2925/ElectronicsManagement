@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 public interface RoleRepository extends JpaRepository<RoleEntity, Integer> {
 
@@ -34,4 +35,9 @@ public interface RoleRepository extends JpaRepository<RoleEntity, Integer> {
             @Param("toDate") LocalDateTime toDate,
             Pageable pageable
     );
+
+    @Query("SELECT r FROM RoleEntity r " +
+            "LEFT JOIN FETCH r.permissions " +
+            "WHERE r.id = :id")
+    Optional<RoleEntity> findRoleWithDetailsById(@Param("id") Integer roleId);
 }

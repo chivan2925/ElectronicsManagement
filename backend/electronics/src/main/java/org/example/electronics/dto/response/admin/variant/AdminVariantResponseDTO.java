@@ -1,11 +1,9 @@
-package org.example.electronics.dto.response.admin;
+package org.example.electronics.dto.response.admin.variant;
 
 import org.example.electronics.entity.enums.ProductStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
 
 public record AdminVariantResponseDTO(
         Integer id,
@@ -14,19 +12,13 @@ public record AdminVariantResponseDTO(
 
         String productName,
 
-        List<AdminMediaResponseDTO> media,
-
         String name,
 
         String slug,
 
         String color,
 
-        Map<String, Object> specsJson,
-
         BigDecimal price,
-
-        Integer stock,
 
         String primaryImageUrl,
 

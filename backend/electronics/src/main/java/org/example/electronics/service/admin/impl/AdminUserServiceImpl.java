@@ -39,8 +39,6 @@ public class AdminUserServiceImpl implements AdminUserService {
 
         userEntity.setStatus(adminUpdateUserStatusRequestDTO.status());
 
-        userEntity = userRepository.save(userEntity);
-
         return userMapper.toResponseDTO(userEntity);
     }
 
@@ -53,8 +51,6 @@ public class AdminUserServiceImpl implements AdminUserService {
                 ));
 
         userEntity.setStatus(UserStatus.DELETED);
-
-        userRepository.save(userEntity);
     }
 
     @Transactional(readOnly = true)

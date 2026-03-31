@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 public interface CategoryRepository extends JpaRepository<CategoryEntity, Integer> {
 
@@ -61,4 +62,10 @@ public interface CategoryRepository extends JpaRepository<CategoryEntity, Intege
             @Param("toDate") LocalDateTime toDate,
             Pageable pageable
     );
+
+    @Query("SELECT c FROM CategoryEntity c " +
+            "LEFT JOIN FETCH c.parent " +
+            "LEFT JOIN FETCH c.subCategoryList " +
+            "WHERE c.id = :id")
+    Optional<CategoryEntity> findCategoryWithDetailsById(@Param("id") Integer categoryId);
 }

@@ -98,8 +98,6 @@ public class AdminMediaServiceImpl implements AdminMediaService {
         }
 
         existingMediaEntity.setIsPrimary(true);
-
-        mediaRepository.save(existingMediaEntity);
     }
 
     @Transactional
@@ -111,8 +109,6 @@ public class AdminMediaServiceImpl implements AdminMediaService {
                 ));
 
         existingMediaEntity.setDisplayOrder(adminUpdateMediaOrderRequestDTO.displayOrder());
-
-        existingMediaEntity = mediaRepository.save(existingMediaEntity);
 
         return mediaMapper.toResponseDTO(existingMediaEntity);
     }

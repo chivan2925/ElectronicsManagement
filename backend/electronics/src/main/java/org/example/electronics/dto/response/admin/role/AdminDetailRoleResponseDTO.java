@@ -1,11 +1,12 @@
-package org.example.electronics.dto.response.admin;
+package org.example.electronics.dto.response.admin.role;
 
+import org.example.electronics.dto.response.admin.AdminPermissionResponseDTO;
 import org.example.electronics.entity.enums.UserStatus;
 
 import java.time.LocalDateTime;
 import java.util.Set;
 
-public record AdminRoleResponseDTO(
+public record AdminDetailRoleResponseDTO(
         Integer id,
 
         String name,

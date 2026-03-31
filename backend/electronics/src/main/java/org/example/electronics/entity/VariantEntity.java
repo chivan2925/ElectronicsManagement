@@ -57,8 +57,8 @@ public class VariantEntity {
     @Column(nullable = false, precision = 12, scale = 3)
     private BigDecimal price;
 
-    @Column(nullable = false)
-    private Integer stock;
+    @Column(name = "total_stock", nullable = false)
+    private Integer totalStock;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

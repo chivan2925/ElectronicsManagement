@@ -5,7 +5,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.example.electronics.dto.request.admin.AdminUpdateProductStatusRequestDTO;
 import org.example.electronics.dto.request.admin.AdminVariantRequestDTO;
-import org.example.electronics.dto.response.admin.AdminVariantResponseDTO;
+import org.example.electronics.dto.response.admin.variant.AdminDetailVariantResponseDTO;
+import org.example.electronics.dto.response.admin.variant.AdminVariantResponseDTO;
 import org.example.electronics.entity.enums.ProductStatus;
 import org.example.electronics.service.admin.AdminVariantService;
 import org.springframework.data.domain.Page;
@@ -96,7 +97,7 @@ public class AdminVariantController {
             @RequestParam(required = false) ProductStatus status,
             @RequestParam(required = false) LocalDate fromDate,
             @RequestParam(required = false) LocalDate toDate,
-            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+            @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         Page<AdminVariantResponseDTO> adminVariantResponseDTOPage = adminVariantService.getAllVariants(keyword, status, fromDate, toDate, pageable);
 
@@ -108,11 +109,11 @@ public class AdminVariantController {
             summary = "Xem chi tiết 1 Biến thể",
             description = "Lấy toàn bộ thông tin chi tiết của một biến thể cụ thể (kèm thông số JSON, giá thực tế, tồn kho hiện tại)."
     )
-    public ResponseEntity<AdminVariantResponseDTO> getVariantById(
+    public ResponseEntity<AdminDetailVariantResponseDTO> getVariantById(
             @PathVariable Integer variantId
     ) {
-        AdminVariantResponseDTO adminVariantResponseDTO = adminVariantService.getVariantById(variantId);
+        AdminDetailVariantResponseDTO adminDetailVariantResponseDTO = adminVariantService.getVariantById(variantId);
 
-        return ResponseEntity.ok(adminVariantResponseDTO);
+        return ResponseEntity.ok(adminDetailVariantResponseDTO);
     }
 }

@@ -5,7 +5,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.example.electronics.dto.request.admin.AdminCategoryRequestDTO;
 import org.example.electronics.dto.request.admin.AdminUpdateProductStatusRequestDTO;
-import org.example.electronics.dto.response.admin.AdminCategoryResponseDTO;
+import org.example.electronics.dto.response.admin.category.AdminCategoryResponseDTO;
+import org.example.electronics.dto.response.admin.category.AdminDetailCategoryResponseDTO;
 import org.example.electronics.entity.enums.ProductStatus;
 import org.example.electronics.service.admin.AdminCategoryService;
 import org.springframework.data.domain.Page;
@@ -93,7 +94,7 @@ public class AdminCategoryController {
             @RequestParam(required = false) ProductStatus status,
             @RequestParam(required = false) LocalDate fromDate,
             @RequestParam(required = false) LocalDate toDate,
-            @PageableDefault(sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable
+            @PageableDefault(sort = "updatedAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable
     ) {
         Page<AdminCategoryResponseDTO> allParentCategoriesPage = adminCategoryService.getAllParentCategories(keyword, status, fromDate, toDate, pageable);
 
@@ -111,7 +112,7 @@ public class AdminCategoryController {
             @RequestParam(required = false) ProductStatus status,
             @RequestParam(required = false) LocalDate fromDate,
             @RequestParam(required = false) LocalDate toDate,
-            @PageableDefault(sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable
+            @PageableDefault(sort = "updatedAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable
     ) {
         Page<AdminCategoryResponseDTO> allSubCategoriesPage = adminCategoryService.getAllSubCategories(parentId, keyword, status, fromDate, toDate, pageable);
 
@@ -123,11 +124,11 @@ public class AdminCategoryController {
             summary = "Lấy chi tiết danh mục",
             description = "Lấy thông tin của 1 danh mục cụ thể dựa vào ID."
     )
-    public ResponseEntity<AdminCategoryResponseDTO> getCategoryById(
+    public ResponseEntity<AdminDetailCategoryResponseDTO> getCategoryById(
             @PathVariable Integer categoryId
     ) {
-        AdminCategoryResponseDTO adminCategoryResponseDTO = adminCategoryService.getCategoryById(categoryId);
+        AdminDetailCategoryResponseDTO adminDetailCategoryResponseDTO = adminCategoryService.getCategoryById(categoryId);
 
-        return ResponseEntity.ok(adminCategoryResponseDTO);
+        return ResponseEntity.ok(adminDetailCategoryResponseDTO);
     }
 }

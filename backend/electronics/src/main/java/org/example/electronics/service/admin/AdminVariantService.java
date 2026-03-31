@@ -2,7 +2,8 @@ package org.example.electronics.service.admin;
 
 import org.example.electronics.dto.request.admin.AdminVariantRequestDTO;
 import org.example.electronics.dto.request.admin.AdminUpdateProductStatusRequestDTO;
-import org.example.electronics.dto.response.admin.AdminVariantResponseDTO;
+import org.example.electronics.dto.response.admin.variant.AdminDetailVariantResponseDTO;
+import org.example.electronics.dto.response.admin.variant.AdminVariantResponseDTO;
 import org.example.electronics.entity.enums.ProductStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,5 +17,5 @@ public interface AdminVariantService {
     AdminVariantResponseDTO updateStatusVariant(Integer variantId, AdminUpdateProductStatusRequestDTO adminUpdateProductStatusRequestDTO);
     void deleteVariant(Integer variantId);
     Page<AdminVariantResponseDTO> getAllVariants(String keyword, ProductStatus status, LocalDate fromDate, LocalDate toDate, Pageable pageable);
-    AdminVariantResponseDTO getVariantById(Integer variantId);
+    AdminDetailVariantResponseDTO getVariantById(Integer variantId);
 }

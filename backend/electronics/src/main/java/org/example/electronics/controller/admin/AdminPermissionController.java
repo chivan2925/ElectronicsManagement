@@ -36,7 +36,7 @@ public class AdminPermissionController {
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) LocalDate fromDate,
             @RequestParam(required = false) LocalDate toDate,
-            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+            @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         Page<AdminPermissionResponseDTO> adminPermissionResponseDTOPage = adminPermissionService.getAllPermissions(keyword, fromDate, toDate, pageable);
 

@@ -35,8 +35,8 @@ public class AdminAddressController {
     )
     public ResponseEntity<Page<AdminAddressResponseDTO>> getAllAddressesByUserId (
             @PathVariable Integer userId,
-            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
-            ) {
+            @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
         Page<AdminAddressResponseDTO> allAddressesPage = adminAddressService.getAllAddressesByUserId(userId, pageable);
 
         return ResponseEntity.ok(allAddressesPage);

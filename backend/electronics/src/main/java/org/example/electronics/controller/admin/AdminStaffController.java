@@ -96,7 +96,7 @@ public class AdminStaffController {
             @RequestParam(required = false) UserStatus status,
             @RequestParam(required = false) LocalDate fromDate,
             @RequestParam(required = false) LocalDate toDate,
-            @PageableDefault(sort = "assignedAt", direction = Sort.Direction.DESC) Pageable pageable
+            @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         Page<AdminStaffResponseDTO> adminStaffResponseDTOPage = adminStaffService.getAllStaffs(keyword, status, fromDate, toDate, pageable);
 
