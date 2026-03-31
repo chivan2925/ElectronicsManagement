@@ -9,7 +9,7 @@ import {
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import logo from "../../../assets/logo.png";
-import { primaryNav, utilityHighlights } from "../../../data/storefront";
+import { primaryNav } from "../../../data/storefront";
 
 function NavItem({ item, onClick }) {
   const className =
@@ -35,16 +35,6 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50">
-      <div className="border-b border-white/[0.08] bg-[rgba(7,17,13,0.88)] backdrop-blur-xl">
-        <div className="page-shell flex gap-6 overflow-x-auto py-3 text-[11px] uppercase tracking-[0.28em] text-[var(--accent)]">
-          {utilityHighlights.map((item) => (
-            <span key={item} className="whitespace-nowrap">
-              {item}
-            </span>
-          ))}
-        </div>
-      </div>
-
       <div className="page-shell py-4">
         <div className="surface-panel flex items-center gap-3 rounded-full px-4 py-3 sm:px-5">
           <Link className="flex items-center gap-3" to="/">
@@ -55,7 +45,7 @@ export default function Header() {
               <p className="font-display text-sm font-semibold uppercase tracking-[0.32em] text-[var(--accent)]">
                 Electronics
               </p>
-              <p className="text-sm text-white/75">Management storefront</p>
+              <p className="text-sm text-white/75">Management Storefront</p>
             </div>
           </Link>
 
@@ -69,7 +59,7 @@ export default function Header() {
             <FaSearch className="text-white/[0.45]" />
             <input
               type="text"
-              placeholder="Tim laptop, linh kien, man hinh..."
+              placeholder="Tìm laptop, linh kiện, màn hình..."
               className="w-full bg-transparent text-sm placeholder:text-white/40 focus:outline-none"
             />
           </div>
@@ -97,7 +87,7 @@ export default function Header() {
                   3
                 </span>
               </span>
-              <span className="hidden sm:inline">Don hang</span>
+              <span className="hidden sm:inline">Đơn hàng</span>
             </Link>
             <button
               type="button"
@@ -124,7 +114,7 @@ export default function Header() {
               className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[var(--accent)]"
               onClick={() => setMobileOpen(false)}
             >
-              Di den thanh toan
+              Đi đến thanh toán
               <FaArrowRight className="text-xs" />
             </Link>
           </div>

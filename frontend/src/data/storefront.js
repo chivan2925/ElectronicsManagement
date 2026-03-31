@@ -4,34 +4,28 @@ import lap1 from "../assets/lap1.png";
 import lap2 from "../assets/lap2.png";
 import ram1 from "../assets/ram1.png";
 
-export const utilityHighlights = [
-  "Giao nhanh 24h khu vuc noi thanh",
-  "Tu van dung cau hinh, dung ngan sach",
-  "Tra gop 0% cho don tu 3 trieu",
-  "Bao hanh mot dau moi, phan hoi ro rang",
-];
 
 export const primaryNav = [
-  { label: "Trang chu", href: "/" },
-  { label: "Hang moi", href: "/#new-arrivals" },
-  { label: "Danh muc", href: "/#categories" },
-  { label: "Ly do chon", href: "/#trust" },
+  { label: "Trang chủ", href: "/" },
+  { label: "Hàng mới", href: "/#new-arrivals" },
+  { label: "Danh mục", href: "/#categories" },
+  { label: "Lý do chọn", href: "/#trust" },
   { label: "Showroom", href: "/#showroom" },
-  { label: "Thanh toan", href: "/checkout" },
+  { label: "Thanh toán", href: "/checkout" },
 ];
 
 export const heroMetrics = [
-  { value: "30+", label: "cau hinh moi cap nhat moi tuan" },
-  { value: "4h", label: "thoi gian lap may nhanh cho cau hinh co san" },
-  { value: "1:1", label: "kenh ho tro rieng sau khi ban giao" },
+  { value: "30+", label: "cấu hình mới cập nhật mỗi tuần" },
+  { value: "4h", label: "thời gian lắp máy nhanh cho cấu hình có sẵn" },
+  { value: "1:1", label: "kênh hỗ trợ riêng sau khi bàn giao" },
 ];
 
 export const catalogFilters = [
-  "Tat ca",
+  "Tất cả",
   "Laptop gaming",
-  "Linh kien",
-  "Man hinh",
-  "Phu kien",
+  "Linh kiện",
+  "Màn hình",
+  "Phụ kiện",
 ];
 
 export const productCatalog = [
@@ -39,38 +33,38 @@ export const productCatalog = [
     id: "nitro-5",
     name: "Acer Nitro 5 RTX 4060",
     category: "Laptop gaming",
-    badge: "Ban chay",
+    badge: "Bán chạy",
     price: 25990000,
     compareAt: 27990000,
     imageUrl: banner2,
-    description: "Man 165Hz, GPU RTX 4060, san hang va nang cap SSD ngay tai showroom.",
-    availability: "San may demo",
+    description: "Màn 165Hz, GPU RTX 4060, sẵn hàng và nâng cấp SSD ngay tại showroom.",
+    availability: "Sẵn máy demo",
     specs: ["i7 H-series", "16GB DDR5", "1TB SSD"],
     accent: "from-[#0c241a] via-[#17362a] to-[#234734]",
   },
   {
     id: "predator-x34",
     name: "Predator X34 OLED cong",
-    category: "Man hinh",
-    badge: "Moi cap ben",
+    category: "Màn hình",
+    badge: "Mới cập bến",
     price: 32990000,
     compareAt: 35990000,
     imageUrl: lap1,
-    description: "Man cong 34 inch, mau sau va do tre thap cho editor lan game thu can do on dinh.",
-    availability: "Nhan test tai cho",
+    description: "Màn cong 34 inch, màu sâu và độ trễ thấp cho editor lẫn game thủ cần độ ổn định.",
+    availability: "Nhận test tại chỗ",
     specs: ["QD-OLED", "175Hz", "USB-C hub"],
     accent: "from-[#0d1c1a] via-[#153833] to-[#1e5a53]",
   },
   {
     id: "ram-kingston",
     name: "Kingston Fury Beast 32GB",
-    category: "Linh kien",
-    badge: "Linh kien hot",
+    category: "Linh kiện",
+    badge: "Linh kiện hot",
     price: 3290000,
     compareAt: 3790000,
     imageUrl: ram1,
-    description: "Kit DDR5 on dinh cho ca gaming va render, duoc test mem truoc khi giao.",
-    availability: "Con hang",
+    description: "Kit DDR5 ổn định cho cả gaming và render, được test mem trước khi giao.",
+    availability: "Còn hàng",
     specs: ["DDR5", "6000MT/s", "CL36"],
     accent: "from-[#121b17] via-[#243329] to-[#375036]",
   },
@@ -82,60 +76,60 @@ export const productCatalog = [
     price: 48990000,
     compareAt: 52990000,
     imageUrl: lap2,
-    description: "Laptop hieu nang cao cho streamer va motion designer can may khoe, tan nhiet sach.",
-    availability: "Cho dat lich xem may",
+    description: "Laptop hiệu năng cao cho streamer và motion designer cần máy khỏe, tản nhiệt sạch.",
+    availability: "Chờ đặt lịch xem máy",
     specs: ["RTX 4070", "240Hz", "Thunderbolt 4"],
     accent: "from-[#10151a] via-[#1b2834] to-[#254258]",
   },
   {
     id: "workstation-dock",
     name: "Dock 12-in-1 Creator Hub",
-    category: "Phu kien",
-    badge: "Setup gon",
+    category: "Phụ kiện",
+    badge: "Setup gọn",
     price: 2490000,
     compareAt: 2890000,
     imageUrl: banner1,
-    description: "Mo rong cong ket noi cho dan laptop mong nhe va workstation di dong.",
-    availability: "San kho HCM",
+    description: "Mở rộng cổng kết nối cho dàn laptop mỏng nhẹ và workstation di động.",
+    availability: "Sẵn kho HCM",
     specs: ["2x HDMI", "2.5GbE", "PD 100W"],
     accent: "from-[#111716] via-[#1a312a] to-[#2a5141]",
   },
   {
     id: "asus-proart",
     name: "ASUS ProArt 27 4K",
-    category: "Man hinh",
-    badge: "Do mau chuan",
+    category: "Màn hình",
+    badge: "Độ màu chuẩn",
     price: 18990000,
     compareAt: 20990000,
     imageUrl: lap1,
-    description: "Man hinh 4K cho designer can can mau va quy trinh lam viec on dinh ca ngay.",
-    availability: "Cho xem mau thuc te",
+    description: "Màn hình 4K cho designer cần cân màu và quy trình làm việc ổn định cả ngày.",
+    availability: "Cho xem màu thực tế",
     specs: ["4K UHD", "Delta E < 2", "USB-C 96W"],
     accent: "from-[#101618] via-[#213338] to-[#35545c]",
   },
   {
     id: "ssd-990-pro",
     name: "Samsung 990 Pro 2TB",
-    category: "Linh kien",
-    badge: "Nang cap nhanh",
+    category: "Linh kiện",
+    badge: "Nâng cấp nhanh",
     price: 4290000,
     compareAt: 4790000,
     imageUrl: ram1,
-    description: "SSD toc do cao cho workflow dung phim va gaming, co clone du lieu tai cho.",
-    availability: "San kit clone",
+    description: "SSD tốc độ cao cho workflow dựng phim và gaming, có clone dữ liệu tại chỗ.",
+    availability: "Sẵn kit clone",
     specs: ["PCIe 4.0", "2TB", "7000MB/s"],
     accent: "from-[#121512] via-[#223227] to-[#426144]",
   },
   {
     id: "mx-master",
     name: "Logitech MX Master 3S",
-    category: "Phu kien",
+    category: "Phụ kiện",
     badge: "Office pro",
     price: 2390000,
     compareAt: 2690000,
     imageUrl: banner2,
-    description: "Chuot cong thai hoc cho ban lam viec dai gio, nhay chuan tren nhieu be mat.",
-    availability: "Nhan tay ngay",
+    description: "Chuột công thái học cho bạn làm việc dài giờ, nhảy chuẩn trên nhiều bề mặt.",
+    availability: "Nhận tay ngay",
     specs: ["Silent click", "Flow", "USB-C"],
     accent: "from-[#141414] via-[#232a2f] to-[#3a4247]",
   },
@@ -144,78 +138,78 @@ export const productCatalog = [
 export const trustReasons = [
   {
     eyebrow: "01",
-    title: "Tu van sat nhu cau thuc te",
+    title: "Tư vấn sát nhu cầu thực tế",
     description:
-      "Khong ban theo trend. Team di tu budget, phan mem, muc dich su dung roi moi de xuat cau hinh.",
+      "Không bán theo trend. Team đi từ budget, phần mềm, mục đích sử dụng rồi mới đề xuất cấu hình.",
   },
   {
     eyebrow: "02",
-    title: "Checklist test truoc khi giao",
+    title: "Checklist test trước khi giao",
     description:
-      "Nhiet do, xung nhip, cong ket noi va kha nang nang cap deu duoc kiem tra de tranh loi vat ve sau nay.",
+      "Nhiệt độ, xung nhịp, cổng kết nối và khả năng nâng cấp đều được kiểm tra để tránh lỗi vặt về sau.",
   },
   {
     eyebrow: "03",
-    title: "Showroom de cam va so sanh",
+    title: "Showroom để cầm và so sánh",
     description:
-      "Laptop, man hinh, phu kien va linh kien demo duoc xep thanh tung cum de ban xem nhanh va chot nhanh.",
+      "Laptop, màn hình, phụ kiện và linh kiện demo được xếp thành từng cụm để bạn xem nhanh và chốt nhanh.",
   },
   {
     eyebrow: "04",
-    title: "Ho tro sau ban co quy trinh",
+    title: "Hỗ trợ sau bán có quy trình",
     description:
-      "Can huong dan, bao hanh hay nang cap them? Moi yeu cau deu co mot dau moi theo doi den khi xong.",
+      "Cần hướng dẫn, bảo hành hay nâng cấp thêm? Mọi yêu cầu đều có một đầu mối theo dõi đến khi xong.",
   },
 ];
 
 export const reviewStats = [
-  { value: "4.9/5", label: "muc hai long trung binh tren cac don demo va don showroom" },
-  { value: "1-2h", label: "toc do giao noi thanh cho cac cau hinh san kho" },
-  { value: "92%", label: "khach quay lai de nang cap hoac mua them phu kien" },
+  { value: "4.9/5", label: "mức hài lòng trung bình trên các đơn demo và đơn showroom" },
+  { value: "1-2h", label: "tốc độ giao nội thành cho các cấu hình sẵn kho" },
+  { value: "92%", label: "khách quay lại để nâng cấp hoặc mua thêm phụ kiện" },
 ];
 
 export const testimonials = [
   {
-    name: "Minh Quan",
+    name: "Minh Quân",
     role: "Streamer FPS",
-    badge: "Da mua 7 don",
+    badge: "Đã mua 7 đơn",
     quote:
-      "Mua tai showroom de so tay va test chuot, xong ve van duoc team theo den luc set xong dongle va profile.",
+      "Mua tại showroom để sờ tay và test chuột, xong về vẫn được team theo đến lúc set xong dongle và profile.",
   },
   {
-    name: "Thao Vy",
+    name: "Thảo Vy",
     role: "Designer motion",
     badge: "Setup workstation",
     quote:
-      "Phan minh can nhat la khong bi tu van theo trend. Team di thang vao workflow va bo tri dung combo man hinh, dock, SSD.",
+      "Phần mình cần nhất là không bị tư vấn theo trend. Team đi thẳng vào workflow và bố trí đúng combo màn hình, dock, SSD.",
   },
   {
-    name: "Duc Anh",
-    role: "Sinh vien nganh ky thuat",
+    name: "Đức Anh",
+    role: "Sinh viên ngành kỹ thuật",
     badge: "Build theo budget",
     quote:
-      "Tu luc chot cau hinh den luc nhan may rat ro rang. Co checklist test va bao nhiet do, khong phai hoi tung buoc.",
+      "Từ lúc chốt cấu hình đến lúc nhận máy rất rõ ràng. Có checklist test và báo nhiệt độ, không phải hỏi từng bước.",
   },
   {
-    name: "Bao Han",
+    name: "Bảo Hân",
     role: "Lead editor",
-    badge: "Da nang cap 3 lan",
+    badge: "Đã nâng cấp 3 lần",
     quote:
-      "Diem an tien la hau mai. Can nang cap RAM hay doi monitor thi van tim lai duoc dung lich su mua va goi y nhanh.",
+      "Điểm ăn tiền là hậu mãi. Cần nâng cấp RAM hay đổi monitor thì vẫn tìm lại được đúng lịch sử mua và gợi ý nhanh.",
   },
 ];
 
 export const showroomHighlights = [
-  "Khu test laptop gaming va workstation theo tung tan nhiet",
-  "Ban trai nghiem man hinh can mau, loa monitor va dock mo rong",
-  "Goc build PC voi linh kien san kho de chot nhanh trong ngay",
+  "Khu test laptop gaming và workstation theo từng tản nhiệt",
+  "Bàn trải nghiệm màn hình cân màu, loa monitor và dock mở rộng",
+  "Góc build PC với linh kiện sẵn kho để chốt nhanh trong ngày",
 ];
 
 export const brandHeadline = {
-  eyebrow: "Section hang",
-  title: "Chi dua len nhung hang co the tu tin gioi thieu.",
+  eyebrow: "Section hãng",
+  title: "Chỉ đưa lên những hãng có thể tự tin giới thiệu.",
   description:
-    "Phong cach tham chieu day mot block brand ro rang o cuoi trang. O day toi giu cung tinh than do bang logo-text grid va bang thong tin phan phoi.",
+    "Phong cách tham chiếu đẩy một block brand rõ ràng ở cuối trang. Ở đây tôi giữ cùng tinh thần đó bằng logo-text grid và bảng thông tin phân phối.",
 };
 
 export const brandPartners = [
@@ -234,111 +228,111 @@ export const brandPartners = [
 ];
 
 export const brandPromises = [
-  "Nhap hang ro nguon goc va thong tin bao hanh",
-  "Co san mau demo voi nhom hang chu luc",
-  "Tu van combo theo he sinh thai, khong ban le tung mon mot cach roi rac",
+  "Nhập hàng rõ nguồn gốc và thông tin bảo hành",
+  "Có sẵn mẫu demo với nhóm hàng chủ lực",
+  "Tư vấn combo theo hệ sinh thái, không bán lẻ từng món một cách rời rạc",
 ];
 
 export const insightCards = [
   {
-    title: "Build theo ngan sach thay vi mua thua",
+    title: "Build theo ngân sách thay vì mua thừa",
     description:
-      "Cac goi cau hinh duoc chia ro theo moc 15, 25 va 40 trieu de ban quyet nhanh hon.",
-    cta: "Xem goi de xuat",
+      "Các gói cấu hình được chia rõ theo mốc 15, 25 và 40 triệu để bạn quyết nhanh hơn.",
+    cta: "Xem gợi ý",
   },
   {
-    title: "Lam viec voi man hinh va phu kien dong bo",
+    title: "Làm việc với màn hình và phụ kiện đồng bộ",
     description:
-      "Tu workstation, monitor den hub ket noi deu duoc xep thanh combo de setup gon va on dinh.",
-    cta: "Tu van combo",
+      "Từ workstation, monitor đến hub kết nối đều được xếp thành combo để setup gọn và ổn định.",
+    cta: "Tư vấn combo",
   },
 ];
 
 export const brandMetrics = [
-  { value: "12", label: "hang dang co line-up test tai showroom" },
-  { value: "100%", label: "san pham uu tien kenh bao hanh ro va de doi soat" },
-  { value: "48h", label: "thoi gian phan loai va xu ly truong hop can gui hang" },
+  { value: "12", label: "hãng đang có line-up test tại showroom" },
+  { value: "100%", label: "sản phẩm ưu tiên kênh bảo hành rõ và dễ đối soát" },
+  { value: "48h", label: "thời gian phân loại và xử lý trường hợp cần gửi hãng" },
 ];
 
 export const supportedBrands = [
-  { name: "ACER", focus: "Laptop gaming va Predator line", tone: "bg-[rgba(215,245,111,0.1)]" },
-  { name: "ASUS", focus: "ProArt, ROG, monitor va linh kien", tone: "bg-[rgba(41,96,79,0.28)]" },
-  { name: "LENOVO", focus: "Legion, ThinkPad va workstation", tone: "bg-[rgba(18,39,31,0.86)]" },
-  { name: "DELL", focus: "XPS, UltraSharp va may van phong", tone: "bg-[rgba(215,245,111,0.08)]" },
-  { name: "LG", focus: "Man hinh OLED va UltraWide", tone: "bg-[rgba(13,28,21,0.92)]" },
-  { name: "LOGITECH", focus: "Phu kien setup va office pro", tone: "bg-[rgba(41,96,79,0.22)]" },
-  { name: "SAMSUNG", focus: "SSD, monitor va storage workflow", tone: "bg-[rgba(18,39,31,0.9)]" },
-  { name: "KINGSTON", focus: "RAM, SSD va nang cap nhanh", tone: "bg-[rgba(215,245,111,0.08)]" },
+  { name: "ACER", focus: "Laptop gaming và Predator line", tone: "bg-[rgba(215,245,111,0.1)]" },
+  { name: "ASUS", focus: "ProArt, ROG, monitor và linh kiện", tone: "bg-[rgba(41,96,79,0.28)]" },
+  { name: "LENOVO", focus: "Legion, ThinkPad và workstation", tone: "bg-[rgba(18,39,31,0.86)]" },
+  { name: "DELL", focus: "XPS, UltraSharp và máy văn phòng", tone: "bg-[rgba(215,245,111,0.08)]" },
+  { name: "LG", focus: "Màn hình OLED và UltraWide", tone: "bg-[rgba(13,28,21,0.92)]" },
+  { name: "LOGITECH", focus: "Phụ kiện setup và office pro", tone: "bg-[rgba(41,96,79,0.22)]" },
+  { name: "SAMSUNG", focus: "SSD, monitor và storage workflow", tone: "bg-[rgba(18,39,31,0.9)]" },
+  { name: "KINGSTON", focus: "RAM, SSD và nâng cấp nhanh", tone: "bg-[rgba(215,245,111,0.08)]" },
 ];
 
 export const reviewMetrics = [
-  { value: "4.9/5", label: "muc hai long tu nhom khach mua setup va nang cap" },
-  { value: "96%", label: "khach quay lai khi can mua them man hinh hoac SSD" },
-  { value: "1 ngay", label: "thoi gian trung binh de chot va giao noi thanh" },
+  { value: "4.9/5", label: "mức hài lòng từ nhóm khách mua setup và nâng cấp" },
+  { value: "96%", label: "khách quay lại khi cần mua thêm màn hình hoặc SSD" },
+  { value: "1 ngày", label: "thời gian trung bình để chốt và giao nội thành" },
 ];
 
 export const customerReviews = [
   {
-    name: "Minh Quan",
+    name: "Minh Quân",
     role: "Editor freelance",
-    purchase: "Nang cap man hinh 4K + SSD clone du lieu",
+    purchase: "Nâng cấp màn hình 4K + SSD clone dữ liệu",
     quote:
-      "Team tu van rat sat workflow, khong ep len cau hinh. Ban giao xong la vao viec duoc ngay.",
+      "Team tư vấn rất sát workflow, không ép lên cấu hình. Bàn giao xong là vào việc được ngay.",
     rating: 5,
   },
   {
-    name: "Ha Vy",
+    name: "Hà Vy",
     role: "Streamer",
-    purchase: "Laptop Legion + dock + man hinh phu",
+    purchase: "Laptop Legion + dock + màn hình phụ",
     quote:
-      "Diem tot nhat la cach ho gom thanh combo va set san ket noi, khong mat thoi gian mua le tung mon.",
+      "Điểm tốt nhất là cách họ gom thành combo và set sẵn kết nối, không mất thời gian mua lẻ từng món.",
     rating: 5,
   },
   {
     name: "Duy Khang",
-    role: "Chu studio nho",
-    purchase: "Build PC render + 2 monitor can mau",
+    role: "Chủ studio nhỏ",
+    purchase: "Build PC render + 2 monitor cân màu",
     quote:
-      "Checklist truoc giao ro, co quay lai nhiet do va thong so. Cam giac chot don de hon rat nhieu.",
+      "Checklist trước giao rõ, có quay lại nhiệt độ và thông số. Cảm giác chốt đơn dễ hơn rất nhiều.",
     rating: 5,
   },
   {
     name: "Lan Anh",
     role: "PM agency",
-    purchase: "Mua 6 may office + phu kien dong bo",
+    purchase: "Mua 6 máy office + phụ kiện đồng bộ",
     quote:
-      "Can nhat cua team la phan giao tiep va theo doi sau ban. Can them hub va SSD la xu ly tiep rat nhanh.",
+      "Cân nhất của team là phần giao tiếp và theo dõi sau bán. Cần thêm hub và SSD là xử lý tiếp rất nhanh.",
     rating: 5,
   },
 ];
 
 export const footerColumns = [
   {
-    title: "Danh muc",
-    links: ["Laptop gaming", "Linh kien PC", "Man hinh", "Phu kien ban lam viec"],
+    title: "Danh mục",
+    links: ["Laptop gaming", "Linh kiện PC", "Màn hình", "Phụ kiện bàn làm việc"],
   },
   {
-    title: "Dich vu",
-    links: ["Tu van build PC", "Nang cap tai cho", "Can mau man hinh", "Bao tri dinh ky"],
+    title: "Dịch vụ",
+    links: ["Tư vấn build PC", "Nâng cấp tại chỗ", "Cân màu màn hình", "Bảo trì định kỳ"],
   },
   {
-    title: "Chinh sach",
-    links: ["Bao hanh minh bach", "Giao hang toan quoc", "Tra gop 0%", "Ho tro doanh nghiep"],
+    title: "Chính sách",
+    links: ["Bảo hành minh bạch", "Giao hàng toàn quốc", "Trả góp 0%", "Hỗ trợ doanh nghiệp"],
   },
 ];
 
 export const contactDetails = [
   {
     label: "Showroom",
-    value: "Tang 2, khu trai nghiem Electronics Management, Q.3, TP.HCM",
+    value: "Tầng 2, khu trải nghiệm Electronics Management, Q.3, TP.HCM",
   },
   {
     label: "Hotline",
     value: "0900 000 126 | 028 7300 1126",
   },
   {
-    label: "Khung gio",
-    value: "08:30 - 20:00 moi ngay, tiep nhan bao hanh den 17:30",
+    label: "Khung giờ",
+    value: "08:30 - 20:00 mỗi ngày, tiếp nhận bảo hành đến 17:30",
   },
 ];
 

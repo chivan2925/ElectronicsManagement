@@ -16,69 +16,69 @@ export default function Checkout() {
           <div>
             <p className="text-xs uppercase tracking-[0.32em] text-[var(--accent)]">Checkout reset</p>
             <h1 className="font-display mt-3 text-3xl font-semibold text-white sm:text-4xl">
-              Trang thanh toan da doi cung visual voi trang chu.
+              Trang thanh toán đã đổi cùng visual với trang chủ.
             </h1>
             <p className="mt-4 max-w-2xl text-sm leading-7 text-[var(--muted)] sm:text-base">
-              Giu lai huong dark-green, tach ro form va order summary de project khong bi doi layout
-              nua duong.
+              Giữ lại hướng dark-green, tách rõ form và order summary để project không bị đổi layout
+              nửa đường.
             </p>
           </div>
 
           <Link className="secondary-button" to="/">
             <FaArrowLeft className="text-xs" />
-            Quay lai trang chu
+            Quay lại trang chủ
           </Link>
         </div>
 
         <div className="mt-8 grid gap-6 lg:grid-cols-[1.08fr_0.92fr]">
           <div className="space-y-6">
             <section className="surface-soft rounded-[30px] p-5 sm:p-6">
-              <h2 className="text-xl font-semibold text-white">Thong tin nhan hang</h2>
+              <h2 className="text-xl font-semibold text-white">Thông tin nhận hàng</h2>
               <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                <input className="field-shell" placeholder="Ho va ten" type="text" />
-                <input className="field-shell" placeholder="So dien thoai" type="tel" />
+                <input className="field-shell" placeholder="Họ và tên" type="text" />
+                <input className="field-shell" placeholder="Số điện thoại" type="tel" />
                 <input className="field-shell sm:col-span-2" placeholder="Email" type="email" />
-                <input className="field-shell sm:col-span-2" placeholder="Dia chi giao hang" type="text" />
-                <input className="field-shell" placeholder="Tinh / Thanh pho" type="text" />
-                <input className="field-shell" placeholder="Quan / Huyen" type="text" />
+                <input className="field-shell sm:col-span-2" placeholder="Địa chỉ giao hàng" type="text" />
+                <input className="field-shell" placeholder="Tỉnh / Thành phố" type="text" />
+                <input className="field-shell" placeholder="Quận / Huyện" type="text" />
                 <textarea
                   className="field-shell min-h-[140px] resize-none sm:col-span-2"
-                  placeholder="Ghi chu giao hang, nhu cau nang cap, phan mem can cai..."
+                  placeholder="Ghi chú giao hàng, nhu cầu nâng cấp, phần mềm cần cài..."
                 />
               </div>
             </section>
 
             <section className="surface-soft rounded-[30px] p-5 sm:p-6">
-              <h2 className="text-xl font-semibold text-white">Phuong thuc xu ly don</h2>
+              <h2 className="text-xl font-semibold text-white">Phương thức xử lý đơn</h2>
               <div className="mt-5 grid gap-4 sm:grid-cols-2">
                 <label className="rounded-[24px] border border-[rgba(215,245,111,0.22)] bg-[rgba(215,245,111,0.08)] p-4">
-                  <p className="text-sm font-semibold text-white">Nhan cau hinh co san</p>
+                  <p className="text-sm font-semibold text-white">Nhận cấu hình có sẵn</p>
                   <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-                    Don co san, xuat kho nhanh va giao noi thanh trong ngay.
+                    Đơn có sẵn, xuất kho nhanh và giao nội thành trong ngày.
                   </p>
                 </label>
                 <label className="rounded-[24px] border border-white/[0.08] bg-white/[0.04] p-4">
-                  <p className="text-sm font-semibold text-white">Build va kiem tra theo yeu cau</p>
+                  <p className="text-sm font-semibold text-white">Build và kiểm tra theo yêu cầu</p>
                   <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-                    Team lap may, test nhiet do va quay checklist truoc khi giao.
+                    Team lắp máy, test nhiệt độ và quay checklist trước khi giao.
                   </p>
                 </label>
               </div>
             </section>
 
             <section className="surface-soft rounded-[30px] p-5 sm:p-6">
-              <h2 className="text-xl font-semibold text-white">Thanh toan</h2>
+              <h2 className="text-xl font-semibold text-white">Thanh toán</h2>
               <div className="mt-5 grid gap-4">
                 <label className="rounded-[24px] border border-[rgba(215,245,111,0.22)] bg-[rgba(215,245,111,0.08)] p-4">
-                  <p className="text-sm font-semibold text-white">Chuyen khoan / QR</p>
+                  <p className="text-sm font-semibold text-white">Chuyển khoản / QR</p>
                   <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-                    Xac nhan nhanh, thuan tien cho don doanh nghiep hoac don gia tri cao.
+                    Xác nhận nhanh, thuận tiện cho đơn doanh nghiệp hoặc đơn giá trị cao.
                   </p>
                 </label>
                 <label className="rounded-[24px] border border-white/[0.08] bg-white/[0.04] p-4">
-                  <p className="text-sm font-semibold text-white">Thanh toan khi nhan hang</p>
+                  <p className="text-sm font-semibold text-white">Thanh toán khi nhận hàng</p>
                   <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-                    Ap dung voi san pham co san va khu vuc ho tro COD.
+                    Áp dụng với sản phẩm có sẵn và khu vực hỗ trợ COD.
                   </p>
                 </label>
               </div>
@@ -86,7 +86,7 @@ export default function Checkout() {
           </div>
 
           <aside className="surface-soft rounded-[30px] p-5 sm:p-6 lg:sticky lg:top-36">
-            <h2 className="text-xl font-semibold text-white">Tom tat don hang</h2>
+            <h2 className="text-xl font-semibold text-white">Tóm tắt đơn hàng</h2>
 
             <div className="mt-5 space-y-4">
               {summaryItems.map((item) => (
@@ -113,37 +113,37 @@ export default function Checkout() {
                 <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[rgba(215,245,111,0.14)] text-[var(--accent)]">
                   <FaTruck />
                 </span>
-                Giao noi thanh mien phi cho don tren 10 trieu.
+                Giao nội thành miễn phí cho đơn trên 10 triệu.
               </div>
               <div className="mt-4 flex items-center gap-3 text-sm text-white/75">
                 <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[rgba(215,245,111,0.14)] text-[var(--accent)]">
                   <FaShieldAlt />
                 </span>
-                Bao hanh mot dau moi, cap nhat tien do xu ly ro rang.
+                Bảo hành một đầu mối, cập nhật tiến độ xử lý rõ ràng.
               </div>
             </div>
 
             <div className="mt-6 space-y-3 text-sm text-white/[0.74]">
               <div className="flex items-center justify-between">
-                <span>Tam tinh</span>
+                <span>Tạm tính</span>
                 <span>{formatCurrency(subtotal)}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span>Phi setup</span>
+                <span>Phí setup</span>
                 <span>{formatCurrency(serviceFee)}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span>Van chuyen</span>
-                <span>{shippingFee === 0 ? "Mien phi" : formatCurrency(shippingFee)}</span>
+                <span>Vận chuyển</span>
+                <span>{shippingFee === 0 ? "Miễn phí" : formatCurrency(shippingFee)}</span>
               </div>
               <div className="flex items-center justify-between border-t border-white/[0.08] pt-4 text-base font-semibold text-white">
-                <span>Tong cong</span>
+                <span>Tổng cộng</span>
                 <span>{formatCurrency(total)}</span>
               </div>
             </div>
 
             <button type="button" className="primary-button mt-6 w-full">
-              Xac nhan don hang
+              Xác nhận đơn hàng
               <FaArrowRight className="text-xs" />
             </button>
           </aside>

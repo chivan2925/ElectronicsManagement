@@ -16,7 +16,7 @@ export default function ProductCard({ product }) {
           </span>
           <p className="mt-3 text-xs uppercase tracking-[0.24em] text-white/[0.45]">{product.category}</p>
         </div>
-        <p className="text-right text-xs text-white/[0.55]">{product.availability}</p>
+        <p className="text-right text-xs text-white/[0.55]">còn hàng</p>
       </div>
 
       <div className="mt-5 flex min-h-[220px] items-center justify-center rounded-[26px] border border-white/[0.08] bg-white/[0.05] p-5">
@@ -44,7 +44,7 @@ export default function ProductCard({ product }) {
 
         <div className="mt-6 flex items-end justify-between gap-4">
           <div>
-            <p className="text-xs uppercase tracking-[0.24em] text-white/[0.45]">Gia uu dai</p>
+            <p className="text-xs uppercase tracking-[0.24em] text-white/[0.45]">Giá ưu đãi</p>
             <p className="mt-2 text-2xl font-bold text-white">{formatCurrency(product.price)}</p>
             {product.compareAt ? (
               <p className="mt-1 text-sm text-white/[0.45] line-through">{formatCurrency(product.compareAt)}</p>

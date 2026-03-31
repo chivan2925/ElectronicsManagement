@@ -20,18 +20,13 @@ export default function Footer() {
                     Electronics Management
                   </p>
                   <h2 className="mt-2 text-3xl font-semibold text-white sm:text-4xl">
-                    Mot footer giong showroom, khong phai danh sach lien ket vo hon.
+                    Hơn 17 năm đồng hành cùng game thủ Việt Nam.
                   </h2>
                 </div>
               </div>
               <p className="max-w-2xl text-sm leading-7 text-[var(--muted)] sm:text-base">
-                Toan bo shell da duoc doi sang mot huong visual dam, xanh, phan cap ro va day
-                section nhu cach phongcachxanh.vn dan nguoi dung xuong tung block.
+                  Nhà phân phối chính thức & độc quyền 25+ thương hiệu gaming cao cấp
               </p>
-              <a className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--accent)]" href="/checkout">
-                Tao don mau
-                <FaArrowRight className="text-xs" />
-              </a>
             </div>
 
             <div className="grid gap-4">
@@ -54,10 +49,10 @@ export default function Footer() {
 
           <div className="grid gap-8 px-6 py-8 md:grid-cols-2 xl:grid-cols-4 lg:px-8">
             <div className="space-y-4">
-              <h3 className="font-display text-lg font-semibold text-white">Tong quan</h3>
+              <h3 className="font-display text-lg font-semibold text-white">Tổng quan</h3>
               <p className="text-sm leading-7 text-[var(--muted)]">
-                Layout moi uu tien khoi hero lon, the san pham sang, section trust ro va CTA
-                day don hang theo cung mot visual language.
+                Layout mới ưu tiên khối hero lớn, thẻ sản phẩm sáng, section trust rõ và CTA
+                đẩy đơn hàng theo cùng một visual language.
               </p>
             </div>
 
@@ -78,8 +73,7 @@ export default function Footer() {
           </div>
 
           <div className="flex flex-col gap-3 border-t border-white/[0.08] px-6 py-5 text-sm text-[var(--muted)] lg:flex-row lg:items-center lg:justify-between lg:px-8">
-            <p>&copy; 2026 Electronics Management. Frontend reset theo huong storefront dark-green.</p>
-            <p>Design focus: hero ro, section co nhip, CTA nhin thay ngay.</p>
+            <p>&copy; 2026 Electronics Management.</p>
           </div>
         </div>
       </div>
