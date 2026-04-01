@@ -1,10 +1,10 @@
-package org.example.electronics.dto.response;
+package org.example.electronics.dto.response.admin;
 
 import org.example.electronics.entity.enums.ProductStatus;
 
 import java.time.LocalDateTime;
 
-public record BrandResponseDTO(
+public record AdminBrandResponseDTO(
         Integer id,
         String name,
         String imageUrl,

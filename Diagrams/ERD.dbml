@@ -239,7 +239,7 @@ Table categories {
 
 Table brands {
   id int [pk, increment]
-  name varchar(100) [not null]
+  name varchar(100) [unique, not null]
   image_url varchar(255)
   status product_status [default: product_status.ACTIVE, not null]
   created_at datetime [default: `now()`, not null]
