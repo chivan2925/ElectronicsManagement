@@ -250,7 +250,7 @@ Table coupons {
   id int [pk, increment]
   category_id int [Ref: > categories.id]
   brand_id int [Ref: > brands.id]
-  code varchar(20) [not null]
+  code varchar(20) [unique, not null]
   type coupon_type [not null]
   value decimal(12,3)
   min_order decimal(12,3)

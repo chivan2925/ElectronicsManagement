@@ -36,9 +36,9 @@ public class CouponEntity {
 
         @ManyToOne
         @JoinColumn(name = "brand_id")
-        private CategoryEntity brand;
+        private BrandEntity brand;
 
-        @Column(nullable = false, length = 20)
+        @Column(nullable = false, unique = true, length = 20)
         private String code;
 
         @Enumerated(EnumType.STRING)
