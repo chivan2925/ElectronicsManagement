@@ -254,8 +254,8 @@ Table coupons {
   type coupon_type [not null]
   value decimal(12,3)
   min_order decimal(12,3)
-  starts_at datetime
-  ends_at datetime
+  starts_at datetime [not null]
+  ends_at datetime [not null]
   usage_limit int
   max_discount decimal(12,3)
   status coupon_status [default: coupon_status.VALID, not null]
