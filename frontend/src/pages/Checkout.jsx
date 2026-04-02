@@ -14,14 +14,7 @@ export default function Checkout() {
       <div className="surface-panel rounded-[36px] p-6 lg:p-8">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <p className="text-xs uppercase tracking-[0.32em] text-[var(--accent)]">Checkout reset</p>
-            <h1 className="font-display mt-3 text-3xl font-semibold text-white sm:text-4xl">
-              Trang thanh toán đã đổi cùng visual với trang chủ.
-            </h1>
-            <p className="mt-4 max-w-2xl text-sm leading-7 text-[var(--muted)] sm:text-base">
-              Giữ lại hướng dark-green, tách rõ form và order summary để project không bị đổi layout
-              nửa đường.
-            </p>
+            <p className="text-xs uppercase tracking-[0.32em] text-[var(--accent)]">Thanh toán đơn hàng</p>
           </div>
 
           <Link className="secondary-button" to="/">
@@ -47,25 +40,7 @@ export default function Checkout() {
                 />
               </div>
             </section>
-
-            <section className="surface-soft rounded-[30px] p-5 sm:p-6">
-              <h2 className="text-xl font-semibold text-white">Phương thức xử lý đơn</h2>
-              <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                <label className="rounded-[24px] border border-[rgba(215,245,111,0.22)] bg-[rgba(215,245,111,0.08)] p-4">
-                  <p className="text-sm font-semibold text-white">Nhận cấu hình có sẵn</p>
-                  <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-                    Đơn có sẵn, xuất kho nhanh và giao nội thành trong ngày.
-                  </p>
-                </label>
-                <label className="rounded-[24px] border border-white/[0.08] bg-white/[0.04] p-4">
-                  <p className="text-sm font-semibold text-white">Build và kiểm tra theo yêu cầu</p>
-                  <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-                    Team lắp máy, test nhiệt độ và quay checklist trước khi giao.
-                  </p>
-                </label>
-              </div>
-            </section>
-
+            
             <section className="surface-soft rounded-[30px] p-5 sm:p-6">
               <h2 className="text-xl font-semibold text-white">Thanh toán</h2>
               <div className="mt-5 grid gap-4">
