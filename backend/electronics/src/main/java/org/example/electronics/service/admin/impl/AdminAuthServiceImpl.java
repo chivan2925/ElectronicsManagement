@@ -1,5 +1,6 @@
 package org.example.electronics.service.admin.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.example.electronics.dto.request.admin.AdminLoginRequestDTO;
 import org.example.electronics.dto.response.admin.AdminLoginResponseDTO;
 import org.example.electronics.entity.StaffEntity;
@@ -15,15 +16,11 @@ import org.springframework.stereotype.Service;
 import java.util.Objects;
 
 @Service
+@RequiredArgsConstructor
 public class AdminAuthServiceImpl implements AdminAuthService {
 
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
-
-    public AdminAuthServiceImpl(AuthenticationManager authenticationManager, JwtUtils jwtUtils) {
-        this.authenticationManager = authenticationManager;
-        this.jwtUtils = jwtUtils;
-    }
 
     @Override
     public AdminLoginResponseDTO login(AdminLoginRequestDTO adminLoginRequestDTO) {

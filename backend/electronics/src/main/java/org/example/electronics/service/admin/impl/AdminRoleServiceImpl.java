@@ -1,6 +1,7 @@
 package org.example.electronics.service.admin.impl;
 
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.example.electronics.dto.request.admin.AdminRoleRequestDTO;
 import org.example.electronics.dto.request.admin.AdminUpdateUserStatusRequestDTO;
 import org.example.electronics.dto.response.admin.role.AdminDetailRoleResponseDTO;
@@ -26,19 +27,13 @@ import java.util.HashSet;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class AdminRoleServiceImpl implements AdminRoleService {
 
     private final RoleMapper roleMapper;
     private final RoleRepository roleRepository;
     private final StaffRepository staffRepository;
     private final PermissionRepository permissionRepository;
-
-    public AdminRoleServiceImpl(RoleMapper roleMapper, RoleRepository roleRepository, StaffRepository staffRepository, PermissionRepository permissionRepository) {
-        this.roleMapper = roleMapper;
-        this.roleRepository = roleRepository;
-        this.staffRepository = staffRepository;
-        this.permissionRepository = permissionRepository;
-    }
 
     @Transactional
     @Override

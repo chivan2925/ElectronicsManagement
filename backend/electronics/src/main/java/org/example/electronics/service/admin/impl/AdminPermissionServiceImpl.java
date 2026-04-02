@@ -1,6 +1,7 @@
 package org.example.electronics.service.admin.impl;
 
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.example.electronics.dto.response.admin.AdminPermissionResponseDTO;
 import org.example.electronics.entity.PermissionEntity;
 import org.example.electronics.mapper.PermissionMapper;
@@ -17,15 +18,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Service
+@RequiredArgsConstructor
 public class AdminPermissionServiceImpl implements AdminPermissionService {
 
     private final PermissionMapper permissionMapper;
     private final PermissionRepository permissionRepository;
-
-    public AdminPermissionServiceImpl(PermissionMapper permissionMapper, PermissionRepository permissionRepository) {
-        this.permissionMapper = permissionMapper;
-        this.permissionRepository = permissionRepository;
-    }
 
     @Transactional(readOnly = true)
     @Override

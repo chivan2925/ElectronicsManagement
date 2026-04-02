@@ -1,6 +1,7 @@
 package org.example.electronics.service.admin.impl;
 
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.example.electronics.dto.request.admin.AdminProductRequestDTO;
 import org.example.electronics.dto.request.admin.AdminUpdateProductStatusRequestDTO;
 import org.example.electronics.dto.request.admin.media.AdminNestedMediaRequestDTO;
@@ -27,6 +28,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class AdminProductServiceImpl implements AdminProductService {
 
     private final ProductMapper productMapper;
@@ -36,16 +38,6 @@ public class AdminProductServiceImpl implements AdminProductService {
     private final VariantRepository variantRepository;
     private final MediaMapper mediaMapper;
     private final MediaRepository mediaRepository;
-
-    public AdminProductServiceImpl(ProductMapper productMapper, ProductRepository productRepository, CategoryRepository categoryRepository, BrandRepository brandRepository, VariantRepository variantRepository, MediaMapper mediaMapper, MediaRepository mediaRepository) {
-        this.productMapper = productMapper;
-        this.productRepository = productRepository;
-        this.categoryRepository = categoryRepository;
-        this.brandRepository = brandRepository;
-        this.variantRepository = variantRepository;
-        this.mediaMapper = mediaMapper;
-        this.mediaRepository = mediaRepository;
-    }
 
     @Transactional
     @Override

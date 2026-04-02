@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import java.time.LocalDate;
 
 public interface AdminBrandService {
+
     AdminBrandResponseDTO createBrand(AdminBrandRequestDTO adminBrandRequestDTO);
     AdminBrandResponseDTO updateBrand(Integer brandId, AdminBrandRequestDTO adminBrandRequestDTO);
     AdminBrandResponseDTO updateStatusBrand(Integer brandId, AdminUpdateProductStatusRequestDTO adminUpdateProductStatusRequestDTO);

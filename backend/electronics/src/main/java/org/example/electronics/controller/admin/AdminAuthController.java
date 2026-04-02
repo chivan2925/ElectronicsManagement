@@ -3,6 +3,7 @@ package org.example.electronics.controller.admin;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.example.electronics.dto.request.admin.AdminLoginRequestDTO;
 import org.example.electronics.dto.response.admin.AdminLoginResponseDTO;
 import org.example.electronics.service.admin.AdminAuthService;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/admin/auth")
+@RequiredArgsConstructor
 @Tag(
         name = "1. Admin Authentication",
         description = "Các API liên quan đến Đăng nhập và Cấp quyền cho Ban quản trị / Nhân viên hệ thống."
@@ -21,10 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdminAuthController {
 
     private final AdminAuthService adminAuthService;
-
-    public AdminAuthController(AdminAuthService adminAuthService) {
-        this.adminAuthService = adminAuthService;
-    }
 
     @PostMapping("/login")
     @Operation(

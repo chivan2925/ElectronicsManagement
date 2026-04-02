@@ -3,6 +3,7 @@ package org.example.electronics.controller.admin;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.example.electronics.dto.request.admin.AdminStaffRequestDTO;
 import org.example.electronics.dto.request.admin.AdminUpdateUserStatusRequestDTO;
 import org.example.electronics.dto.response.admin.AdminStaffResponseDTO;
@@ -20,6 +21,7 @@ import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/admin/staffs")
+@RequiredArgsConstructor
 @Tag(
         name = "5. Staff Management",
         description = "Các API dành cho Admin để quản lý tài khoản Nhân viên (Staff), phân quyền và theo dõi trạng thái hoạt động."
@@ -27,10 +29,6 @@ import java.time.LocalDate;
 public class AdminStaffController {
 
     private final AdminStaffService adminStaffService;
-
-    public AdminStaffController(AdminStaffService adminStaffService) {
-        this.adminStaffService = adminStaffService;
-    }
 
     @PostMapping
     @Operation(

@@ -3,6 +3,7 @@ package org.example.electronics.controller.admin;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.example.electronics.dto.request.admin.AdminProductRequestDTO;
 import org.example.electronics.dto.request.admin.AdminUpdateProductStatusRequestDTO;
 import org.example.electronics.dto.response.admin.product.AdminDetailProductResponseDTO;
@@ -21,6 +22,7 @@ import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/admin/products")
+@RequiredArgsConstructor
 @Tag(
         name = "6. Product Management",
         description = "Các API dành cho Admin để quản lý Sản phẩm gốc (Base Product). Nơi định nghĩa 'Linh hồn' và thông số chung của thiết bị."
@@ -28,10 +30,6 @@ import java.time.LocalDate;
 public class AdminProductController {
 
     private final AdminProductService adminProductService;
-
-    public AdminProductController(AdminProductService adminProductService) {
-        this.adminProductService = adminProductService;
-    }
 
     @PostMapping
     @Operation(

@@ -3,6 +3,7 @@ package org.example.electronics.controller.admin;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.example.electronics.dto.request.admin.AdminUpdateProductStatusRequestDTO;
 import org.example.electronics.dto.request.admin.AdminVariantRequestDTO;
 import org.example.electronics.dto.response.admin.variant.AdminDetailVariantResponseDTO;
@@ -21,6 +22,7 @@ import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/admin/variants")
+@RequiredArgsConstructor
 @Tag(
         name = "7. Variant Management",
         description = "Các API dành cho Admin để quản lý Biến thể sản phẩm (Variant). Nơi quản lý 'Thể xác' như Màu sắc, RAM, ROM, Giá tiền và Tồn kho."
@@ -28,10 +30,6 @@ import java.time.LocalDate;
 public class AdminVariantController {
 
     private final AdminVariantService adminVariantService;
-
-    public AdminVariantController(AdminVariantService adminVariantService) {
-        this.adminVariantService = adminVariantService;
-    }
 
     @PostMapping
     @Operation(

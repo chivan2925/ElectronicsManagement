@@ -1,6 +1,7 @@
 package org.example.electronics.service.admin.impl;
 
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.example.electronics.dto.request.admin.AdminBrandRequestDTO;
 import org.example.electronics.dto.request.admin.AdminUpdateProductStatusRequestDTO;
 import org.example.electronics.dto.response.admin.AdminBrandResponseDTO;
@@ -20,15 +21,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Service
+@RequiredArgsConstructor
 public class AdminBrandServiceImpl implements AdminBrandService {
 
     private final BrandMapper brandMapper;
     private final BrandRepository brandRepository;
-
-    public AdminBrandServiceImpl(BrandMapper brandMapper, BrandRepository brandRepository) {
-        this.brandMapper = brandMapper;
-        this.brandRepository = brandRepository;
-    }
 
     @Transactional
     @Override

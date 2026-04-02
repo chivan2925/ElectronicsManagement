@@ -1,6 +1,7 @@
 package org.example.electronics.service.admin.impl;
 
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.example.electronics.dto.request.admin.AdminStaffRequestDTO;
 import org.example.electronics.dto.request.admin.AdminUpdateUserStatusRequestDTO;
 import org.example.electronics.dto.response.admin.AdminStaffResponseDTO;
@@ -22,17 +23,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Service
+@RequiredArgsConstructor
 public class AdminStaffServiceImpl implements AdminStaffService {
 
     private final StaffMapper staffMapper;
     private final StaffRepository staffRepository;
     private final RoleRepository roleRepository;
-
-    public AdminStaffServiceImpl(StaffMapper staffMapper, StaffRepository staffRepository, RoleRepository roleRepository) {
-        this.staffMapper = staffMapper;
-        this.staffRepository = staffRepository;
-        this.roleRepository = roleRepository;
-    }
 
     @Transactional
     @Override

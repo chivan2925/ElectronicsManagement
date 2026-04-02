@@ -3,6 +3,7 @@ package org.example.electronics.controller.admin;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.example.electronics.dto.request.admin.AdminBrandRequestDTO;
 import org.example.electronics.dto.request.admin.AdminUpdateProductStatusRequestDTO;
 import org.example.electronics.dto.response.admin.AdminBrandResponseDTO;
@@ -20,14 +21,11 @@ import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/admin/brands")
+@RequiredArgsConstructor
 @Tag(name = "Admin - Brand Management", description = "Các API quản lý Thương hiệu dành cho Admin")
 public class AdminBrandController {
 
     private final AdminBrandService adminBrandService;
-
-    public AdminBrandController(AdminBrandService adminBrandService) {
-        this.adminBrandService = adminBrandService;
-    }
 
     @PostMapping
     @Operation(

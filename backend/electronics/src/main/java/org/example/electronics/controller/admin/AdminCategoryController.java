@@ -3,6 +3,7 @@ package org.example.electronics.controller.admin;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.example.electronics.dto.request.admin.AdminCategoryRequestDTO;
 import org.example.electronics.dto.request.admin.AdminUpdateProductStatusRequestDTO;
 import org.example.electronics.dto.response.admin.category.AdminCategoryResponseDTO;
@@ -20,14 +21,11 @@ import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/admin/categories")
+@RequiredArgsConstructor
 @Tag(name = "1. Category Management", description = "Các API dùng để quản lý Danh mục sản phẩm")
 public class AdminCategoryController {
 
     private final AdminCategoryService adminCategoryService;
-
-    public AdminCategoryController(AdminCategoryService adminCategoryService) {
-        this.adminCategoryService = adminCategoryService;
-    }
 
     @PostMapping
     @Operation(

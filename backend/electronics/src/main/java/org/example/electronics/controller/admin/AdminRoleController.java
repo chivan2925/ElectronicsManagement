@@ -3,6 +3,7 @@ package org.example.electronics.controller.admin;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.example.electronics.dto.request.admin.AdminRoleRequestDTO;
 import org.example.electronics.dto.request.admin.AdminUpdateUserStatusRequestDTO;
 import org.example.electronics.dto.response.admin.role.AdminDetailRoleResponseDTO;
@@ -21,14 +22,14 @@ import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/admin/roles")
-@Tag(name = "3. Role Management", description = "Các API dành cho Admin để quản lý Vai trò / Chức vụ của nhân viên")
+@RequiredArgsConstructor
+@Tag(
+        name = "3. Role Management",
+        description = "Các API dành cho Admin để quản lý Vai trò / Chức vụ của nhân viên"
+)
 public class AdminRoleController {
 
     private final AdminRoleService adminRoleService;
-
-    public AdminRoleController(AdminRoleService adminRoleService) {
-        this.adminRoleService = adminRoleService;
-    }
 
     @PostMapping
     @Operation(

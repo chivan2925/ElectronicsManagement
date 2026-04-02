@@ -3,6 +3,7 @@ package org.example.electronics.controller.admin;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.example.electronics.dto.request.admin.media.AdminAddMediaRequestDTO;
 import org.example.electronics.dto.request.admin.media.AdminUpdateMediaOrderRequestDTO;
 import org.example.electronics.dto.response.admin.AdminMediaResponseDTO;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/admin/media")
+@RequiredArgsConstructor
 @Tag(
         name = "8. Media Management",
         description = "Các API dành cho Admin để quản lý hình ảnh độc lập (Thêm, Xóa, Đổi vị trí, Chọn ảnh bìa)."
@@ -20,10 +22,6 @@ import org.springframework.web.bind.annotation.*;
 public class AdminMediaController {
 
     private final AdminMediaService adminMediaService;
-
-    public AdminMediaController(AdminMediaService adminMediaService) {
-        this.adminMediaService = adminMediaService;
-    }
 
     @PostMapping
     @Operation(

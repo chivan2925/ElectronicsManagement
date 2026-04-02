@@ -2,6 +2,7 @@ package org.example.electronics.controller.admin;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.example.electronics.dto.response.admin.AdminAddressResponseDTO;
 import org.example.electronics.service.admin.AdminAddressService;
 import org.springframework.data.domain.Page;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/admin/users")
+@RequiredArgsConstructor
 @Tag(
         name = "Admin - User Address Management",
         description = "Các API dành cho Admin để xem và quản lý địa chỉ của khách hàng"
@@ -23,10 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdminAddressController {
 
     private final AdminAddressService adminAddressService;
-
-    public AdminAddressController(AdminAddressService adminAddressService) {
-        this.adminAddressService = adminAddressService;
-    }
 
     @GetMapping("/{userId}/addresses")
     @Operation(

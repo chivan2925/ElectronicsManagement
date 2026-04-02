@@ -3,6 +3,7 @@ package org.example.electronics.controller.admin;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.example.electronics.dto.request.admin.warehouse.AdminUpdateWarehouseStatusRequestDTO;
 import org.example.electronics.dto.request.admin.warehouse.AdminWarehouseRequestDTO;
 import org.example.electronics.dto.response.admin.warehouse.AdminWarehouseResponseDTO;
@@ -20,6 +21,7 @@ import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/admin/warehouses")
+@RequiredArgsConstructor
 @Tag(
         name = "2. Admin Warehouse",
         description = "Các API quản lý Kho hàng và Tồn kho (Thêm/Sửa/Xóa/Danh sách). Dành riêng cho Ban quản trị."
@@ -27,10 +29,6 @@ import java.time.LocalDate;
 public class AdminWarehouseController {
 
     private final AdminWarehouseService adminWarehouseService;
-
-    public AdminWarehouseController(AdminWarehouseService adminWarehouseService) {
-        this.adminWarehouseService = adminWarehouseService;
-    }
 
     @PostMapping
     @Operation(

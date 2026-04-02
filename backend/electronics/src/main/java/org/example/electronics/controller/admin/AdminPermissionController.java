@@ -2,6 +2,7 @@ package org.example.electronics.controller.admin;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.example.electronics.dto.response.admin.AdminPermissionResponseDTO;
 import org.example.electronics.service.admin.AdminPermissionService;
 import org.springframework.data.domain.Page;
@@ -15,6 +16,7 @@ import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/admin/permissions")
+@RequiredArgsConstructor
 @Tag(
         name = "4. Permission Management",
         description = "Các API dành cho Admin để quản lý danh mục Quyền hạn (Lưu ý: Không có API Xóa vì quyền hạn gắn liền với Source Code)"
@@ -22,10 +24,6 @@ import java.time.LocalDate;
 public class AdminPermissionController {
 
     private final AdminPermissionService adminPermissionService;
-
-    public AdminPermissionController(AdminPermissionService adminPermissionService) {
-        this.adminPermissionService = adminPermissionService;
-    }
 
     @GetMapping
     @Operation(

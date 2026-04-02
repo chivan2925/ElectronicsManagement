@@ -1,6 +1,7 @@
 package org.example.electronics.service.admin.impl;
 
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.example.electronics.dto.request.admin.warehouse.AdminUpdateWarehouseStatusRequestDTO;
 import org.example.electronics.dto.request.admin.warehouse.AdminWarehouseDetailRequestDTO;
 import org.example.electronics.dto.request.admin.warehouse.AdminWarehouseRequestDTO;
@@ -27,15 +28,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class AdminWarehouseServiceImpl implements AdminWarehouseService {
 
     private final WarehouseMapper warehouseMapper;
     private final WarehouseRepository warehouseRepository;
-
-    public AdminWarehouseServiceImpl(WarehouseMapper warehouseMapper, WarehouseRepository warehouseRepository) {
-        this.warehouseMapper = warehouseMapper;
-        this.warehouseRepository = warehouseRepository;
-    }
 
     @Transactional
     @Override

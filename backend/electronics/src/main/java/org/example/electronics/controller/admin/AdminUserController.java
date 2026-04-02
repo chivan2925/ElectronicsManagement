@@ -3,6 +3,7 @@ package org.example.electronics.controller.admin;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.example.electronics.dto.request.admin.AdminUpdateUserStatusRequestDTO;
 import org.example.electronics.dto.response.admin.AdminUserResponseDTO;
 import org.example.electronics.entity.enums.UserStatus;
@@ -18,14 +19,11 @@ import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/admin/users")
+@RequiredArgsConstructor
 @Tag(name = "2. User Management", description = "Các API dành cho Admin để quản lý người dùng")
 public class AdminUserController {
 
     private final AdminUserService adminUserService;
-
-    public AdminUserController(AdminUserService adminUserService) {
-        this.adminUserService = adminUserService;
-    }
 
     @PatchMapping("/{userId}/status")
     @Operation(
