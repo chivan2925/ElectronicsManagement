@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.electronics.dto.request.admin.AdminUpdateUserStatusRequestDTO;
+import org.example.electronics.dto.request.admin.status.AdminUpdateUserStatusRequestDTO;
 import org.example.electronics.dto.response.admin.AdminUserResponseDTO;
 import org.example.electronics.entity.enums.UserStatus;
 import org.example.electronics.service.admin.AdminUserService;

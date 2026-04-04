@@ -1,7 +1,7 @@
 package org.example.electronics.service.admin;
 
 import org.example.electronics.dto.request.admin.AdminProductRequestDTO;
-import org.example.electronics.dto.request.admin.AdminUpdateProductStatusRequestDTO;
+import org.example.electronics.dto.request.admin.status.AdminUpdateProductStatusRequestDTO;
 import org.example.electronics.dto.response.admin.product.AdminDetailProductResponseDTO;
 import org.example.electronics.dto.response.admin.product.AdminProductResponseDTO;
 import org.example.electronics.entity.enums.ProductStatus;

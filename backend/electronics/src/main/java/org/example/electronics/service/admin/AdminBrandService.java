@@ -1,7 +1,7 @@
 package org.example.electronics.service.admin;
 
 import org.example.electronics.dto.request.admin.AdminBrandRequestDTO;
-import org.example.electronics.dto.request.admin.AdminUpdateProductStatusRequestDTO;
+import org.example.electronics.dto.request.admin.status.AdminUpdateProductStatusRequestDTO;
 import org.example.electronics.dto.response.admin.AdminBrandResponseDTO;
 import org.example.electronics.entity.enums.ProductStatus;
 import org.springframework.data.domain.Page;

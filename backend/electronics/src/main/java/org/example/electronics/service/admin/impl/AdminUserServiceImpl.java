@@ -2,7 +2,7 @@ package org.example.electronics.service.admin.impl;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.example.electronics.dto.request.admin.AdminUpdateUserStatusRequestDTO;
+import org.example.electronics.dto.request.admin.status.AdminUpdateUserStatusRequestDTO;
 import org.example.electronics.dto.response.admin.AdminUserResponseDTO;
 import org.example.electronics.entity.UserEntity;
 import org.example.electronics.entity.enums.UserStatus;

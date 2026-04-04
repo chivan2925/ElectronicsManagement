@@ -1,4 +1,4 @@
-package org.example.electronics.dto.request.admin;
+package org.example.electronics.dto.request.admin.status;
 
 import jakarta.validation.constraints.NotNull;
 import org.example.electronics.entity.enums.ProductStatus;

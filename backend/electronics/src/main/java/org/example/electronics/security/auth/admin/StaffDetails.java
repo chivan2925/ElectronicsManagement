@@ -26,6 +26,11 @@ public record StaffDetails(StaffEntity staffEntity) implements UserDetails {
         return authorities;
     }
 
+    @NonNull
+    public Integer getId() {
+        return staffEntity.getId();
+    }
+
     @Override
     @NonNull
     public String getUsername() {

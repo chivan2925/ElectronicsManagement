@@ -37,7 +37,7 @@ public class VariantEntity {
     @JoinColumn(name = "product_id", nullable = false)
     private ProductEntity product;
 
-    @OneToMany(mappedBy = "variant", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "variant")
     @Builder.Default
     private Set<MediaEntity> media = new HashSet<>();
 

@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.electronics.dto.request.admin.AdminCategoryRequestDTO;
-import org.example.electronics.dto.request.admin.AdminUpdateProductStatusRequestDTO;
+import org.example.electronics.dto.request.admin.status.AdminUpdateProductStatusRequestDTO;
 import org.example.electronics.dto.response.admin.category.AdminCategoryResponseDTO;
 import org.example.electronics.dto.response.admin.category.AdminDetailCategoryResponseDTO;
 import org.example.electronics.entity.enums.ProductStatus;

@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.electronics.dto.request.admin.AdminCouponRequestDTO;
-import org.example.electronics.dto.request.admin.AdminUpdateCouponStatusRequestDTO;
+import org.example.electronics.dto.request.admin.status.AdminUpdateCouponStatusRequestDTO;
 import org.example.electronics.dto.response.admin.AdminCouponResponseDTO;
 import org.example.electronics.entity.enums.CouponStatus;
 import org.example.electronics.service.admin.AdminCouponService;

@@ -3,7 +3,9 @@ package org.example.electronics.service.admin;
 import org.example.electronics.dto.request.admin.warehouse.AdminWarehouseRequestDTO;
 import org.example.electronics.dto.request.admin.warehouse.AdminUpdateWarehouseStatusRequestDTO;
 import org.example.electronics.dto.response.admin.warehouse.AdminWarehouseResponseDTO;
+import org.example.electronics.entity.StaffEntity;
 import org.example.electronics.entity.enums.WarehouseStatus;
+import org.example.electronics.entity.order.OrderEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -17,4 +19,6 @@ public interface AdminWarehouseService {
     void deleteWarehouse(Integer warehouseId);
     Page<AdminWarehouseResponseDTO> getAllWarehouses(String keyword, WarehouseStatus status, LocalDate fromDate, LocalDate toDate, Pageable pageable);
     AdminWarehouseResponseDTO getWarehouseById(Integer warehouseId);
+
+    void processCancelledAndReturnedOrder(OrderEntity orderEntity, StaffEntity currentStaffEntity);
 }

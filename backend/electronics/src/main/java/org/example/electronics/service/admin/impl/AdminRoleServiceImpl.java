@@ -3,7 +3,7 @@ package org.example.electronics.service.admin.impl;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.example.electronics.dto.request.admin.AdminRoleRequestDTO;
-import org.example.electronics.dto.request.admin.AdminUpdateUserStatusRequestDTO;
+import org.example.electronics.dto.request.admin.status.AdminUpdateUserStatusRequestDTO;
 import org.example.electronics.dto.response.admin.role.AdminDetailRoleResponseDTO;
 import org.example.electronics.dto.response.admin.role.AdminRoleResponseDTO;
 import org.example.electronics.entity.PermissionEntity;

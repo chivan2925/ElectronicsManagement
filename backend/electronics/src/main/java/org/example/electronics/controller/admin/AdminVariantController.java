@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.electronics.dto.request.admin.AdminUpdateProductStatusRequestDTO;
+import org.example.electronics.dto.request.admin.status.AdminUpdateProductStatusRequestDTO;
 import org.example.electronics.dto.request.admin.AdminVariantRequestDTO;
 import org.example.electronics.dto.response.admin.variant.AdminDetailVariantResponseDTO;
 import org.example.electronics.dto.response.admin.variant.AdminVariantResponseDTO;

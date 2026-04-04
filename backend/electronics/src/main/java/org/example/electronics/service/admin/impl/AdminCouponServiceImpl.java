@@ -3,7 +3,7 @@ package org.example.electronics.service.admin.impl;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.example.electronics.dto.request.admin.AdminCouponRequestDTO;
-import org.example.electronics.dto.request.admin.AdminUpdateCouponStatusRequestDTO;
+import org.example.electronics.dto.request.admin.status.AdminUpdateCouponStatusRequestDTO;
 import org.example.electronics.dto.response.admin.AdminCouponResponseDTO;
 import org.example.electronics.entity.BrandEntity;
 import org.example.electronics.entity.CategoryEntity;

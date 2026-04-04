@@ -3,6 +3,7 @@
 // =======================
 Enum order_status {
   PENDING
+  PROCESSING
   COMPLETED
   CANCELLED
   RETURNED
@@ -40,6 +41,7 @@ Enum payment_status {
   PENDING
   PAID
   FAILED
+  REFUNDED
 }
 
 Enum payment_transaction_status {
@@ -61,13 +63,14 @@ Enum return_request_status {
   CANCELLED
 }
 
-Enum transaction_type {
-  IN
-  OUT
+Enum warehouse_transaction_type {
+  IMPORT
+  EXPORT
+  RETURN
 }
-Enum transaction_status {
+Enum warehouse_transaction_status {
   PENDING
-  SUCCESS
+  COMPLETED
   FAILED
   CANCELLED
 }
@@ -84,6 +87,7 @@ Enum shipping_status {
   PENDING
   SHIPPING
   DELIVERED
+  RETURNED
   CANCELLED
 }
 
@@ -280,14 +284,14 @@ Table orders {
   id int [pk, increment]
   user_id int [Ref: > users.id, not null]
   coupon_id int [Ref: > coupons.id]
-  code varchar(20) [not null]
+  code varchar(20) [unique, not null]
   shipping_name varchar(100) [not null]
-  shipping_phone varchar(20) [not null]
+  shipping_phone varchar(10) [not null]
   shipping_line varchar(255) [not null]
   shipping_ward varchar(50) [not null]
   shipping_district varchar(50) [not null]
   shipping_province varchar(50) [not null]
-  tracking_code varchar(20) [not null]
+  tracking_code varchar(20) [unique]
   status order_status [default: order_status.PENDING, not null]
   payment_method payment_method_type [not null]
   payment_status payment_status [default: payment_status.PENDING, not null]
@@ -295,16 +299,16 @@ Table orders {
   shipping_fee decimal(12,3) [not null]
   subtotal decimal(12,3) [not null]
   total decimal(12,3) [not null]
-  created_at datetime [default: `now()`, not null]
-  updated_at datetime [default: `now()`, not null]
-  paid_at datetime
   note text
   shipping_provider shipping_provider [not null]
   shipping_status shipping_status [default: shipping_status.PENDING, not null]
+  paid_at datetime
+  created_at datetime [default: `now()`, not null]
+  updated_at datetime [default: `now()`, not null]
 
   checks {
     `discount >= 0` [name: "chk_discount_non_negative"]
-    `discount <= subtotal` [name: "chk_discount_logic"]
+    `discount <= subtotal` [name: "chk_discount_smaller_or_equal_subtotal"]
     `shipping_fee >= 0` [name: "chk_shipping_fee_non_negative"]
     `subtotal >= 0` [name: "chk_subtotal_non_negative"]
     `total >= 0` [name: "chk_total_non_negative"]
@@ -318,6 +322,7 @@ Table payment_transactions {
   provider_payment_id varchar(20) [not null]
   amount decimal(12,3) [not null]
   status payment_transaction_status [default: payment_transaction_status.PENDING, not null]
+  payment_time datetime [not null]
   created_at datetime [default: `now()`, not null]
 
   checks {
@@ -390,8 +395,8 @@ Table warehouse_transactions {
   staff_id int [Ref: > staffs.id, not null]
   order_id int [Ref: > orders.id]
   return_request_id int [Ref: > return_requests.id]
-  type transaction_type [not null]
-  status transaction_status [default: transaction_status.PENDING, not null]
+  type warehouse_transaction_type [not null]
+  status warehouse_transaction_status [default: warehouse_transaction_status.PENDING, not null]
   note text
   created_at datetime [default: `now()`, not null]
   updated_at datetime [default: `now()`, not null]

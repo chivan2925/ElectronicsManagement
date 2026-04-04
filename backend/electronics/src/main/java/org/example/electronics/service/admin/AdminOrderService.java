@@ -1,0 +1,22 @@
+package org.example.electronics.service.admin;
+
+import org.example.electronics.dto.request.admin.order.AdminUpdateOrderRequestDTO;
+import org.example.electronics.dto.response.admin.order.AdminOrderDetailResponseDTO;
+import org.example.electronics.dto.response.admin.order.AdminOrderResponseDTO;
+import org.example.electronics.entity.enums.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
+
+import java.time.LocalDate;
+
+public interface AdminOrderService {
+
+    AdminOrderResponseDTO updateOrder(Integer orderId, AdminUpdateOrderRequestDTO adminUpdateOrderRequestDTO, Integer staffId);
+
+    Page<AdminOrderResponseDTO> getAllOrders(String keyword, OrderStatus status, PaymentMethodType type,
+                                             PaymentStatus paymentStatus, ShippingProvider provider, ShippingStatus shippingStatus,
+                                             LocalDate fromDate, LocalDate toDate, Pageable pageable);
+
+    AdminOrderDetailResponseDTO getOrderById(Integer orderId);
+}

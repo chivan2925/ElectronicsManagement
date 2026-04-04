@@ -6,12 +6,20 @@ import org.example.electronics.dto.request.admin.warehouse.AdminUpdateWarehouseS
 import org.example.electronics.dto.request.admin.warehouse.AdminWarehouseDetailRequestDTO;
 import org.example.electronics.dto.request.admin.warehouse.AdminWarehouseRequestDTO;
 import org.example.electronics.dto.response.admin.warehouse.AdminWarehouseResponseDTO;
+import org.example.electronics.entity.StaffEntity;
 import org.example.electronics.entity.VariantEntity;
 import org.example.electronics.entity.enums.WarehouseStatus;
+import org.example.electronics.entity.enums.WarehouseTransactionStatus;
+import org.example.electronics.entity.enums.WarehouseTransactionType;
+import org.example.electronics.entity.order.OrderEntity;
 import org.example.electronics.entity.warehouse.WarehouseDetailEntity;
 import org.example.electronics.entity.warehouse.WarehouseEntity;
+import org.example.electronics.entity.warehouse.transaction.WarehouseTransactionDetailEntity;
+import org.example.electronics.entity.warehouse.transaction.WarehouseTransactionEntity;
 import org.example.electronics.mapper.WarehouseMapper;
+import org.example.electronics.repository.VariantRepository;
 import org.example.electronics.repository.WarehouseRepository;
+import org.example.electronics.repository.WarehouseTransactionRepository;
 import org.example.electronics.service.admin.AdminWarehouseService;
 import org.example.electronics.util.DateTimeUtils;
 import org.springframework.data.domain.Page;
@@ -33,6 +41,8 @@ public class AdminWarehouseServiceImpl implements AdminWarehouseService {
 
     private final WarehouseMapper warehouseMapper;
     private final WarehouseRepository warehouseRepository;
+    private final WarehouseTransactionRepository warehouseTransactionRepository;
+    private final VariantRepository variantRepository;
 
     @Transactional
     @Override
@@ -46,11 +56,10 @@ public class AdminWarehouseServiceImpl implements AdminWarehouseService {
 
         if (adminWarehouseRequestDTO.warehouseDetails() != null) {
             for (AdminWarehouseDetailRequestDTO adminWarehouseDetailRequestDTO : adminWarehouseRequestDTO.warehouseDetails()) {
-                VariantEntity variantEntity = new VariantEntity();
-                variantEntity.setId(adminWarehouseDetailRequestDTO.variantId());
+                VariantEntity variantEntityProxy = variantRepository.getReferenceById(adminWarehouseDetailRequestDTO.variantId());
 
                 WarehouseDetailEntity warehouseDetailEntity = WarehouseDetailEntity.builder()
-                        .variant(variantEntity)
+                        .variant(variantEntityProxy)
                         .quantity(adminWarehouseDetailRequestDTO.quantity())
                         .build();
 
@@ -117,8 +126,7 @@ public class AdminWarehouseServiceImpl implements AdminWarehouseService {
             }
 
             for (Map.Entry<Integer, Integer> entry : incomingWarehouseDetailsMap.entrySet()) {
-                VariantEntity variantEntityProxy = new VariantEntity();
-                variantEntityProxy.setId(entry.getKey());
+                VariantEntity variantEntityProxy = variantRepository.getReferenceById(entry.getKey());
 
                 WarehouseDetailEntity newWarehouseDetailEntity = WarehouseDetailEntity.builder()
                         .variant(variantEntityProxy)
@@ -194,5 +202,49 @@ public class AdminWarehouseServiceImpl implements AdminWarehouseService {
                 ));
 
         return warehouseMapper.toResponseDTO(existingWarehouseEntity);
+    }
+
+    @Transactional
+    @Override
+    public void processCancelledAndReturnedOrder(OrderEntity orderEntity, StaffEntity currentStaffEntity) {
+
+        WarehouseTransactionEntity thisOrderOriginExportWarehouseTransactionEntity = warehouseTransactionRepository
+                .findByOrderAndType(orderEntity, WarehouseTransactionType.EXPORT)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Không tìm thấy phiếu xuất kho gốc của đơn hàng " + orderEntity.getCode()
+                ));
+
+        WarehouseEntity originWarehouseEntity = thisOrderOriginExportWarehouseTransactionEntity.getWarehouse();
+
+        WarehouseTransactionEntity returnWarehouseTransactionEntity = WarehouseTransactionEntity.builder()
+                .warehouse(originWarehouseEntity)
+                .staff(currentStaffEntity)
+                .order(orderEntity)
+                .type(WarehouseTransactionType.RETURN)
+                .status(WarehouseTransactionStatus.COMPLETED)
+                .note("Hoàn trả từ đơn hàng bị huỷ/trả: " + orderEntity.getCode())
+                .build();
+
+        for (WarehouseTransactionDetailEntity exportWarehouseTransactionDetailEntity : thisOrderOriginExportWarehouseTransactionEntity.getWarehouseTransactionDetails()) {
+            VariantEntity variantEntity = exportWarehouseTransactionDetailEntity.getVariant();
+            Integer quantityReturned = exportWarehouseTransactionDetailEntity.getQuantity();
+
+            WarehouseTransactionDetailEntity warehouseTransactionDetailEntity = WarehouseTransactionDetailEntity.builder()
+                    .variant(variantEntity)
+                    .quantity(quantityReturned)
+                    .build();
+            returnWarehouseTransactionEntity.addWarehouseTransactionDetail(warehouseTransactionDetailEntity);
+
+            variantEntity.setTotalStock(variantEntity.getTotalStock() + quantityReturned);
+
+            originWarehouseEntity.getWarehouseDetails().stream()
+                    .filter(wd -> wd.getVariant().getId().equals(variantEntity.getId()))
+                    .findFirst()
+                    .ifPresent(wd -> wd.setQuantity(wd.getQuantity() + quantityReturned));
+
+            originWarehouseEntity.setCurrentStock(originWarehouseEntity.getCurrentStock() + quantityReturned);
+        }
+
+        warehouseTransactionRepository.save(returnWarehouseTransactionEntity);
     }
 }

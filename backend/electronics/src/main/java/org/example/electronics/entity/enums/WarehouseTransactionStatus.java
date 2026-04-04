@@ -1,8 +1,8 @@
 package org.example.electronics.entity.enums;
 
-public enum TransactionStatus {
+public enum WarehouseTransactionStatus {
     PENDING,
-    SUCCESS,
+    COMPLETED,
     FAILED,
     CANCELLED
 }
