@@ -137,6 +137,10 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         ShippingProvider currentProvider = currentOrder.getShippingProvider();
         ShippingProvider newProvider = adminUpdateOrderRequestDTO.shippingProvider();
 
+        if (currentStatus == newStatus && currentProvider == newProvider) {
+            return;
+        }
+
         if (currentStatus.ordinal() > newStatus.ordinal()) {
             throw new IllegalArgumentException("Không được lùi trạng thái vận chuyển đơn hàng từ " + currentStatus + " về " + newStatus);
         }

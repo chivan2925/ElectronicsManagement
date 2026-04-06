@@ -28,6 +28,6 @@ public interface OrderMapper {
 
     @SuppressWarnings("unused")
     @Mapping(source = "variant.id", target = "variantId")
-    @Mapping(source = "variant.product.name", target = "productName")
+    @Mapping(source = "variant.name", target = "variantName")
     AdminOrderItemResponseDTO toItemResponseDTO(OrderDetailEntity orderDetailEntity);
 }

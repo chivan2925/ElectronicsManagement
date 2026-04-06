@@ -4,5 +4,6 @@ public enum WarehouseTransactionStatus {
     PENDING,
     COMPLETED,
     FAILED,
-    CANCELLED
+    CANCELLED,
+    DELETED
 }

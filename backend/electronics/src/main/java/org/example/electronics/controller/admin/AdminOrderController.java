@@ -12,6 +12,7 @@ import org.example.electronics.security.auth.admin.StaffDetails;
 import org.example.electronics.service.admin.AdminOrderService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -58,7 +59,7 @@ public class AdminOrderController {
             @RequestParam(required = false) ShippingStatus shippingStatus,
             @RequestParam(required = false) LocalDate fromDate,
             @RequestParam(required = false) LocalDate toDate,
-            @PageableDefault(sort = "updatedAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable
+            @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         Page<AdminOrderResponseDTO> adminOrderResponseDTOPage = adminOrderService.getAllOrders(keyword, status, type, paymentStatus, provider, shippingStatus, fromDate, toDate, pageable);
 

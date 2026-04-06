@@ -6,7 +6,7 @@ public record AdminOrderItemResponseDTO(
 
         Integer variantId,
 
-        String productName,
+        String variantName,
 
         BigDecimal price,
 

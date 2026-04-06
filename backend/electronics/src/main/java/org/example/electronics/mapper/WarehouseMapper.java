@@ -22,6 +22,7 @@ public interface WarehouseMapper {
     AdminWarehouseResponseDTO toResponseDTO(WarehouseEntity warehouseEntity);
 
     @Mapping(source = "variant.id", target = "variantId")
+    @Mapping(source = "variant.name", target = "variantName")
     AdminWarehouseDetailResponseDTO toDetailResponseDTO(WarehouseDetailEntity warehouseDetailEntity);
 
     @Mapping(target = "warehouseDetails", ignore = true)

@@ -73,6 +73,7 @@ Enum warehouse_transaction_status {
   COMPLETED
   FAILED
   CANCELLED
+  DELETED
 }
 
 Enum shipping_provider {
@@ -391,6 +392,7 @@ Table warehouses {
 
 Table warehouse_transactions {
   id int [pk, increment]
+  code varchar(20) [unique, not null]
   warehouse_id int [Ref: > warehouses.id, not null]
   staff_id int [Ref: > staffs.id, not null]
   order_id int [Ref: > orders.id]
