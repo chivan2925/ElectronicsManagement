@@ -105,13 +105,6 @@ Enum gender_type {
   PREFER_NOT_TO_SAY
 }
 
-Enum review_status {
-  PENDING
-  APPROVED
-  REJECTED
-  DELETED
-}
-
 // =======================
 // CORE TABLES
 // =======================
@@ -336,16 +329,16 @@ Table return_requests {
   user_id int [Ref: > users.id, not null]
   order_id int [Ref: > orders.id, not null]
   variant_id int [Ref: > variants.id, not null]
-  handled_by_staff_id int [Ref: > staffs.id, not null]
+  handled_by_staff_id int [Ref: > staffs.id]
   type return_request_type [not null]
   reason text
   refund_amount decimal(12,3) [not null]
   refund_method payment_method_type [not null]
+  evidence_json json
   status return_request_status [default: return_request_status.PENDING, not null]
   created_at datetime [default: `now()`, not null]
   updated_at datetime [default: `now()`, not null]
   resolved_at datetime
-  evidence_json json
 
   checks {
     `refund_amount >= 0` [name: "chk_refund_amount_non_negative"]
@@ -357,11 +350,9 @@ Table reviews {
   product_id int [Ref: > products.id, not null]
   user_id int [Ref: > users.id, not null]
   order_id int [Ref: > orders.id, not null]
-  variant_id int [Ref: > variants.id, not null]
   rating_star int [not null]
   content text
   photos_json json
-  status review_status [default: review_status.PENDING, not null]
   created_at datetime [default: `now()`, not null]
   updated_at datetime [default: `now()`, not null]
 

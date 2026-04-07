@@ -45,10 +45,10 @@ public class CouponEntity {
         @Column(nullable = false)
         private CouponType type;
 
-        @Column(nullable = false)
+        @Column(nullable = false, precision = 12, scale = 3)
         private BigDecimal value;
 
-        @Column(name = "min_order", nullable = false)
+        @Column(name = "min_order", precision = 12, scale = 3, nullable = false)
         private BigDecimal minOrder;
 
         @Column(name = "starts_at", nullable = false)
@@ -60,7 +60,7 @@ public class CouponEntity {
         @Column(name = "usage_limit")
         private Integer usageLimit;
 
-        @Column(name = "max_discount")
+        @Column(name = "max_discount", precision = 12, scale = 3)
         private BigDecimal maxDiscount;
 
         @Enumerated(EnumType.STRING)
