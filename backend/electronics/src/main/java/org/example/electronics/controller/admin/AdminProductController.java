@@ -6,10 +6,12 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.electronics.dto.request.admin.AdminProductRequestDTO;
 import org.example.electronics.dto.request.admin.status.AdminUpdateProductStatusRequestDTO;
+import org.example.electronics.dto.response.admin.AdminReviewResponseDTO;
 import org.example.electronics.dto.response.admin.product.AdminDetailProductResponseDTO;
 import org.example.electronics.dto.response.admin.product.AdminProductResponseDTO;
 import org.example.electronics.entity.enums.ProductStatus;
 import org.example.electronics.service.admin.AdminProductService;
+import org.example.electronics.service.admin.AdminReviewService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -30,6 +32,7 @@ import java.time.LocalDate;
 public class AdminProductController {
 
     private final AdminProductService adminProductService;
+    private final AdminReviewService adminReviewService;
 
     @PostMapping
     @Operation(
@@ -113,5 +116,22 @@ public class AdminProductController {
         AdminDetailProductResponseDTO adminDetailProductResponseDTO = adminProductService.getProductById(productId);
 
         return ResponseEntity.ok(adminDetailProductResponseDTO);
+    }
+
+    @GetMapping("/{productId}/reviews")
+    @Operation(
+            summary = "Lấy danh sách Đánh giá của Sản phẩm (Có phân trang & Lọc)",
+            description = "Truy xuất danh sách đánh giá của 1 sản phẩm cụ thể. Hỗ trợ phân trang để tránh tràn RAM (Chuẩn Enterprise) và lọc theo từ khóa (ID, Nội dung), khoảng thời gian."
+    )
+    public ResponseEntity<Page<AdminReviewResponseDTO>> getAllProductReviews(
+            @PathVariable Integer productId,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) LocalDate fromDate,
+            @RequestParam(required = false) LocalDate toDate,
+            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        Page<AdminReviewResponseDTO> reviewsPage = adminReviewService.getAllReviewsByProductId(productId, keyword, fromDate, toDate, pageable);
+
+        return ResponseEntity.ok(reviewsPage);
     }
 }

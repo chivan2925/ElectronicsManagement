@@ -9,7 +9,7 @@ public record AdminReviewResponseDTO (
         Integer userId,
         Integer orderId,
         Integer ratingStar,
-        Integer content,
+        String content,
         List<String> photosJson,
         LocalDateTime createdAt,
         LocalDateTime updatedAt

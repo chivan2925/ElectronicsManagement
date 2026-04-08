@@ -40,6 +40,7 @@ public interface ProductMapper {
     void updateEntityFromDTO(AdminProductRequestDTO adminProductRequestDTO,
                              @MappingTarget ProductEntity productEntity);
 
+    @SuppressWarnings("unused")
     @Named("getPrimaryImage")
     default String getPrimaryImage(List<MediaEntity> mediaEntityList) {
         if (mediaEntityList == null || mediaEntityList.isEmpty()) {

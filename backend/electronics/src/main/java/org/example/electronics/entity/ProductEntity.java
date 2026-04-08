@@ -64,11 +64,11 @@ public class ProductEntity {
     @Builder.Default
     private Integer warrantyMonths = 0;
 
-    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "product")
     @Builder.Default
     private Set<VariantEntity> variants = new HashSet<>();
 
-    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "product")
     @Builder.Default
     private Set<MediaEntity> media = new HashSet<>();
 
