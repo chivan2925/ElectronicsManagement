@@ -311,7 +311,8 @@ Table orders {
 
 Table payment_transactions {
   id int [pk, increment]
-  order_id int [Ref: > orders.id, not null]
+  order_id int [Ref: > orders.id]
+  return_request_id [Ref: > return_requests.id]
   provider varchar(20) [not null]
   provider_payment_id varchar(20) [not null]
   amount decimal(12,3) [not null]
@@ -331,7 +332,7 @@ Table return_requests {
   variant_id int [Ref: > variants.id, not null]
   handled_by_staff_id int [Ref: > staffs.id]
   type return_request_type [not null]
-  reason text
+  reason text [not null]
   refund_amount decimal(12,3) [not null]
   refund_method payment_method_type [not null]
   evidence_json json

@@ -53,7 +53,7 @@ public class ReturnRequestEntity {
     @Column(nullable = false)
     private ReturnRequestType type;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String reason;
 
     @Column(name = "refund_amount", precision = 12, scale = 3, nullable = false)
