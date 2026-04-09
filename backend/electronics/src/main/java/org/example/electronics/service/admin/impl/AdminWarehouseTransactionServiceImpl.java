@@ -6,6 +6,7 @@ import org.example.electronics.dto.request.admin.status.AdminUpdateWarehouseTran
 import org.example.electronics.dto.request.admin.warehouse.transaction.AdminWarehouseTransactionDetailRequestDTO;
 import org.example.electronics.dto.request.admin.warehouse.transaction.AdminWarehouseTransactionRequestDTO;
 import org.example.electronics.dto.response.admin.warehouse.transaction.AdminWarehouseTransactionResponseDTO;
+import org.example.electronics.entity.ReturnRequestEntity;
 import org.example.electronics.entity.VariantEntity;
 import org.example.electronics.entity.enums.WarehouseTransactionStatus;
 import org.example.electronics.entity.enums.WarehouseTransactionType;
@@ -304,5 +305,35 @@ public class AdminWarehouseTransactionServiceImpl implements AdminWarehouseTrans
         }
 
         warehouse.setCurrentStock(newWarehouseStock);
+    }
+
+    @Transactional
+    @Override
+    public void autoCreateReturnWarehouseTransaction(ReturnRequestEntity returnRequestEntity, Integer staffId) {
+        WarehouseEntity originalWarehouse = warehouseTransactionRepository.findSourceWarehouseForOrderItem(
+                returnRequestEntity.getOrder().getId(),
+                returnRequestEntity.getVariant().getId(),
+                WarehouseTransactionType.EXPORT
+        ).orElseThrow(() -> new IllegalStateException(
+                "Không tìm thấy lịch sử xuất kho gốc của Biến thể ID "
+                        + returnRequestEntity.getVariant().getId() + " trong Đơn hàng ID " + returnRequestEntity.getOrder().getId()
+        ));
+
+        WarehouseTransactionEntity newWarehouseTransaction = WarehouseTransactionEntity.builder()
+                .code("RETURN-" + returnRequestEntity.getId() + "-" + System.currentTimeMillis())
+                .type(WarehouseTransactionType.RETURN)
+                .staff(staffRepository.getReferenceById(staffId))
+                .warehouse(originalWarehouse)
+                .order(returnRequestEntity.getOrder())
+                .returnRequest(returnRequestEntity)
+                .build();
+
+        WarehouseTransactionDetailEntity detail = WarehouseTransactionDetailEntity.builder()
+                .variant(returnRequestEntity.getVariant())
+                .quantity(returnRequestEntity.getQuantity())
+                .build();
+        newWarehouseTransaction.addWarehouseTransactionDetail(detail);
+
+        warehouseTransactionRepository.save(newWarehouseTransaction);
     }
 }

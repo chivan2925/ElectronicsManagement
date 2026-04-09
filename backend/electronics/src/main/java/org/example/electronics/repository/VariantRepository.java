@@ -5,7 +5,6 @@ import org.example.electronics.entity.enums.ProductStatus;
 import org.example.electronics.entity.warehouse.WarehouseDetailEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -26,7 +25,6 @@ public interface VariantRepository extends JpaRepository<VariantEntity, Integer>
 
     boolean existsBySlugAndIdNot(String slug, Integer id);
 
-    @EntityGraph(attributePaths = {"product"})
     @Query(value = "SELECT v FROM VariantEntity v " +
             "LEFT JOIN FETCH v.product " +
             "WHERE 1=1 " +
@@ -61,7 +59,6 @@ public interface VariantRepository extends JpaRepository<VariantEntity, Integer>
             Pageable pageable
     );
 
-    @EntityGraph(attributePaths = {"product", "media"})
     @Query("SELECT v FROM VariantEntity v " +
             "LEFT JOIN FETCH v.product " +
             "LEFT JOIN FETCH v.media " +

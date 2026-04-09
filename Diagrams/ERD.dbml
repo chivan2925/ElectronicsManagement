@@ -330,6 +330,7 @@ Table return_requests {
   user_id int [Ref: > users.id, not null]
   order_id int [Ref: > orders.id, not null]
   variant_id int [Ref: > variants.id, not null]
+  quantity int [not null]
   handled_by_staff_id int [Ref: > staffs.id]
   type return_request_type [not null]
   reason text [not null]
@@ -342,6 +343,7 @@ Table return_requests {
   resolved_at datetime
 
   checks {
+    `quantity > 0` [name: "chk_quantity_positive"]
     `refund_amount >= 0` [name: "chk_refund_amount_non_negative"]
   }
 }

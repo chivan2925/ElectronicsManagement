@@ -19,7 +19,8 @@ import java.util.List;
 @Table(
         name = "return_requests",
         check = {
-            @CheckConstraint(name = "chk_refund_amount_non_negative", constraint = "refund_amount >= 0")
+            @CheckConstraint(name = "chk_refund_amount_non_negative", constraint = "refund_amount >= 0"),
+            @CheckConstraint(name = "chk_quantity_positive", constraint = "quantity > 0")
         }
 )
 @Getter
@@ -44,6 +45,9 @@ public class ReturnRequestEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "variant_id", nullable = false)
     private VariantEntity variant;
+
+    @Column(nullable = false)
+    Integer quantity;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "handled_by_staff_id")

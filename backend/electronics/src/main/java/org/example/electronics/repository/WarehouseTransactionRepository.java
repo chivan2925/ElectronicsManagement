@@ -3,6 +3,7 @@ package org.example.electronics.repository;
 import org.example.electronics.entity.enums.WarehouseTransactionStatus;
 import org.example.electronics.entity.enums.WarehouseTransactionType;
 import org.example.electronics.entity.order.OrderEntity;
+import org.example.electronics.entity.warehouse.WarehouseEntity;
 import org.example.electronics.entity.warehouse.transaction.WarehouseTransactionEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -51,4 +52,15 @@ public interface WarehouseTransactionRepository extends JpaRepository<WarehouseT
     Optional<WarehouseTransactionEntity> findWarehouseTransactionWithDetailsById(@Param("id") Integer id);
 
     Optional<WarehouseTransactionEntity> findByOrderAndType(OrderEntity orderEntity, WarehouseTransactionType type);
+
+    @Query("SELECT wt.warehouse FROM WarehouseTransactionEntity wt " +
+            "JOIN wt.warehouseTransactionDetails wtd " +
+            "WHERE wt.order.id = :orderId " +
+            "AND wt.type = :type " +
+            "AND wtd.variant.id = :variantId")
+    Optional<WarehouseEntity> findSourceWarehouseForOrderItem(
+            @Param("orderId") Integer orderId,
+            @Param("variantId") Integer variantId,
+            @Param("type") WarehouseTransactionType type
+    );
 }

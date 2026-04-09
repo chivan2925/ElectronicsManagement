@@ -1,4 +1,4 @@
-package org.example.electronics.dto.response.admin;
+package org.example.electronics.dto.response.admin.returnrequest;
 
 import org.example.electronics.entity.enums.PaymentMethodType;
 import org.example.electronics.entity.enums.ReturnRequestStatus;
@@ -8,11 +8,15 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public record AdminReturnRequestResponseDTO (
+public record AdminDetailReturnRequestResponseDTO(
         Integer id,
         Integer userId,
+        String userFullName,
+        String userEmail,
+        String userPhoneNumber,
         Integer orderId,
         Integer variantId,
+        Integer quantity,
         Integer handledByStaffId,
         ReturnRequestType type,
         String reason,
