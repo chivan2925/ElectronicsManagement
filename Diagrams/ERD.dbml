@@ -44,6 +44,16 @@ Enum payment_status {
   REFUNDED
 }
 
+Enum payment_provider {
+  VNPAY
+  MOMO
+}
+
+Enum payment_transaction_type {
+  PAYMENT
+  REFUND
+}
+
 Enum payment_transaction_status {
   PENDING
   SUCCESS
@@ -312,16 +322,19 @@ Table orders {
 Table payment_transactions {
   id int [pk, increment]
   order_id int [Ref: > orders.id]
-  return_request_id [Ref: > return_requests.id]
-  provider varchar(20) [not null]
-  provider_payment_id varchar(20) [not null]
+  return_request_id int [Ref: > return_requests.id]
+  type payment_transaction_type [not null]
+  provider payment_provider [not null]
+  provider_payment_id varchar(255)
   amount decimal(12,3) [not null]
+  note text
   status payment_transaction_status [default: payment_transaction_status.PENDING, not null]
-  payment_time datetime [not null]
+  payment_time datetime
+  payload_json json
   created_at datetime [default: `now()`, not null]
 
   checks {
-    `amount >= 0` [name: "chk_amount_non_negative"]
+    `amount > 0` [name: "chk_amount_positive"]
   }
 }
 
