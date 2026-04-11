@@ -37,8 +37,8 @@ public interface VariantRepository extends JpaRepository<VariantEntity, Integer>
 
             "AND (:status IS NULL OR v.status = :status) " +
 
-            "AND (:fromDate IS NULL OR v.createdAt >= :fromDate) " +
-            "AND (:toDate IS NULL OR v.createdAt <= :toDate)",
+            "AND (CAST(:fromDate AS timestamp) IS NULL OR v.createdAt >= :fromDate) " +
+            "AND (CAST(:toDate AS timestamp) IS NULL OR v.createdAt <= :toDate)",
 
             countQuery = "SELECT COUNT(v) FROM VariantEntity v " +
                     "WHERE 1=1 " +
@@ -48,8 +48,8 @@ public interface VariantRepository extends JpaRepository<VariantEntity, Integer>
                     "    OR LOWER(v.slug) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
                     ")) " +
                     "AND (:status IS NULL OR v.status = :status) " +
-                    "AND (:fromDate IS NULL OR v.createdAt >= :fromDate) " +
-                    "AND (:toDate IS NULL OR v.createdAt <= :toDate)"
+                    "AND (CAST(:fromDate AS timestamp) IS NULL OR v.createdAt >= :fromDate) " +
+                    "AND (CAST(:toDate AS timestamp) IS NULL OR v.createdAt <= :toDate)"
     )
     Page<VariantEntity> findVariantsWithFilter(
             @Param("keyword") String keyword,

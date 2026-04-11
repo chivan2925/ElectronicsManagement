@@ -13,18 +13,18 @@ import org.mapstruct.ReportingPolicy;
 public interface CategoryMapper {
 
     @Mapping(source = "parentId", target = "parent.id")
-    CategoryEntity toEntity(AdminCategoryRequestDTO adminCategoryRequestDTO);
+    CategoryEntity toNewEntity(AdminCategoryRequestDTO adminCategoryRequestDTO);
 
     @Mapping(source = "parent.id", target = "parentId")
     @Mapping(source = "parent.name", target = "parentName")
-    AdminCategoryResponseDTO toResponseDTO(CategoryEntity categoryEntity);
+    AdminCategoryResponseDTO toAdminResponseDTO(CategoryEntity categoryEntity);
 
     @Mapping(source = "parent.id", target = "parentId")
     @Mapping(source = "parent.name", target = "parentName")
-    AdminDetailCategoryResponseDTO toDetailResponseDTO(CategoryEntity categoryEntity);
+    AdminDetailCategoryResponseDTO toAdminDetailResponseDTO(CategoryEntity categoryEntity);
 
     @Mapping(target = "parent", ignore = true)
     @Mapping(target = "subCategoryList", ignore = true)
-    void updateEntityFromDTO(AdminCategoryRequestDTO adminCategoryRequestDTO,
-                             @MappingTarget CategoryEntity categoryEntity);
+    void updateEntityFromRequest(AdminCategoryRequestDTO adminCategoryRequestDTO,
+                                 @MappingTarget CategoryEntity categoryEntity);
 }

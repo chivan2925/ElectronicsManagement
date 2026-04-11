@@ -25,8 +25,9 @@ public interface BrandRepository extends JpaRepository<BrandEntity, Integer> {
 
             "AND (:status IS NULL OR b.status = :status) " +
 
-            "AND (:fromDate IS NULL OR b.createdAt >= :fromDate) " +
-            "AND (:toDate IS NULL OR b.createdAt <= :toDate)")
+            "AND (CAST(:fromDate AS timestamp) IS NULL OR b.createdAt >= :fromDate) " +
+            "AND (CAST(:toDate AS timestamp) IS NULL OR b.createdAt <= :toDate)"
+    )
     Page<BrandEntity> findBrandsWithFilter(
             @Param("keyword") String keyword,
             @Param("status") ProductStatus status,

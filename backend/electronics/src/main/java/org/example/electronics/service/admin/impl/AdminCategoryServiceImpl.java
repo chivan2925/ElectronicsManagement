@@ -38,7 +38,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
             throw new IllegalArgumentException("Slug này đã tồn tại. Vui lòng chọn slug khác");
         }
 
-        CategoryEntity newCategoryEntity = categoryMapper.toEntity(adminCategoryRequestDTO);
+        CategoryEntity newCategoryEntity = categoryMapper.toNewEntity(adminCategoryRequestDTO);
 
         if(adminCategoryRequestDTO.parentId() != null) {
             CategoryEntity existingParentCategoryEntity = categoryRepository.findById(adminCategoryRequestDTO.parentId())
@@ -51,7 +51,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
 
         newCategoryEntity = categoryRepository.save(newCategoryEntity);
 
-        return categoryMapper.toResponseDTO(newCategoryEntity);
+        return categoryMapper.toAdminResponseDTO(newCategoryEntity);
     }
 
     @Transactional
@@ -72,7 +72,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
                         "Không tìm thấy danh mục với id: " + categoryId
                 ));
 
-        categoryMapper.updateEntityFromDTO(adminCategoryRequestDTO, existingCategoryEntity);
+        categoryMapper.updateEntityFromRequest(adminCategoryRequestDTO, existingCategoryEntity);
 
         Integer newParentId = adminCategoryRequestDTO.parentId();
         CategoryEntity oldParentEntity = existingCategoryEntity.getParent();
@@ -94,7 +94,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
             }
         }
 
-        return categoryMapper.toResponseDTO(existingCategoryEntity);
+        return categoryMapper.toAdminResponseDTO(existingCategoryEntity);
     }
 
     @Transactional
@@ -107,7 +107,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
 
         categoryEntity.setStatus(adminUpdateProductStatusRequestDTO.status());
 
-        return categoryMapper.toResponseDTO(categoryEntity);
+        return categoryMapper.toAdminResponseDTO(categoryEntity);
     }
 
     @Transactional
@@ -139,7 +139,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
 
         Page<CategoryEntity> categoryEntityPage = categoryRepository.findParentCategoriesWithFilter(finalKeyword, status, startDateTime, endDateTime, pageable);
 
-        return categoryEntityPage.map(categoryMapper::toResponseDTO);
+        return categoryEntityPage.map(categoryMapper::toAdminResponseDTO);
     }
 
     @Transactional(readOnly = true)
@@ -156,7 +156,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
 
         Page<CategoryEntity> categoryEntityPage = categoryRepository.findSubCategoriesWithFilter(parentId, finalKeyword, status, startDateTime, endDateTime, pageable);
 
-        return categoryEntityPage.map(categoryMapper::toResponseDTO);
+        return categoryEntityPage.map(categoryMapper::toAdminResponseDTO);
     }
 
     @Transactional(readOnly = true)
@@ -167,6 +167,6 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
                         "Không tìm thấy danh mục với id: " + categoryId
                 ));
 
-        return categoryMapper.toDetailResponseDTO(existingCategoryEntity);
+        return categoryMapper.toAdminDetailResponseDTO(existingCategoryEntity);
     }
 }

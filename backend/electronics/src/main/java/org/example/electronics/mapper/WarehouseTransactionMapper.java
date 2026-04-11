@@ -17,7 +17,7 @@ import org.mapstruct.ReportingPolicy;
 public interface WarehouseTransactionMapper {
 
     @Mapping(target = "warehouseTransactionDetails", ignore = true)
-    WarehouseTransactionEntity toEntity(AdminWarehouseTransactionRequestDTO adminWarehouseTransactionRequestDTO);
+    WarehouseTransactionEntity toNewEntity(AdminWarehouseTransactionRequestDTO adminWarehouseTransactionRequestDTO);
 
     @Mapping(source = "warehouse.id", target = "warehouseId")
     @Mapping(source = "warehouse.name", target = "warehouseName")
@@ -25,8 +25,9 @@ public interface WarehouseTransactionMapper {
     @Mapping(source = "staff.fullName", target = "staffFullName")
     @Mapping(source = "order.id", target = "orderId")
     @Mapping(source = "returnRequest.id", target = "returnRequestId")
-    AdminWarehouseTransactionResponseDTO toResponseDTO(WarehouseTransactionEntity warehouseTransactionEntity);
+    AdminWarehouseTransactionResponseDTO toAdminResponseDTO(WarehouseTransactionEntity warehouseTransactionEntity);
 
+    @SuppressWarnings("unused")
     @Mapping(source = "variant.id", target = "variantId")
     @Mapping(source = "variant.name", target = "variantName")
     AdminWarehouseTransactionDetailResponseDTO toDetailResponseDTO(WarehouseTransactionDetailEntity warehouseTransactionDetailEntity);

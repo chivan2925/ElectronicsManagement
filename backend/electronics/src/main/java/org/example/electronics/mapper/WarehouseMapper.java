@@ -17,15 +17,16 @@ import org.mapstruct.ReportingPolicy;
 public interface WarehouseMapper {
 
     @Mapping(target = "warehouseDetails", ignore = true)
-    WarehouseEntity toEntity(AdminWarehouseRequestDTO adminWarehouseRequestDTO);
+    WarehouseEntity toNewEntity(AdminWarehouseRequestDTO adminWarehouseRequestDTO);
 
-    AdminWarehouseResponseDTO toResponseDTO(WarehouseEntity warehouseEntity);
+    AdminWarehouseResponseDTO toAdminResponseDTO(WarehouseEntity warehouseEntity);
 
+    @SuppressWarnings("unused")
     @Mapping(source = "variant.id", target = "variantId")
     @Mapping(source = "variant.name", target = "variantName")
     AdminWarehouseDetailResponseDTO toDetailResponseDTO(WarehouseDetailEntity warehouseDetailEntity);
 
     @Mapping(target = "warehouseDetails", ignore = true)
-    void updateEntityFromDTO(AdminWarehouseRequestDTO adminWarehouseRequestDTO,
-                             @MappingTarget WarehouseEntity warehouseEntity);
+    void updateEntityFromRequest(AdminWarehouseRequestDTO adminWarehouseRequestDTO,
+                                 @MappingTarget WarehouseEntity warehouseEntity);
 }

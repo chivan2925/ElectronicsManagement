@@ -34,7 +34,7 @@ public class AdminPermissionServiceImpl implements AdminPermissionService {
 
         Page<PermissionEntity> permissionEntityPage = permissionRepository.findPermissionsWithFilter(finalKeyword, startDateTime, endDateTime, pageable);
 
-        return permissionEntityPage.map(permissionMapper::toResponseDTO);
+        return permissionEntityPage.map(permissionMapper::toAdminResponseDTO);
     }
 
     @Transactional(readOnly = true)
@@ -45,6 +45,6 @@ public class AdminPermissionServiceImpl implements AdminPermissionService {
                         "Không tìm thấy quyền hạn với id: " + permissionId
                 ));
 
-        return permissionMapper.toResponseDTO(existingPermissionEntity);
+        return permissionMapper.toAdminResponseDTO(existingPermissionEntity);
     }
 }

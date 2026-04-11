@@ -34,11 +34,11 @@ public class AdminBrandServiceImpl implements AdminBrandService {
             throw new IllegalArgumentException("Tên thương hiệu đã tồn tại");
         }
 
-        BrandEntity newBrandEntity = brandMapper.toEntity(adminBrandRequestDTO);
+        BrandEntity newBrandEntity = brandMapper.toNewEntity(adminBrandRequestDTO);
 
         newBrandEntity = brandRepository.save(newBrandEntity);
 
-        return brandMapper.toResponseDTO(newBrandEntity);
+        return brandMapper.toAdminResponseDTO(newBrandEntity);
     }
 
     @Transactional
@@ -53,9 +53,9 @@ public class AdminBrandServiceImpl implements AdminBrandService {
                         "Không tìm thấy thương hiệu với id: " + brandId
                 ));
 
-        brandMapper.updateEntityFromDTO(adminBrandRequestDTO, existingBrandEntity);
+        brandMapper.updateEntityFromRequest(adminBrandRequestDTO, existingBrandEntity);
 
-        return brandMapper.toResponseDTO(existingBrandEntity);
+        return brandMapper.toAdminResponseDTO(existingBrandEntity);
     }
 
     @Transactional
@@ -68,7 +68,7 @@ public class AdminBrandServiceImpl implements AdminBrandService {
 
         existingBrandEntity.setStatus(adminUpdateProductStatusRequestDTO.status());
 
-        return brandMapper.toResponseDTO(existingBrandEntity);
+        return brandMapper.toAdminResponseDTO(existingBrandEntity);
     }
 
     @Transactional
@@ -92,7 +92,7 @@ public class AdminBrandServiceImpl implements AdminBrandService {
 
         Page<BrandEntity> brandEntityPage = brandRepository.findBrandsWithFilter(finalKeyword, status, startDateTime, endDateTime, pageable);
 
-        return brandEntityPage.map(brandMapper::toResponseDTO);
+        return brandEntityPage.map(brandMapper::toAdminResponseDTO);
     }
 
     @Transactional(readOnly = true)
@@ -103,6 +103,6 @@ public class AdminBrandServiceImpl implements AdminBrandService {
                         "Không tìm thấy thương hiệu với id: " + brandId
                 ));
 
-        return brandMapper.toResponseDTO(existingBrandEntity);
+        return brandMapper.toAdminResponseDTO(existingBrandEntity);
     }
 }

@@ -26,8 +26,9 @@ public interface WarehouseRepository extends JpaRepository<WarehouseEntity, Inte
 
             "AND (:status IS NULL OR w.status = :status) " +
 
-            "AND (:fromDate IS NULL OR w.createdAt >= :fromDate) " +
-            "AND (:toDate IS NULL OR w.createdAt <= :toDate)")
+            "AND (CAST(:fromDate AS timestamp) IS NULL OR w.createdAt >= :fromDate) " +
+            "AND (CAST(:toDate AS timestamp) IS NULL OR w.createdAt <= :toDate)"
+    )
     Page<WarehouseEntity> findWarehousesWithFilter(
             @Param("keyword") String keyword,
             @Param("status") WarehouseStatus status,

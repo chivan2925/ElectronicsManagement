@@ -45,6 +45,6 @@ public class AdminReviewServiceImpl implements AdminReviewService {
 
         Page<ReviewEntity> reviewEntityPage = reviewRepository.findReviewsWithFilterByProductId(productId, finalKeyword, startDateTime, endDateTime, pageable);
 
-        return reviewEntityPage.map(reviewMapper::toResponseDTO);
+        return reviewEntityPage.map(reviewMapper::toAdminResponseDTO);
     }
 }

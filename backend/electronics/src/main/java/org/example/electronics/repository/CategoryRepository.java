@@ -34,8 +34,9 @@ public interface CategoryRepository extends JpaRepository<CategoryEntity, Intege
 
             "AND (:status IS NULL OR c.status = :status) " +
 
-            "AND (:fromDate IS NULL OR c.createdAt >= :fromDate) " +
-            "AND (:toDate IS NULL OR c.createdAt <= :toDate)")
+            "AND (CAST(:fromDate AS timestamp) IS NULL OR c.createdAt >= :fromDate) " +
+            "AND (CAST(:toDate AS timestamp) IS NULL OR c.createdAt <= :toDate)"
+    )
     Page<CategoryEntity> findParentCategoriesWithFilter(
             @Param("keyword") String keyword,
             @Param("status") ProductStatus status,
@@ -54,8 +55,9 @@ public interface CategoryRepository extends JpaRepository<CategoryEntity, Intege
 
             "AND (:status IS NULL OR c.status = :status) " +
 
-            "AND (:fromDate IS NULL OR c.createdAt >= :fromDate) " +
-            "AND (:toDate IS NULL OR c.createdAt <= :toDate)")
+            "AND (CAST(:fromDate AS timestamp) IS NULL OR c.createdAt >= :fromDate) " +
+            "AND (CAST(:toDate AS timestamp) IS NULL OR c.createdAt <= :toDate)"
+    )
     Page<CategoryEntity> findSubCategoriesWithFilter(
             @Param("parentId") Integer parentId,
             @Param("keyword") String keyword,

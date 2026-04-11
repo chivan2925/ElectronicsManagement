@@ -20,6 +20,9 @@ public class MomoConfig {
     @Value("${payment.momo.endpoint}")
     private String endpoint;
 
+    @Value("${payment.momo.refund-url}")
+    private String refundUrl;
+
     @Value("${payment.momo.return-url}")
     private String returnUrl;
 

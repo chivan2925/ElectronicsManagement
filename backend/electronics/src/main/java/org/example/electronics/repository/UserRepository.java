@@ -24,8 +24,9 @@ public interface UserRepository extends JpaRepository<UserEntity, Integer> {
 
             "AND (:status IS NULL OR u.status = :status) " +
 
-            "AND (:fromDate IS NULL OR u.createdAt >= :fromDate) " +
-            "AND (:toDate IS NULL OR u.createdAt <= :toDate)")
+            "AND (CAST(:fromDate AS timestamp) IS NULL OR u.createdAt >= :fromDate) " +
+            "AND (CAST(:toDate AS timestamp) IS NULL OR u.createdAt <= :toDate)"
+    )
     Page<UserEntity> findUsersWithFilter(
             @Param("keyword") String keyword,
             @Param("status") UserStatus status,

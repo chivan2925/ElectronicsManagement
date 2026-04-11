@@ -23,8 +23,8 @@ Enum user_status {
 }
 
 Enum coupon_status {
-  VALID
-  EXPIRED
+  ACTIVE
+  INACTIVE
   DELETED
 }
 
@@ -70,6 +70,7 @@ Enum return_request_type {
 Enum return_request_status {
   PENDING
   APPROVED
+  COMPLETED
   REJECTED
   CANCELLED
 }
@@ -263,11 +264,11 @@ Table coupons {
   type coupon_type [not null]
   value decimal(12,3)
   min_order decimal(12,3)
-  starts_at datetime [not null]
-  ends_at datetime [not null]
+  start_date datetime [not null]
+  end_date datetime [not null]
   usage_limit int
   max_discount decimal(12,3)
-  status coupon_status [default: coupon_status.VALID, not null]
+  status coupon_status [coupon_status.ACTIVE, not null]
   created_at datetime [default: `now()`, not null]
   updated_at datetime [default: `now()`, not null]
 

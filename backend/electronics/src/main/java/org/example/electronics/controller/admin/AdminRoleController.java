@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -93,8 +94,8 @@ public class AdminRoleController {
     public ResponseEntity<Page<AdminRoleResponseDTO>> getAllRoles(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) UserStatus status,
-            @RequestParam(required = false) LocalDate fromDate,
-            @RequestParam(required = false) LocalDate toDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
             @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         Page<AdminRoleResponseDTO> allRolesPage = adminRoleService.getAllRoles(keyword, status, fromDate, toDate, pageable);

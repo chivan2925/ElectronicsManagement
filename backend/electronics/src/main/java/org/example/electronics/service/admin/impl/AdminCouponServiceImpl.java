@@ -9,6 +9,7 @@ import org.example.electronics.entity.BrandEntity;
 import org.example.electronics.entity.CategoryEntity;
 import org.example.electronics.entity.CouponEntity;
 import org.example.electronics.entity.enums.CouponStatus;
+import org.example.electronics.entity.enums.CouponTimeStatus;
 import org.example.electronics.mapper.CouponMapper;
 import org.example.electronics.repository.BrandRepository;
 import org.example.electronics.repository.CategoryRepository;
@@ -40,18 +41,18 @@ public class AdminCouponServiceImpl implements AdminCouponService {
             throw new IllegalArgumentException("Code của coupon đã tồn tại");
         }
 
-        if (adminCouponRequestDTO.startsAt().isAfter(adminCouponRequestDTO.endsAt()) ||
-                adminCouponRequestDTO.startsAt().isEqual(adminCouponRequestDTO.endsAt())) {
+        if (adminCouponRequestDTO.startDate().isAfter(adminCouponRequestDTO.endDate()) ||
+                adminCouponRequestDTO.startDate().isEqual(adminCouponRequestDTO.endDate())) {
             throw new IllegalArgumentException("Ngày kết thúc phải diễn ra sau ngày bắt đầu.");
         }
 
-        CouponEntity newCouponEntity = couponMapper.toEntity(adminCouponRequestDTO);
+        CouponEntity newCouponEntity = couponMapper.toNewEntity(adminCouponRequestDTO);
 
         assignCategoryAndBrand(newCouponEntity, adminCouponRequestDTO.categoryId(), adminCouponRequestDTO.brandId());
 
         newCouponEntity = couponRepository.save(newCouponEntity);
 
-        return couponMapper.toResponseDTO(newCouponEntity);
+        return couponMapper.toAdminResponseDTO(newCouponEntity);
     }
 
     @Transactional
@@ -61,8 +62,8 @@ public class AdminCouponServiceImpl implements AdminCouponService {
             throw new IllegalArgumentException("Code của coupon đã bị trùng với một coupon khác");
         }
 
-        if (adminCouponRequestDTO.startsAt().isAfter(adminCouponRequestDTO.endsAt()) ||
-                adminCouponRequestDTO.startsAt().isEqual(adminCouponRequestDTO.endsAt())) {
+        if (adminCouponRequestDTO.startDate().isAfter(adminCouponRequestDTO.endDate()) ||
+                adminCouponRequestDTO.startDate().isEqual(adminCouponRequestDTO.endDate())) {
             throw new IllegalArgumentException("Ngày kết thúc phải diễn ra sau ngày bắt đầu.");
         }
 
@@ -73,9 +74,9 @@ public class AdminCouponServiceImpl implements AdminCouponService {
 
         assignCategoryAndBrand(existingCouponEntity, adminCouponRequestDTO.categoryId(), adminCouponRequestDTO.brandId());
 
-        couponMapper.updateEntityFromDTO(adminCouponRequestDTO, existingCouponEntity);
+        couponMapper.updateEntityFromRequest(adminCouponRequestDTO, existingCouponEntity);
 
-        return couponMapper.toResponseDTO(existingCouponEntity);
+        return couponMapper.toAdminResponseDTO(existingCouponEntity);
     }
 
     @Transactional
@@ -88,7 +89,7 @@ public class AdminCouponServiceImpl implements AdminCouponService {
 
         existingCouponEntity.setStatus(adminUpdateCouponStatusRequestDTO.status());
 
-        return couponMapper.toResponseDTO(existingCouponEntity);
+        return couponMapper.toAdminResponseDTO(existingCouponEntity);
     }
 
     @Transactional
@@ -104,15 +105,15 @@ public class AdminCouponServiceImpl implements AdminCouponService {
 
     @Transactional(readOnly = true)
     @Override
-    public Page<AdminCouponResponseDTO> getAllCoupons(String keyword, CouponStatus status, LocalDate fromDate, LocalDate toDate, Pageable pageable) {
+    public Page<AdminCouponResponseDTO> getAllCoupons(String keyword, CouponTimeStatus timeStatus, CouponStatus status, LocalDate fromDate, LocalDate toDate, Pageable pageable) {
         LocalDateTime startDateTime = DateTimeUtils.getStartOfDay(fromDate);
         LocalDateTime endDateTime = DateTimeUtils.getEndOfDay(toDate);
 
         String finalKeyword = StringUtils.hasText(keyword) ? keyword.trim() : null;
 
-        Page<CouponEntity> couponEntityPage = couponRepository.findCouponsWithFilter(finalKeyword, status, startDateTime, endDateTime, pageable);
+        Page<CouponEntity> couponEntityPage = couponRepository.findCouponsWithFilter(finalKeyword, timeStatus, status, startDateTime, endDateTime, pageable);
 
-        return couponEntityPage.map(couponMapper::toResponseDTO);
+        return couponEntityPage.map(couponMapper::toAdminResponseDTO);
     }
 
     @Transactional(readOnly = true)
@@ -123,7 +124,7 @@ public class AdminCouponServiceImpl implements AdminCouponService {
                         "Không tìm thấy coupon với id: " + couponId
                 ));
 
-        return couponMapper.toResponseDTO(existingCouponEntity);
+        return couponMapper.toAdminResponseDTO(existingCouponEntity);
     }
 
     private void assignCategoryAndBrand(CouponEntity couponEntity, Integer categoryId, Integer brandId) {

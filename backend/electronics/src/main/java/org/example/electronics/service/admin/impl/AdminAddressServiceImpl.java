@@ -30,6 +30,6 @@ public class AdminAddressServiceImpl implements AdminAddressService {
 
         Page<AddressEntity> addressEntityPage = addressRepository.findByUser_Id(userId, pageable);
 
-        return addressEntityPage.map(addressMapper::toResponseDTO);
+        return addressEntityPage.map(addressMapper::toAdminResponseDTO);
     }
 }

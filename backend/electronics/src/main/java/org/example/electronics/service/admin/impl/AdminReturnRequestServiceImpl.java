@@ -10,6 +10,7 @@ import org.example.electronics.entity.enums.ReturnRequestStatus;
 import org.example.electronics.mapper.ReturnRequestMapper;
 import org.example.electronics.repository.ReturnRequestRepository;
 import org.example.electronics.repository.StaffRepository;
+import org.example.electronics.service.admin.AdminPaymentTransactionService;
 import org.example.electronics.service.admin.AdminReturnRequestService;
 import org.example.electronics.service.admin.AdminWarehouseTransactionService;
 import org.example.electronics.util.DateTimeUtils;
@@ -21,6 +22,8 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -28,8 +31,20 @@ public class AdminReturnRequestServiceImpl implements AdminReturnRequestService 
 
     private final ReturnRequestMapper returnRequestMapper;
     private final ReturnRequestRepository returnRequestRepository;
+
     private final StaffRepository staffRepository;
+
     private final AdminWarehouseTransactionService adminWarehouseTransactionService;
+
+    private final AdminPaymentTransactionService adminPaymentTransactionService;
+
+    private static final Map<ReturnRequestStatus, Set<ReturnRequestStatus>> ALLOWED_STATUS_TRANSITIONS = Map.of(
+            ReturnRequestStatus.PENDING, Set.of(ReturnRequestStatus.APPROVED, ReturnRequestStatus.REJECTED),
+            ReturnRequestStatus.APPROVED, Set.of(ReturnRequestStatus.COMPLETED),
+
+            ReturnRequestStatus.COMPLETED, Set.of(),
+            ReturnRequestStatus.REJECTED, Set.of()
+    );
 
     @Transactional
     @Override
@@ -39,16 +54,33 @@ public class AdminReturnRequestServiceImpl implements AdminReturnRequestService 
                         "Không tìm thấy yêu cầu trả hàng với id: " + returnRequestId
                 ));
 
+        checkReturnRequestEditable(existingReturnRequestEntity);
+
+        validateStatusTransition(existingReturnRequestEntity, requestDTO);
+
         existingReturnRequestEntity.setStatus(requestDTO.status());
         existingReturnRequestEntity.setHandledByStaff(staffRepository.getReferenceById(staffId));
 
-        if (requestDTO.status() == ReturnRequestStatus.APPROVED) {
-            existingReturnRequestEntity.setResolvedAt(LocalDateTime.now());
+        switch (requestDTO.status()) {
+            case COMPLETED:
+                existingReturnRequestEntity.setResolvedAt(LocalDateTime.now());
 
-            adminWarehouseTransactionService.autoCreateReturnWarehouseTransaction(existingReturnRequestEntity, staffId);
+                adminWarehouseTransactionService.autoCreateReturnWarehouseTransaction(existingReturnRequestEntity, staffId);
+
+                adminPaymentTransactionService.processRefund(returnRequestId, staffId);
+
+                break;
+
+            case REJECTED:
+                existingReturnRequestEntity.setResolvedAt(LocalDateTime.now());
+
+                break;
+
+            default:
+                break;
         }
 
-        return returnRequestMapper.toResponseDTO(existingReturnRequestEntity);
+        return returnRequestMapper.toAdminResponseDTO(existingReturnRequestEntity);
     }
 
     @Transactional(readOnly = true)
@@ -61,7 +93,7 @@ public class AdminReturnRequestServiceImpl implements AdminReturnRequestService 
 
         Page<ReturnRequestEntity> returnRequestEntityPage = returnRequestRepository.findAllReturnRequestsWithFilter(finalKeyword, status, startDateTime, endDateTime, pageable);
 
-        return returnRequestEntityPage.map(returnRequestMapper::toResponseDTO);
+        return returnRequestEntityPage.map(returnRequestMapper::toAdminResponseDTO);
     }
 
     @Transactional(readOnly = true)
@@ -72,6 +104,31 @@ public class AdminReturnRequestServiceImpl implements AdminReturnRequestService 
                         "Không tìm thấy yêu cầu trả hàng với id: " + id
                 ));
 
-        return returnRequestMapper.toDetailResponseDTO(existingReturnRequestEntity);
+        return returnRequestMapper.toAdminDetailResponseDTO(existingReturnRequestEntity);
+    }
+
+    private void validateStatusTransition(ReturnRequestEntity currentReturnRequest, AdminUpdateReturnRequestStatusRequestDTO requestDTO) {
+        ReturnRequestStatus currentStatus = currentReturnRequest.getStatus();
+        ReturnRequestStatus newStatus = requestDTO.status();
+
+        if (currentStatus == newStatus) {
+            return;
+        }
+
+        Set<ReturnRequestStatus> allowedNextStatus = ALLOWED_STATUS_TRANSITIONS.getOrDefault(currentStatus, Set.of());
+
+        if (!allowedNextStatus.contains(newStatus)) {
+            throw new IllegalArgumentException(
+                    String.format("Chuyển đổi trạng thái không hợp lệ, không thể chuyển từ '%s' sang '%s'", currentStatus, newStatus)
+            );
+        }
+    }
+
+    private void checkReturnRequestEditable(ReturnRequestEntity returnRequest) {
+        if (returnRequest.getStatus() != ReturnRequestStatus.PENDING) {
+            throw new IllegalStateException(
+                    "Không thể chỉnh sửa! Yêu cầu trả hàng đang ở trạng thái " + returnRequest.getStatus() + ". Chỉ được phép sửa khi đang PENDING."
+            );
+        }
     }
 }

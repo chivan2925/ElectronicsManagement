@@ -13,6 +13,7 @@ import org.example.electronics.service.admin.AdminCategoryService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -90,8 +91,8 @@ public class AdminCategoryController {
     public ResponseEntity<Page<AdminCategoryResponseDTO>> getAllParentCategories(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) ProductStatus status,
-            @RequestParam(required = false) LocalDate fromDate,
-            @RequestParam(required = false) LocalDate toDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
             @PageableDefault(sort = "updatedAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable
     ) {
         Page<AdminCategoryResponseDTO> allParentCategoriesPage = adminCategoryService.getAllParentCategories(keyword, status, fromDate, toDate, pageable);
@@ -108,8 +109,8 @@ public class AdminCategoryController {
             @PathVariable Integer parentId,
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) ProductStatus status,
-            @RequestParam(required = false) LocalDate fromDate,
-            @RequestParam(required = false) LocalDate toDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
             @PageableDefault(sort = "updatedAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable
     ) {
         Page<AdminCategoryResponseDTO> allSubCategoriesPage = adminCategoryService.getAllSubCategories(parentId, keyword, status, fromDate, toDate, pageable);

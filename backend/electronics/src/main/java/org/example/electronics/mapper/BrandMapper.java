@@ -13,10 +13,10 @@ import org.mapstruct.ReportingPolicy;
 )
 public interface BrandMapper {
 
-    BrandEntity toEntity(AdminBrandRequestDTO adminBrandRequestDTO);
+    BrandEntity toNewEntity(AdminBrandRequestDTO adminBrandRequestDTO);
 
-    AdminBrandResponseDTO toResponseDTO(BrandEntity brandEntity);
+    AdminBrandResponseDTO toAdminResponseDTO(BrandEntity brandEntity);
 
-    void updateEntityFromDTO(AdminBrandRequestDTO adminBrandRequestDTO,
-                          @MappingTarget BrandEntity brandEntity);
+    void updateEntityFromRequest(AdminBrandRequestDTO adminBrandRequestDTO,
+                                 @MappingTarget BrandEntity brandEntity);
 }

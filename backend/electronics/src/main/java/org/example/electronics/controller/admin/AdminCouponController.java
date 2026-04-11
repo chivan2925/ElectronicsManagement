@@ -8,11 +8,13 @@ import org.example.electronics.dto.request.admin.AdminCouponRequestDTO;
 import org.example.electronics.dto.request.admin.status.AdminUpdateCouponStatusRequestDTO;
 import org.example.electronics.dto.response.admin.AdminCouponResponseDTO;
 import org.example.electronics.entity.enums.CouponStatus;
+import org.example.electronics.entity.enums.CouponTimeStatus;
 import org.example.electronics.service.admin.AdminCouponService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -88,12 +90,13 @@ public class AdminCouponController {
     )
     public ResponseEntity<Page<AdminCouponResponseDTO>> getAllCoupons(
             @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) CouponTimeStatus timeStatus,
             @RequestParam(required = false) CouponStatus status,
-            @RequestParam(required = false) LocalDate fromDate,
-            @RequestParam(required = false) LocalDate toDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
             @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        Page<AdminCouponResponseDTO> adminCouponResponseDTOPage = adminCouponService.getAllCoupons(keyword, status, fromDate, toDate, pageable);
+        Page<AdminCouponResponseDTO> adminCouponResponseDTOPage = adminCouponService.getAllCoupons(keyword, timeStatus, status, fromDate, toDate, pageable);
 
         return ResponseEntity.ok(adminCouponResponseDTOPage);
     }

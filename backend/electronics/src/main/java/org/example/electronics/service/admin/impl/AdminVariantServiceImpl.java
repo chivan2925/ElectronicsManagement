@@ -54,7 +54,7 @@ public class AdminVariantServiceImpl implements AdminVariantService {
                         "Không tìm thấy sản phẩm với id: " + adminVariantRequestDTO.productId()
                 ));
 
-        VariantEntity newVariantEntity = variantMapper.toEntity(adminVariantRequestDTO);
+        VariantEntity newVariantEntity = variantMapper.toNewEntity(adminVariantRequestDTO);
 
         newVariantEntity.setProduct(existingProductEntity);
 
@@ -65,7 +65,7 @@ public class AdminVariantServiceImpl implements AdminVariantService {
         if(adminNestedMediaRequestDTOList != null && !adminNestedMediaRequestDTOList.isEmpty()) {
             List<MediaEntity> mediaEntityList = adminNestedMediaRequestDTOList.stream()
                     .map(mediaDTO -> {
-                        MediaEntity mediaEntity = mediaMapper.nestedDTO_toEntity(mediaDTO);
+                        MediaEntity mediaEntity = mediaMapper.nestedDTO_toNewEntity(mediaDTO);
                         mediaEntity.setVariant(savedVariantEntity);
                         return mediaEntity;
                     })
@@ -74,7 +74,7 @@ public class AdminVariantServiceImpl implements AdminVariantService {
             mediaRepository.saveAll(mediaEntityList);
         }
 
-        return variantMapper.toResponseDTO(savedVariantEntity);
+        return variantMapper.toAdminResponseDTO(savedVariantEntity);
     }
 
     @Transactional
@@ -95,11 +95,11 @@ public class AdminVariantServiceImpl implements AdminVariantService {
                         "Không tìm thấy sản phẩm với id: " + adminVariantRequestDTO.productId()
                 ));
 
-        variantMapper.updateEntityFromDTO(adminVariantRequestDTO, existingVariantEntity);
+        variantMapper.updateEntityFromRequest(adminVariantRequestDTO, existingVariantEntity);
 
         existingVariantEntity.setProduct(existingProductEntity);
 
-        return variantMapper.toResponseDTO(existingVariantEntity);
+        return variantMapper.toAdminResponseDTO(existingVariantEntity);
     }
 
     @Transactional
@@ -112,7 +112,7 @@ public class AdminVariantServiceImpl implements AdminVariantService {
 
         existingVariantEntity.setStatus(adminUpdateProductStatusRequestDTO.status());
 
-        return variantMapper.toResponseDTO(existingVariantEntity);
+        return variantMapper.toAdminResponseDTO(existingVariantEntity);
     }
 
     @Transactional
@@ -136,7 +136,7 @@ public class AdminVariantServiceImpl implements AdminVariantService {
 
         Page<VariantEntity> variantEntityPage = variantRepository.findVariantsWithFilter(finalKeyword, status, startDateTime, endDateTime, pageable);
 
-        return variantEntityPage.map(variantMapper::toResponseDTO);
+        return variantEntityPage.map(variantMapper::toAdminResponseDTO);
     }
 
     @Transactional(readOnly = true)
@@ -160,7 +160,7 @@ public class AdminVariantServiceImpl implements AdminVariantService {
         BigDecimal totalWarehouseValue = existingVariantEntity.getPrice()
                 .multiply(BigDecimal.valueOf(totalStock));
 
-        return variantMapper.toDetailResponseDTO(
+        return variantMapper.toAdminDetailResponseDTO(
                 existingVariantEntity,
                 warehouseStockResponseDTOList,
                 totalStock,

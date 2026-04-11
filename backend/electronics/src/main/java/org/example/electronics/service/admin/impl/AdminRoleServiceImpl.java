@@ -42,14 +42,14 @@ public class AdminRoleServiceImpl implements AdminRoleService {
             throw new IllegalArgumentException("Tên chức vụ này đã tồn tại.");
         }
 
-        RoleEntity newRoleEntity = roleMapper.toEntity(adminRoleRequestDTO);
+        RoleEntity newRoleEntity = roleMapper.toNewEntity(adminRoleRequestDTO);
 
         List<PermissionEntity> permissionEntityList = permissionRepository.findAllById(adminRoleRequestDTO.permissionIds());
         newRoleEntity.setPermissions(new HashSet<>(permissionEntityList));
 
         newRoleEntity = roleRepository.save(newRoleEntity);
 
-        return roleMapper.toResponseDTO(newRoleEntity);
+        return roleMapper.toAdminResponseDTO(newRoleEntity);
     }
 
     @Transactional
@@ -63,12 +63,12 @@ public class AdminRoleServiceImpl implements AdminRoleService {
                         "Không tìm thấy chức vụ với id: " + roleId
                 ));
 
-        roleMapper.updateEntityFromDTO(adminRoleRequestDTO, existingRoleEntity);
+        roleMapper.updateEntityFromRequest(adminRoleRequestDTO, existingRoleEntity);
 
         List<PermissionEntity> permissionEntityList = permissionRepository.findAllById(adminRoleRequestDTO.permissionIds());
         existingRoleEntity.setPermissions(new HashSet<>(permissionEntityList));
 
-        return roleMapper.toResponseDTO(existingRoleEntity);
+        return roleMapper.toAdminResponseDTO(existingRoleEntity);
     }
 
     @Transactional
@@ -81,7 +81,7 @@ public class AdminRoleServiceImpl implements AdminRoleService {
 
         existingRoleEntity.setStatus(adminUpdateUserStatusRequestDTO.status());
 
-        return roleMapper.toResponseDTO(existingRoleEntity);
+        return roleMapper.toAdminResponseDTO(existingRoleEntity);
     }
 
     @Transactional
@@ -109,7 +109,7 @@ public class AdminRoleServiceImpl implements AdminRoleService {
 
         Page<RoleEntity> roleEntityPage = roleRepository.findRolesWithFilter(finalKeyword, status, startDateTime, endDateTime, pageable);
 
-        return roleEntityPage.map(roleMapper::toResponseDTO);
+        return roleEntityPage.map(roleMapper::toAdminResponseDTO);
     }
 
     @Transactional(readOnly = true)
@@ -120,6 +120,6 @@ public class AdminRoleServiceImpl implements AdminRoleService {
                         "Không tìm thấy chức vụ với id: " + roleId
                 ));
 
-        return roleMapper.toDetailResponseDTO(existingRoleEntity);
+        return roleMapper.toAdminDetailResponseDTO(existingRoleEntity);
     }
 }

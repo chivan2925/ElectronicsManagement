@@ -8,5 +8,5 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface PermissionMapper {
 
-    AdminPermissionResponseDTO toResponseDTO(PermissionEntity permissionEntity);
+    AdminPermissionResponseDTO toAdminResponseDTO(PermissionEntity permissionEntity);
 }

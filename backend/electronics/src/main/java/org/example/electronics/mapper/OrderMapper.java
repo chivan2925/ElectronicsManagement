@@ -17,17 +17,17 @@ public interface OrderMapper {
 
     @Mapping(source = "user.id", target = "userId")
     @Mapping(source = "user.fullName", target = "userFullName")
-    AdminOrderResponseDTO toResponseDTO(OrderEntity orderEntity);
+    AdminOrderResponseDTO toAdminResponseDTO(OrderEntity orderEntity);
 
     @Mapping(source = "user.id", target = "userId")
     @Mapping(source = "user.fullName", target = "userFullName")
     @Mapping(source = "user.email", target = "userEmail")
     @Mapping(source = "user.phoneNumber", target = "userPhoneNumber")
     @Mapping(source = "coupon.code", target = "couponCode")
-    AdminOrderDetailResponseDTO toDetailResponseDTO(OrderEntity orderEntity);
+    AdminOrderDetailResponseDTO toAdminDetailResponseDTO(OrderEntity orderEntity);
 
     @SuppressWarnings("unused")
     @Mapping(source = "variant.id", target = "variantId")
     @Mapping(source = "variant.name", target = "variantName")
-    AdminOrderItemResponseDTO toItemResponseDTO(OrderDetailEntity orderDetailEntity);
+    AdminOrderItemResponseDTO toAdminItemResponseDTO(OrderDetailEntity orderDetailEntity);
 }

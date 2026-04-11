@@ -52,7 +52,7 @@ public class AdminWarehouseServiceImpl implements AdminWarehouseService {
         }
 
         int totalQuantity = 0;
-        WarehouseEntity newWarehouseEntity = warehouseMapper.toEntity(adminWarehouseRequestDTO);
+        WarehouseEntity newWarehouseEntity = warehouseMapper.toNewEntity(adminWarehouseRequestDTO);
 
         if (adminWarehouseRequestDTO.warehouseDetails() != null) {
             for (AdminWarehouseDetailRequestDTO adminWarehouseDetailRequestDTO : adminWarehouseRequestDTO.warehouseDetails()) {
@@ -76,7 +76,7 @@ public class AdminWarehouseServiceImpl implements AdminWarehouseService {
 
         newWarehouseEntity = warehouseRepository.save(newWarehouseEntity);
 
-        return warehouseMapper.toResponseDTO(newWarehouseEntity);
+        return warehouseMapper.toAdminResponseDTO(newWarehouseEntity);
     }
 
     @Transactional
@@ -91,7 +91,7 @@ public class AdminWarehouseServiceImpl implements AdminWarehouseService {
                         "Cập nhật kho hàng thất bại: Không tìm thấy nhà kho với id: " + warehouseId
                 ));
 
-        warehouseMapper.updateEntityFromDTO(adminWarehouseRequestDTO, existingWarehouseEntity);
+        warehouseMapper.updateEntityFromRequest(adminWarehouseRequestDTO, existingWarehouseEntity);
 
         if (adminWarehouseRequestDTO.warehouseDetails() != null) {
             Map<Integer, Integer> incomingWarehouseDetailsMap = adminWarehouseRequestDTO.warehouseDetails().stream()
@@ -153,7 +153,7 @@ public class AdminWarehouseServiceImpl implements AdminWarehouseService {
         existingWarehouseEntity.setCurrentStock(totalQuantity);
 
 
-        return warehouseMapper.toResponseDTO(existingWarehouseEntity);
+        return warehouseMapper.toAdminResponseDTO(existingWarehouseEntity);
     }
 
     @Transactional
@@ -166,7 +166,7 @@ public class AdminWarehouseServiceImpl implements AdminWarehouseService {
 
         existingWarehouseEntity.setStatus(adminUpdateWarehouseStatusRequestDTO.status());
 
-        return warehouseMapper.toResponseDTO(existingWarehouseEntity);
+        return warehouseMapper.toAdminResponseDTO(existingWarehouseEntity);
     }
 
     @Transactional
@@ -190,7 +190,7 @@ public class AdminWarehouseServiceImpl implements AdminWarehouseService {
 
         Page<WarehouseEntity> warehouseEntityPagePage = warehouseRepository.findWarehousesWithFilter(finalKeyword, status, startDateTime, endDateTime, pageable);
 
-        return warehouseEntityPagePage.map(warehouseMapper::toResponseDTO);
+        return warehouseEntityPagePage.map(warehouseMapper::toAdminResponseDTO);
     }
 
     @Transactional(readOnly = true)
@@ -201,7 +201,7 @@ public class AdminWarehouseServiceImpl implements AdminWarehouseService {
                         "Xem chi tiết kho hàng thất bại: Không tìm thấy nhà kho với id: " + warehouseId
                 ));
 
-        return warehouseMapper.toResponseDTO(existingWarehouseEntity);
+        return warehouseMapper.toAdminResponseDTO(existingWarehouseEntity);
     }
 
     @Transactional

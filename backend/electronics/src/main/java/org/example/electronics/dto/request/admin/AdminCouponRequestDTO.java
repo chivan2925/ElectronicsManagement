@@ -2,6 +2,7 @@ package org.example.electronics.dto.request.admin;
 
 import jakarta.validation.constraints.*;
 import org.example.electronics.entity.enums.CouponStatus;
+import org.example.electronics.entity.enums.CouponTimeStatus;
 import org.example.electronics.entity.enums.CouponType;
 
 import java.math.BigDecimal;
@@ -29,11 +30,11 @@ public record AdminCouponRequestDTO(
 
         @NotNull(message = "Ngày bắt đầu của coupon không được để trống")
         @FutureOrPresent(message = "Ngày bắt đầu phải từ thời điểm hiện tại trở đi")
-        LocalDateTime startsAt,
+        LocalDateTime startDate,
 
         @NotNull(message = "Ngày kết thúc của coupon không được để trống")
         @Future(message = "Ngày kết thúc phải nằm ở tương lai")
-        LocalDateTime endsAt,
+        LocalDateTime endDate,
 
         @Positive(message = "Lượt dùng tối đa của coupon phải lớn hơn 0")
         Integer usageLimit,
@@ -41,7 +42,7 @@ public record AdminCouponRequestDTO(
         @PositiveOrZero(message = "Lượng giá giảm tối đa của coupon không được âm")
         BigDecimal maxDiscount,
 
-        @NotNull(message = "Trạng thái của coupon không được để trống")
+        @NotNull(message = "Trạng thái  của coupon không được để trống")
         CouponStatus status
 ) {
 }

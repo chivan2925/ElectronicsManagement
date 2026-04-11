@@ -21,18 +21,18 @@ public interface VariantMapper {
 
     @Mapping(target = "product", ignore = true)
     @Mapping(target = "media", ignore = true)
-    VariantEntity toEntity(AdminVariantRequestDTO adminVariantRequestDTO);
+    VariantEntity toNewEntity(AdminVariantRequestDTO adminVariantRequestDTO);
 
     @Mapping(source = "product.id", target = "productId")
     @Mapping(source = "product.name", target = "productName")
     @Mapping(source = "media", target = "primaryImageUrl", qualifiedByName = "getPrimaryImage")
-    AdminVariantResponseDTO toResponseDTO(VariantEntity variantEntity);
+    AdminVariantResponseDTO toAdminResponseDTO(VariantEntity variantEntity);
 
     @Mapping(source = "product.id", target = "productId")
     @Mapping(source = "product.name", target = "productName")
     @Mapping(source = "media", target = "primaryImageUrl", qualifiedByName = "getPrimaryImage")
     @Mapping(source = "totalStock", target = "totalStock")
-    AdminDetailVariantResponseDTO toDetailResponseDTO(
+    AdminDetailVariantResponseDTO toAdminDetailResponseDTO(
             VariantEntity variantEntity,
             List<AdminVariantWarehouseStockResponseDTO> warehouseStocks,
             Integer totalStock,
@@ -46,7 +46,7 @@ public interface VariantMapper {
 
     @Mapping(target = "product", ignore = true)
     @Mapping(target = "media", ignore = true)
-    void updateEntityFromDTO(AdminVariantRequestDTO adminVariantRequestDTO,
-                             @MappingTarget VariantEntity VariantEntity);
+    void updateEntityFromRequest(AdminVariantRequestDTO adminVariantRequestDTO,
+                                 @MappingTarget VariantEntity VariantEntity);
 
 }

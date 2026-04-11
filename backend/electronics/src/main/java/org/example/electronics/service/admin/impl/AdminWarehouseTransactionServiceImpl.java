@@ -26,10 +26,7 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,6 +42,20 @@ public class AdminWarehouseTransactionServiceImpl implements AdminWarehouseTrans
     private final OrderRepository orderRepository;
     private final ReturnRequestRepository returnRequestRepository;
 
+    private static final Map<WarehouseTransactionStatus, Set<WarehouseTransactionStatus>> ALLOWED_WAREHOUSE_TRANSITIONS = Map.of(
+            WarehouseTransactionStatus.PENDING, Set.of(
+                    WarehouseTransactionStatus.COMPLETED,
+                    WarehouseTransactionStatus.FAILED,
+                    WarehouseTransactionStatus.CANCELLED,
+                    WarehouseTransactionStatus.DELETED
+            ),
+
+            WarehouseTransactionStatus.COMPLETED, Set.of(),
+            WarehouseTransactionStatus.FAILED, Set.of(),
+            WarehouseTransactionStatus.CANCELLED, Set.of(),
+            WarehouseTransactionStatus.DELETED, Set.of()
+    );
+
     @Transactional
     @Override
     public AdminWarehouseTransactionResponseDTO createWarehouseTransaction(AdminWarehouseTransactionRequestDTO adminWarehouseTransactionRequestDTO, Integer staffId) {
@@ -52,7 +63,7 @@ public class AdminWarehouseTransactionServiceImpl implements AdminWarehouseTrans
             throw new IllegalArgumentException("Code giao dịch kho này đã tồn tại");
         }
 
-        WarehouseTransactionEntity newWarehouseTransactionEntity = warehouseTransactionMapper.toEntity(adminWarehouseTransactionRequestDTO);
+        WarehouseTransactionEntity newWarehouseTransactionEntity = warehouseTransactionMapper.toNewEntity(adminWarehouseTransactionRequestDTO);
 
         setWarehouseTransactionRelationships(newWarehouseTransactionEntity, adminWarehouseTransactionRequestDTO, staffId);
 
@@ -69,7 +80,7 @@ public class AdminWarehouseTransactionServiceImpl implements AdminWarehouseTrans
 
         newWarehouseTransactionEntity = warehouseTransactionRepository.save(newWarehouseTransactionEntity);
 
-        return warehouseTransactionMapper.toResponseDTO(newWarehouseTransactionEntity);
+        return warehouseTransactionMapper.toAdminResponseDTO(newWarehouseTransactionEntity);
     }
 
     @Transactional
@@ -83,6 +94,8 @@ public class AdminWarehouseTransactionServiceImpl implements AdminWarehouseTrans
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Không tìm thấy giao dịch kho với id: " + warehouseTransactionId
                 ));
+
+        checkWarehouseTransactionEditableOrDeletable(existingWarehouseTransactionEntity);
 
         if (existingWarehouseTransactionEntity.getStatus() != WarehouseTransactionStatus.PENDING) {
             throw new IllegalArgumentException("Chỉ được sửa đổi thông tin và chi tiết phiếu giao dịch kho khi đang ở trạng thái PENDING");
@@ -134,7 +147,7 @@ public class AdminWarehouseTransactionServiceImpl implements AdminWarehouseTrans
             existingWarehouseTransactionEntity.addWarehouseTransactionDetail(newWarehouseTransactionDetailEntity);
         }
 
-        return warehouseTransactionMapper.toResponseDTO(existingWarehouseTransactionEntity);
+        return warehouseTransactionMapper.toAdminResponseDTO(existingWarehouseTransactionEntity);
     }
 
     @Transactional
@@ -158,7 +171,7 @@ public class AdminWarehouseTransactionServiceImpl implements AdminWarehouseTrans
 
         existingWarehouseTransactionEntity.setStatus(adminUpdateWarehouseTransactionTypeStatusRequestDTO.status());
 
-        return warehouseTransactionMapper.toResponseDTO(existingWarehouseTransactionEntity);
+        return warehouseTransactionMapper.toAdminResponseDTO(existingWarehouseTransactionEntity);
     }
 
     @Transactional
@@ -169,9 +182,7 @@ public class AdminWarehouseTransactionServiceImpl implements AdminWarehouseTrans
                         "Không tìm thấy giao dịch kho với id: " + warehouseTransactionId
                 ));
 
-        if (existingWarehouseTransactionEntity.getStatus() != WarehouseTransactionStatus.PENDING) {
-            throw new IllegalArgumentException("Chỉ được xoá phiếu giao dịch kho khi đang ở trạng thái PENDING");
-        }
+        checkWarehouseTransactionEditableOrDeletable(existingWarehouseTransactionEntity);
 
         existingWarehouseTransactionEntity.setStaff(staffRepository.getReferenceById(staffId));
 
@@ -188,7 +199,7 @@ public class AdminWarehouseTransactionServiceImpl implements AdminWarehouseTrans
 
         Page<WarehouseTransactionEntity> warehouseTransactionEntityPage = warehouseTransactionRepository.findWarehouseTransactionsWithFilter(finalKeyword, type, status, startDateTime, endDateTime, pageable);
 
-        return warehouseTransactionEntityPage.map(warehouseTransactionMapper::toResponseDTO);
+        return warehouseTransactionEntityPage.map(warehouseTransactionMapper::toAdminResponseDTO);
     }
 
     @Transactional(readOnly = true)
@@ -199,7 +210,7 @@ public class AdminWarehouseTransactionServiceImpl implements AdminWarehouseTrans
                         "Không tìm thấy giao dịch kho với id: " + warehouseTransactionId
                 ));
 
-        return warehouseTransactionMapper.toResponseDTO(existingWarehouseTransactionEntity);
+        return warehouseTransactionMapper.toAdminResponseDTO(existingWarehouseTransactionEntity);
     }
 
     private void validateWarehouseTransactionTransition(WarehouseTransactionEntity currentWarehouseTransaction, AdminUpdateWarehouseTransactionTypeStatusRequestDTO requestDTO) {
@@ -209,12 +220,24 @@ public class AdminWarehouseTransactionServiceImpl implements AdminWarehouseTrans
         WarehouseTransactionStatus currentStatus = currentWarehouseTransaction.getStatus();
         WarehouseTransactionStatus newStatus = requestDTO.status();
 
-        if (currentType == newType && currentStatus == newStatus) {
+        if (currentType != newType) {
+            if (currentStatus != WarehouseTransactionStatus.PENDING) {
+                throw new IllegalArgumentException(
+                        "Phiếu kho đã chốt (" + currentStatus + "), không thể đổi loại giao dịch từ " + currentType + " sang " + newType
+                );
+            }
+        }
+
+        if (currentStatus == newStatus) {
             return;
         }
 
-        if (currentStatus != WarehouseTransactionStatus.PENDING) {
-            throw new IllegalArgumentException("Chỉ được sửa đổi trạng thái phiếu giao dịch kho khi đang ở trạng thái PENDING");
+        Set<WarehouseTransactionStatus> allowedNextStates = ALLOWED_WAREHOUSE_TRANSITIONS.getOrDefault(currentStatus, Set.of());
+
+        if (!allowedNextStates.contains(newStatus)) {
+            throw new IllegalArgumentException(
+                    String.format("Chuyển đổi trạng thái phiếu kho không hợp lệ, không thể chuyển từ '%s' sang '%s'", currentStatus, newStatus)
+            );
         }
     }
 
@@ -335,5 +358,13 @@ public class AdminWarehouseTransactionServiceImpl implements AdminWarehouseTrans
         newWarehouseTransaction.addWarehouseTransactionDetail(detail);
 
         warehouseTransactionRepository.save(newWarehouseTransaction);
+    }
+
+    private void checkWarehouseTransactionEditableOrDeletable(WarehouseTransactionEntity warehouseTransaction) {
+        if (warehouseTransaction.getStatus() != WarehouseTransactionStatus.PENDING) {
+            throw new IllegalStateException(
+                    "Không thể chỉnh sửa hay xoá! Phiếu giao dịch kho đã chốt ở trạng thái " + warehouseTransaction.getStatus() + ". Chỉ được phép sửa hoặc xoá khi đang PENDING."
+            );
+        }
     }
 }

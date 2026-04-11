@@ -57,7 +57,7 @@ public class AdminProductServiceImpl implements AdminProductService {
                         "Không tìm thấy thương hiệu với id: " + adminProductRequestDTO.brandId()
                 ));
 
-        ProductEntity newProductEntity = productMapper.toEntity(adminProductRequestDTO);
+        ProductEntity newProductEntity = productMapper.toNewEntity(adminProductRequestDTO);
 
         newProductEntity.setCategory(existingCategoryEntity);
         newProductEntity.setBrand(existingBrandEntity);
@@ -69,7 +69,7 @@ public class AdminProductServiceImpl implements AdminProductService {
         if(adminNestedMediaRequestDTOList != null && !adminNestedMediaRequestDTOList.isEmpty()) {
             List<MediaEntity> mediaEntityList = adminNestedMediaRequestDTOList.stream()
                     .map(mediaDTO -> {
-                        MediaEntity mediaEntity = mediaMapper.nestedDTO_toEntity(mediaDTO);
+                        MediaEntity mediaEntity = mediaMapper.nestedDTO_toNewEntity(mediaDTO);
                         mediaEntity.setProduct(savedProductEntity);
                         return mediaEntity;
                     })
@@ -78,7 +78,7 @@ public class AdminProductServiceImpl implements AdminProductService {
             mediaRepository.saveAll(mediaEntityList);
         }
 
-        return productMapper.toResponseDTO(savedProductEntity);
+        return productMapper.toAdminResponseDTO(savedProductEntity);
     }
 
     @Transactional
@@ -104,12 +104,12 @@ public class AdminProductServiceImpl implements AdminProductService {
                         "Không tìm thấy thương hiệu với id: " + adminProductRequestDTO.brandId()
                 ));
 
-        productMapper.updateEntityFromDTO(adminProductRequestDTO, existingProductEntity);
+        productMapper.updateEntityFromRequest(adminProductRequestDTO, existingProductEntity);
 
         existingProductEntity.setCategory(existingCategoryEntity);
         existingProductEntity.setBrand(existingBrandEntity);
 
-        return productMapper.toResponseDTO(existingProductEntity);
+        return productMapper.toAdminResponseDTO(existingProductEntity);
     }
 
     @Transactional
@@ -122,7 +122,7 @@ public class AdminProductServiceImpl implements AdminProductService {
 
         existingProductEntity.setStatus(adminUpdateProductStatusRequestDTO.status());
 
-        return productMapper.toResponseDTO(existingProductEntity);
+        return productMapper.toAdminResponseDTO(existingProductEntity);
     }
 
     @Transactional
@@ -150,7 +150,7 @@ public class AdminProductServiceImpl implements AdminProductService {
 
         Page<ProductEntity> productEntityPage = productRepository.findProductsWithFilter(finalKeyword, status, startDateTime, endDateTime, pageable);
 
-        return productEntityPage.map(productMapper::toResponseDTO);
+        return productEntityPage.map(productMapper::toAdminResponseDTO);
     }
 
     @Transactional(readOnly = true)
@@ -161,6 +161,6 @@ public class AdminProductServiceImpl implements AdminProductService {
                         "Không tìm thấy sản phẩm với id: " + productId
                 ));
 
-        return productMapper.toDetailResponseDTO(existingProductEntity);
+        return productMapper.toAdminDetailResponseDTO(existingProductEntity);
     }
 }

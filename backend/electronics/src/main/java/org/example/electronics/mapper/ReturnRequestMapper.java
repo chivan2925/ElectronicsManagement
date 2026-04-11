@@ -14,7 +14,7 @@ public interface ReturnRequestMapper {
     @Mapping(source = "order.id", target = "orderId")
     @Mapping(source = "variant.id", target = "variantId")
     @Mapping(source = "handleByStaff.id", target = "handleByStaffId")
-    AdminReturnRequestResponseDTO toResponseDTO(ReturnRequestEntity returnRequestEntity);
+    AdminReturnRequestResponseDTO toAdminResponseDTO(ReturnRequestEntity returnRequestEntity);
 
     @Mapping(source = "user.id", target = "userId")
     @Mapping(source = "user.fullName", target = "userFullName")
@@ -23,5 +23,5 @@ public interface ReturnRequestMapper {
     @Mapping(source = "order.id", target = "orderId")
     @Mapping(source = "variant.id", target = "variantId")
     @Mapping(source = "handleByStaff.id", target = "handleByStaff.id")
-    AdminDetailReturnRequestResponseDTO toDetailResponseDTO(ReturnRequestEntity returnRequestEntity);
+    AdminDetailReturnRequestResponseDTO toAdminDetailResponseDTO(ReturnRequestEntity returnRequestEntity);
 }

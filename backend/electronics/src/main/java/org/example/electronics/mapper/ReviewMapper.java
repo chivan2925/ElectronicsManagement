@@ -11,5 +11,5 @@ public interface ReviewMapper {
     @Mapping(source = "product.id", target = "productId")
     @Mapping(source = "user.id", target = "userId")
     @Mapping(source = "order.id", target = "orderId")
-    AdminReviewResponseDTO toResponseDTO(ReviewEntity reviewEntity);
+    AdminReviewResponseDTO toAdminResponseDTO(ReviewEntity reviewEntity);
 }

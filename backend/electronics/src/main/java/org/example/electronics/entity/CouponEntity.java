@@ -51,11 +51,11 @@ public class CouponEntity {
         @Column(name = "min_order", precision = 12, scale = 3, nullable = false)
         private BigDecimal minOrder;
 
-        @Column(name = "starts_at", nullable = false)
-        private LocalDateTime startsAt;
+        @Column(name = "start_date", nullable = false)
+        private LocalDateTime startDate;
 
-        @Column(name = "ends_at", nullable = false)
-        private LocalDateTime endsAt;
+        @Column(name = "end_date", nullable = false)
+        private LocalDateTime endDate;
 
         @Column(name = "usage_limit")
         private Integer usageLimit;
@@ -66,7 +66,7 @@ public class CouponEntity {
         @Enumerated(EnumType.STRING)
         @Column(nullable = false)
         @Builder.Default
-        private CouponStatus status = CouponStatus.VALID;
+        private CouponStatus status = CouponStatus.ACTIVE;
 
         @CreationTimestamp
         @Column(name = "created_at", updatable = false, nullable = false)
@@ -75,4 +75,11 @@ public class CouponEntity {
         @UpdateTimestamp
         @Column(name = "updated_at", nullable = false)
         private LocalDateTime updatedAt;
+
+        @Transient
+        public boolean isValidTime() {
+                LocalDateTime now = LocalDateTime.now();
+                return (startDate == null || !now.isBefore(startDate)) &&
+                        (endDate == null || !now.isAfter(endDate));
+        }
 }

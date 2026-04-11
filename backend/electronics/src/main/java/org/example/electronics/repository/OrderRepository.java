@@ -30,8 +30,9 @@ public interface OrderRepository extends JpaRepository<OrderEntity, Integer> {
             "AND (:provider IS NULL OR o.shippingProvider = :provider) " +
             "AND (:shippingStatus IS NULL OR o.shippingStatus = :shippingStatus) " +
 
-            "AND (:fromDate IS NULL OR o.createdAt >= :fromDate) " +
-            "AND (:toDate IS NULL OR o.createdAt <= :toDate)")
+            "AND (CAST(:fromDate AS timestamp) IS NULL OR o.createdAt >= :fromDate) " +
+            "AND (CAST(:toDate AS timestamp) IS NULL OR o.createdAt <= :toDate)"
+    )
     Page<OrderEntity> findOrdersWithFilter(
             @Param("keyword") String keyword,
             @Param("status") OrderStatus status,

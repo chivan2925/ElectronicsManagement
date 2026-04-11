@@ -9,5 +9,5 @@ import org.mapstruct.Mapping;
 public interface AddressMapper {
 
     @Mapping(source = "user.id", target = "userId")
-    AdminAddressResponseDTO toResponseDTO(AddressEntity addressEntity);
+    AdminAddressResponseDTO toAdminResponseDTO(AddressEntity addressEntity);
 }

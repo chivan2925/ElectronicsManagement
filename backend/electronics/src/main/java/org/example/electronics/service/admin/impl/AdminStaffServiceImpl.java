@@ -45,14 +45,14 @@ public class AdminStaffServiceImpl implements AdminStaffService {
                         "Không tìm thấy Chức vụ với ID: " + adminStaffRequestDTO.roleId()
                 ));
 
-        StaffEntity newStaffEntity = staffMapper.toEntity(adminStaffRequestDTO);
+        StaffEntity newStaffEntity = staffMapper.toNewEntity(adminStaffRequestDTO);
 
         newStaffEntity.setRole(roleEntity);
         newStaffEntity.setHashedPassword("Chưa có BCrypt" + adminStaffRequestDTO.password());
 
         newStaffEntity = staffRepository.save(newStaffEntity);
 
-        return staffMapper.toResponseDTO(newStaffEntity);
+        return staffMapper.toAdminResponseDTO(newStaffEntity);
     }
 
     @Transactional
@@ -75,12 +75,12 @@ public class AdminStaffServiceImpl implements AdminStaffService {
                         "Không tìm thấy Chức vụ với ID: " + adminStaffRequestDTO.roleId()
                 ));
 
-        staffMapper.updateEntityFromDTO(adminStaffRequestDTO, existingStaffEntity);
+        staffMapper.updateEntityFromRequest(adminStaffRequestDTO, existingStaffEntity);
 
         existingStaffEntity.setRole(newRoleEntity);
         existingStaffEntity.setHashedPassword("Chưa có BCrypt" + adminStaffRequestDTO.password());
 
-        return staffMapper.toResponseDTO(existingStaffEntity);
+        return staffMapper.toAdminResponseDTO(existingStaffEntity);
     }
 
     @Transactional
@@ -93,7 +93,7 @@ public class AdminStaffServiceImpl implements AdminStaffService {
 
         existingStaffEntity.setStatus(adminUpdateUserStatusRequestDTO.status());
 
-        return staffMapper.toResponseDTO(existingStaffEntity);
+        return staffMapper.toAdminResponseDTO(existingStaffEntity);
     }
 
     @Transactional
@@ -117,7 +117,7 @@ public class AdminStaffServiceImpl implements AdminStaffService {
 
         Page<StaffEntity> staffEntityPage = staffRepository.findStaffsWithFilter(finalKeyword, status, startDateTime, endDateTime, pageable);
 
-        return staffEntityPage.map(staffMapper::toResponseDTO);
+        return staffEntityPage.map(staffMapper::toAdminResponseDTO);
     }
 
     @Transactional(readOnly = true)
@@ -128,6 +128,6 @@ public class AdminStaffServiceImpl implements AdminStaffService {
                         "Không tìm thấy nhân viên với id: " + staffId
                 ));
 
-        return staffMapper.toResponseDTO(existingStaffEntity);
+        return staffMapper.toAdminResponseDTO(existingStaffEntity);
     }
 }

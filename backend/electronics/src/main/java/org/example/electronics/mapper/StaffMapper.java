@@ -16,14 +16,14 @@ public interface StaffMapper {
 
     @Mapping(target = "role", ignore = true)
     @Mapping(target = "hashedPassword", ignore = true)
-    StaffEntity toEntity(AdminStaffRequestDTO adminStaffRequestDTO);
+    StaffEntity toNewEntity(AdminStaffRequestDTO adminStaffRequestDTO);
 
     @Mapping(source = "role.id", target = "roleId")
     @Mapping(source = "role.name", target = "roleName")
-    AdminStaffResponseDTO toResponseDTO(StaffEntity staffEntity);
+    AdminStaffResponseDTO toAdminResponseDTO(StaffEntity staffEntity);
 
     @Mapping(target = "role", ignore = true)
     @Mapping(target = "hashedPassword", ignore = true)
-    void updateEntityFromDTO(AdminStaffRequestDTO adminStaffRequestDTO,
-                             @MappingTarget StaffEntity staffEntity);
+    void updateEntityFromRequest(AdminStaffRequestDTO adminStaffRequestDTO,
+                                 @MappingTarget StaffEntity staffEntity);
 }

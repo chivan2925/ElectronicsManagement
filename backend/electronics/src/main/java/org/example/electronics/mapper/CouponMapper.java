@@ -3,10 +3,8 @@ package org.example.electronics.mapper;
 import org.example.electronics.dto.request.admin.AdminCouponRequestDTO;
 import org.example.electronics.dto.response.admin.AdminCouponResponseDTO;
 import org.example.electronics.entity.CouponEntity;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.ReportingPolicy;
+import org.example.electronics.entity.enums.CouponTimeStatus;
+import org.mapstruct.*;
 
 @Mapper(
         componentModel = "spring",
@@ -16,14 +14,24 @@ public interface CouponMapper {
 
     @Mapping(target = "category", ignore = true)
     @Mapping(target = "brand", ignore = true)
-    CouponEntity toEntity(AdminCouponRequestDTO adminCouponRequestDTO);
+    CouponEntity toNewEntity(AdminCouponRequestDTO adminCouponRequestDTO);
 
     @Mapping(source = "category.id", target = "categoryId")
     @Mapping(source = "brand.id", target = "brandId")
-    AdminCouponResponseDTO toResponseDTO(CouponEntity couponEntity);
+    AdminCouponResponseDTO toAdminResponseDTO(CouponEntity couponEntity);
 
     @Mapping(target = "category", ignore = true)
     @Mapping(target = "brand", ignore = true)
-    void updateEntityFromDTO(AdminCouponRequestDTO adminCouponRequestDTO,
-                             @MappingTarget CouponEntity couponEntity);
+    void updateEntityFromRequest(AdminCouponRequestDTO adminCouponRequestDTO,
+                                 @MappingTarget CouponEntity couponEntity);
+
+    @SuppressWarnings("unused")
+    @AfterMapping
+    default void setTimeStatus(CouponEntity entity, @MappingTarget AdminCouponResponseDTO.AdminCouponResponseDTOBuilder dtoBuilder) {
+
+        if (entity != null) {
+            CouponTimeStatus timeStatus = entity.isValidTime() ? CouponTimeStatus.VALID : CouponTimeStatus.EXPIRED;
+            dtoBuilder.timeStatus(timeStatus);
+        }
+    }
 }

@@ -39,7 +39,7 @@ public class AdminMediaServiceImpl implements AdminMediaService {
             throw new IllegalArgumentException("Một media không thể vừa là media của sản phẩm, vừa là media của biến thể.");
         }
 
-        MediaEntity newMediaEntity = mediaMapper.toEntity(adminAddMediaRequestDTO);
+        MediaEntity newMediaEntity = mediaMapper.toNewEntity(adminAddMediaRequestDTO);
 
         if (productId != null) {
             ProductEntity existingProductEntity = productRepository.findById(productId)
@@ -60,7 +60,7 @@ public class AdminMediaServiceImpl implements AdminMediaService {
 
         newMediaEntity = mediaRepository.save(newMediaEntity);
 
-        return mediaMapper.toResponseDTO(newMediaEntity);
+        return mediaMapper.toAdminResponseDTO(newMediaEntity);
     }
 
     @Transactional
@@ -105,6 +105,6 @@ public class AdminMediaServiceImpl implements AdminMediaService {
 
         existingMediaEntity.setDisplayOrder(adminUpdateMediaOrderRequestDTO.displayOrder());
 
-        return mediaMapper.toResponseDTO(existingMediaEntity);
+        return mediaMapper.toAdminResponseDTO(existingMediaEntity);
     }
 }

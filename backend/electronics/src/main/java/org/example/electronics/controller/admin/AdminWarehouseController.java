@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -92,8 +93,8 @@ public class AdminWarehouseController {
     public ResponseEntity<Page<AdminWarehouseResponseDTO>> getAllWarehouses(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) WarehouseStatus status,
-            @RequestParam(required = false) LocalDate fromDate,
-            @RequestParam(required = false) LocalDate toDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
             @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         Page<AdminWarehouseResponseDTO> adminWarehouseResponseDTOPage = adminWarehouseService.getAllWarehouses(keyword, status, fromDate, toDate, pageable);

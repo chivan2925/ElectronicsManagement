@@ -17,13 +17,13 @@ import org.mapstruct.ReportingPolicy;
 public interface RoleMapper {
 
     @Mapping(target = "permissions", ignore = true)
-    RoleEntity toEntity(AdminRoleRequestDTO adminRoleRequestDTO);
+    RoleEntity toNewEntity(AdminRoleRequestDTO adminRoleRequestDTO);
 
-    AdminRoleResponseDTO toResponseDTO(RoleEntity roleEntity);
+    AdminRoleResponseDTO toAdminResponseDTO(RoleEntity roleEntity);
 
-    AdminDetailRoleResponseDTO toDetailResponseDTO(RoleEntity roleEntity);
+    AdminDetailRoleResponseDTO toAdminDetailResponseDTO(RoleEntity roleEntity);
 
     @Mapping(target = "permissions", ignore = true)
-    void updateEntityFromDTO(AdminRoleRequestDTO adminRoleRequestDTO,
-                             @MappingTarget RoleEntity roleEntity);
+    void updateEntityFromRequest(AdminRoleRequestDTO adminRoleRequestDTO,
+                                 @MappingTarget RoleEntity roleEntity);
 }

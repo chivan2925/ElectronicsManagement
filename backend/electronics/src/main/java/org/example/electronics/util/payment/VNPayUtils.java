@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
+import java.util.Random;
 
 public class VNPayUtils {
 
@@ -56,5 +57,17 @@ public class VNPayUtils {
             ipAddress = "Invalid IP";
         }
         return ipAddress;
+    }
+
+    // 🚀 Vũ khí 3: Sinh chuỗi số ngẫu nhiên (Dùng để tạo vnp_RequestId cho luồng Hoàn tiền)
+    public static String getRandomNumber(int length) {
+        Random random = new Random();
+        String chars = "0123456789";
+        StringBuilder stringBuilder = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
+            stringBuilder.append(chars.charAt(random.nextInt(chars.length())));
+        }
+
+        return stringBuilder.toString();
     }
 }

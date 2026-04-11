@@ -36,7 +36,7 @@ public class AdminUserServiceImpl implements AdminUserService {
 
         userEntity.setStatus(adminUpdateUserStatusRequestDTO.status());
 
-        return userMapper.toResponseDTO(userEntity);
+        return userMapper.toAdminResponseDTO(userEntity);
     }
 
     @Transactional
@@ -60,7 +60,7 @@ public class AdminUserServiceImpl implements AdminUserService {
 
         Page<UserEntity> userEntityPage = userRepository.findUsersWithFilter(finalKeyword, status, startDateTime, endDateTime, pageable);
 
-        return userEntityPage.map(userMapper::toResponseDTO);
+        return userEntityPage.map(userMapper::toAdminResponseDTO);
     }
 
     @Transactional(readOnly = true)
@@ -71,6 +71,6 @@ public class AdminUserServiceImpl implements AdminUserService {
                         "Không tìm thấy user với id: " + userId
                 ));
 
-        return userMapper.toResponseDTO(existingUserEntity);
+        return userMapper.toAdminResponseDTO(existingUserEntity);
     }
 }

@@ -26,8 +26,9 @@ public interface RoleRepository extends JpaRepository<RoleEntity, Integer> {
 
             "AND (:status IS NULL OR r.status = :status) " +
 
-            "AND (:fromDate IS NULL OR r.createdAt >= :fromDate) " +
-            "AND (:toDate IS NULL OR r.createdAt <= :toDate)")
+            "AND (CAST(:fromDate AS timestamp) IS NULL OR r.createdAt >= :fromDate) " +
+            "AND (CAST(:toDate AS timestamp) IS NULL OR r.createdAt <= :toDate)"
+    )
     Page<RoleEntity> findRolesWithFilter(
             @Param("keyword") String keyword,
             @Param("status") UserStatus status,

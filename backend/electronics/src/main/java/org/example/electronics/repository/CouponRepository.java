@@ -2,10 +2,10 @@ package org.example.electronics.repository;
 
 import org.example.electronics.entity.CouponEntity;
 import org.example.electronics.entity.enums.CouponStatus;
+import org.example.electronics.entity.enums.CouponTimeStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -24,24 +24,22 @@ public interface CouponRepository extends JpaRepository<CouponEntity, Integer> {
             "    OR LOWER(c.code) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
             ")) " +
 
+            "AND (:timeStatus IS NULL OR " +
+            "    (:timeStatus = 'VALID' AND CURRENT_TIMESTAMP >= c.startDate AND CURRENT_TIMESTAMP <= c.endDate) OR " +
+            "    (:timeStatus = 'EXPIRED' AND (CURRENT_TIMESTAMP < c.startDate OR CURRENT_TIMESTAMP > c.endDate)) " +
+            ") " +
+
             "AND (:status IS NULL OR c.status = :status) " +
 
-            "AND (:fromDate IS NULL OR c.createdAt >= :fromDate) " +
-            "AND (:toDate IS NULL OR c.createdAt <= :toDate)")
+            "AND (CAST(:fromDate AS timestamp) IS NULL OR c.createdAt >= :fromDate) " +
+            "AND (CAST(:toDate AS timestamp) IS NULL OR c.createdAt <= :toDate)"
+    )
     Page<CouponEntity> findCouponsWithFilter(
             @Param("keyword") String keyword,
+            @Param("timeStatus") CouponTimeStatus timeStatus,
             @Param("status") CouponStatus status,
             @Param("fromDate") LocalDateTime fromDate,
             @Param("toDate") LocalDateTime toDate,
             Pageable pageable
-    );
-
-    @Modifying
-    @Query("UPDATE CouponEntity c SET c.status = :expiredStatus " +
-            "WHERE c.endsAt <= :now AND c.status = :validStatus")
-    int updateExpiredCoupons(
-            @Param("now") LocalDateTime now,
-            @Param("expiredStatus") CouponStatus expiredStatus,
-            @Param("validStatus") CouponStatus validStatus
     );
 }
