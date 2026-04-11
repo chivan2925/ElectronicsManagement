@@ -45,6 +45,7 @@ Enum payment_status {
 }
 
 Enum payment_provider {
+  COD
   VNPAY
   MOMO
 }

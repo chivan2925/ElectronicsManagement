@@ -13,7 +13,8 @@ import java.time.LocalDateTime;
 public interface ReturnRequestRepository extends JpaRepository<ReturnRequestEntity, Integer> {
 
     @Query(value = "SELECT r FROM ReturnRequestEntity r " +
-            "LEFT JOIN FETCH r.user, r.variant " +
+            "LEFT JOIN FETCH r.user " +
+            "LEFT JOIN FETCH r.variant " +
             "WHERE 1=1 " +
 
             "AND (:keyword IS NULL OR ( " +
@@ -24,7 +25,20 @@ public interface ReturnRequestRepository extends JpaRepository<ReturnRequestEnti
             "AND (:status IS NULL OR r.status = :status) " +
 
             "AND (:fromDate IS NULL OR r.createdAt >= :fromDate) " +
-            "AND (:toDate IS NULL OR r.createdAt <= :toDate)"
+            "AND (:toDate IS NULL OR r.createdAt <= :toDate)",
+
+            countQuery = "SELECT COUNT(r) FROM ReturnRequestEntity r " +
+                    "WHERE 1=1 " +
+
+                    "AND (:keyword IS NULL OR ( " +
+                    "    CAST(r.id AS string) LIKE CONCAT('%', :keyword, '%') " +
+                    "    OR LOWER(r.reason) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+                    ")) " +
+
+                    "AND (:status IS NULL OR r.status = :status) " +
+
+                    "AND (:fromDate IS NULL OR r.createdAt >= :fromDate) " +
+                    "AND (:toDate IS NULL OR r.createdAt <= :toDate)"
     )
     Page<ReturnRequestEntity> findAllReturnRequestsWithFilter(
             @Param("keyword") String keyword,

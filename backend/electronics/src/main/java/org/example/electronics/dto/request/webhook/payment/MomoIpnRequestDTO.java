@@ -1,8 +1,5 @@
 package org.example.electronics.dto.request.webhook.payment;
 
-import lombok.Builder;
-
-@Builder
 public record MomoIpnRequestDTO (
 
         String partnerCode,

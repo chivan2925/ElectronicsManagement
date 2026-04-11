@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: electronics
+
+  # 1. Database Connection
+  datasource:
+    url: jdbc:postgresql://localhost:5432/electronics_management
+    username: postgres
+    password: 123456
+    driver-class-name: org.postgresql.Driver
+
+  # 2. Hibernate
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+
+# 3. JWT
+electronics:
+  app:
+    jwtSecret: ${JWT_SECRET_KEY}
+    jwtExpirationMs: 86400000
+
+# 4. Payment Integration
+payment:
+  vnpay:
+    tmn-code: "YOUR_TMN_CODE" # Lấy trên trang Sandbox VNPay
+    secret-key: "YOUR_SECRET_KEY" # Lấy trên trang Sandbox VNPay
+    pay-url: "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html"
+    return-url: "http://localhost:8080/api/payments/vnpay-return" # Đường dẫn gọi về Frontend/Backend của sếp sau khi trả tiền
+  momo:
+    partner-code: "MOMO_PARTNER_CODE"
+    access-key: "MOMO_ACCESS_KEY"
+    secret-key: "MOMO_SECRET_KEY"
+    endpoint: "https://test-payment.momo.vn/v2/gateway/api/create"
+    return-url: "http://localhost:8080/api/payments/momo-return"
+    notify-url: "http://localhost:8080/api/webhook/momo-ipn" # Đường dẫn Momo bắn IPN về
