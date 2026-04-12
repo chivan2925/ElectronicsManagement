@@ -111,13 +111,15 @@ public class AdminOrderServiceImpl implements AdminOrderService {
     @Override
     public Page<AdminOrderResponseDTO> getAllOrders(String keyword, OrderStatus status, PaymentMethodType type,
                                                     PaymentStatus paymentStatus, ShippingProvider provider, ShippingStatus shippingStatus,
-                                                    LocalDate fromDate, LocalDate toDate, Pageable pageable) {
+                                                    DateFilterType dateType, LocalDate fromDate, LocalDate toDate, Pageable pageable) {
         LocalDateTime startDateTime = DateTimeUtils.getStartOfDay(fromDate);
         LocalDateTime endDateTime = DateTimeUtils.getEndOfDay(toDate);
 
         String finalKeyword = StringUtils.hasText(keyword) ? keyword.trim() : null;
 
-        Page<OrderEntity> orderEntityPage = orderRepository.findOrdersWithFilter(finalKeyword, status, type, paymentStatus, provider, shippingStatus, startDateTime, endDateTime, pageable);
+        String typeString = dateType != null ? dateType.name() : DateFilterType.CREATED_AT.name();
+
+        Page<OrderEntity> orderEntityPage = orderRepository.findOrdersWithFilter(finalKeyword, status, type, paymentStatus, provider, shippingStatus, typeString, startDateTime, endDateTime, pageable);
 
         return orderEntityPage.map(orderMapper::toAdminResponseDTO);
     }

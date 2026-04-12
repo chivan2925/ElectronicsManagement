@@ -8,6 +8,7 @@ import org.example.electronics.dto.request.admin.warehouse.transaction.AdminWare
 import org.example.electronics.dto.response.admin.warehouse.transaction.AdminWarehouseTransactionResponseDTO;
 import org.example.electronics.entity.ReturnRequestEntity;
 import org.example.electronics.entity.VariantEntity;
+import org.example.electronics.entity.enums.DateFilterType;
 import org.example.electronics.entity.enums.WarehouseTransactionStatus;
 import org.example.electronics.entity.enums.WarehouseTransactionType;
 import org.example.electronics.entity.warehouse.WarehouseDetailEntity;
@@ -191,13 +192,15 @@ public class AdminWarehouseTransactionServiceImpl implements AdminWarehouseTrans
 
     @Transactional(readOnly = true)
     @Override
-    public Page<AdminWarehouseTransactionResponseDTO> getAllWarehouseTransactions(String keyword, WarehouseTransactionType type, WarehouseTransactionStatus status, LocalDate fromDate, LocalDate toDate, Pageable pageable) {
+    public Page<AdminWarehouseTransactionResponseDTO> getAllWarehouseTransactions(String keyword, WarehouseTransactionType type, WarehouseTransactionStatus status, DateFilterType dateType, LocalDate fromDate, LocalDate toDate, Pageable pageable) {
         LocalDateTime startDateTime = DateTimeUtils.getStartOfDay(fromDate);
         LocalDateTime endDateTime = DateTimeUtils.getEndOfDay(toDate);
 
         String finalKeyword = StringUtils.hasText(keyword) ? keyword.trim() : null;
 
-        Page<WarehouseTransactionEntity> warehouseTransactionEntityPage = warehouseTransactionRepository.findWarehouseTransactionsWithFilter(finalKeyword, type, status, startDateTime, endDateTime, pageable);
+        String typeString = dateType != null ? dateType.name() : DateFilterType.CREATED_AT.name();
+
+        Page<WarehouseTransactionEntity> warehouseTransactionEntityPage = warehouseTransactionRepository.findWarehouseTransactionsWithFilter(finalKeyword, type, status, typeString, startDateTime, endDateTime, pageable);
 
         return warehouseTransactionEntityPage.map(warehouseTransactionMapper::toAdminResponseDTO);
     }

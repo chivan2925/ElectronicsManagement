@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.electronics.dto.request.admin.status.AdminUpdateUserStatusRequestDTO;
 import org.example.electronics.dto.response.admin.AdminUserResponseDTO;
 import org.example.electronics.entity.UserEntity;
+import org.example.electronics.entity.enums.DateFilterType;
 import org.example.electronics.entity.enums.UserStatus;
 import org.example.electronics.mapper.UserMapper;
 import org.example.electronics.repository.UserRepository;
@@ -52,13 +53,15 @@ public class AdminUserServiceImpl implements AdminUserService {
 
     @Transactional(readOnly = true)
     @Override
-    public Page<AdminUserResponseDTO> getAllUsers(String keyword, UserStatus status, LocalDate fromDate, LocalDate toDate, Pageable pageable) {
+    public Page<AdminUserResponseDTO> getAllUsers(String keyword, UserStatus status, DateFilterType dateType, LocalDate fromDate, LocalDate toDate, Pageable pageable) {
         LocalDateTime startDateTime = DateTimeUtils.getStartOfDay(fromDate);
         LocalDateTime endDateTime = DateTimeUtils.getEndOfDay(toDate);
 
         String finalKeyword = StringUtils.hasText(keyword) ? keyword.trim() : null;
 
-        Page<UserEntity> userEntityPage = userRepository.findUsersWithFilter(finalKeyword, status, startDateTime, endDateTime, pageable);
+        String typeString = dateType != null ? dateType.name() : DateFilterType.CREATED_AT.name();
+
+        Page<UserEntity> userEntityPage = userRepository.findUsersWithFilter(finalKeyword, status, typeString, startDateTime, endDateTime, pageable);
 
         return userEntityPage.map(userMapper::toAdminResponseDTO);
     }

@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.electronics.dto.request.admin.status.AdminUpdateReturnRequestStatusRequestDTO;
 import org.example.electronics.dto.response.admin.returnrequest.AdminDetailReturnRequestResponseDTO;
 import org.example.electronics.dto.response.admin.returnrequest.AdminReturnRequestResponseDTO;
+import org.example.electronics.entity.enums.DateFilterType;
 import org.example.electronics.entity.enums.ReturnRequestStatus;
 import org.example.electronics.security.auth.admin.StaffDetails;
 import org.example.electronics.service.admin.AdminReturnRequestService;
@@ -57,11 +58,12 @@ public class AdminReturnRequestController {
     public ResponseEntity<Page<AdminReturnRequestResponseDTO>> getAllReturnRequests(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) ReturnRequestStatus status,
+            @RequestParam(defaultValue = "CREATED_AT") DateFilterType dateType,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        Page<AdminReturnRequestResponseDTO> returnRequestResponseDTOPage = adminReturnRequestService.getAllReturnRequests(keyword, status, fromDate, toDate, pageable);
+        Page<AdminReturnRequestResponseDTO> returnRequestResponseDTOPage = adminReturnRequestService.getAllReturnRequests(keyword, status, dateType, fromDate, toDate, pageable);
 
         return ResponseEntity.ok(returnRequestResponseDTOPage);
     }

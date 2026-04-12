@@ -36,12 +36,20 @@ public interface StaffRepository extends JpaRepository<StaffEntity, Integer> {
 
             "AND (:status IS NULL OR s.status = :status) " +
 
-            "AND (CAST(:fromDate AS timestamp) IS NULL OR s.assignedAt >= :fromDate) " +
-            "AND (CAST(:toDate AS timestamp) IS NULL OR s.assignedAt <= :toDate)"
+            "AND (CAST(:fromDate AS timestamp) IS NULL OR " +
+            "    (:dateType = 'ASSIGNED_AT' AND s.assignedAt >= :fromDate) OR " +
+            "    (:dateType = 'UPDATED_AT' AND s.updatedAt >= :fromDate) " +
+            ") " +
+
+            "AND (CAST(:toDate AS timestamp) IS NULL OR " +
+            "    (:dateType = 'ASSIGNED_AT' AND s.assignedAt <= :toDate) OR " +
+            "    (:dateType = 'UPDATED_AT' AND s.updatedAt <= :toDate) " +
+            ")"
     )
     Page<StaffEntity> findStaffsWithFilter(
             @Param("keyword") String keyword,
             @Param("status") UserStatus status,
+            @Param("dateType") String dateType,
             @Param("fromDate") LocalDateTime fromDate,
             @Param("toDate") LocalDateTime toDate,
             Pageable pageable

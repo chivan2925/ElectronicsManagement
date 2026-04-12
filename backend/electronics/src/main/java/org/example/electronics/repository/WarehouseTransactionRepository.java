@@ -32,13 +32,21 @@ public interface WarehouseTransactionRepository extends JpaRepository<WarehouseT
             "AND :type IS NULL OR wt.type = :type " +
             "AND :status IS NULL OR wt.status = :status " +
 
-            "AND (CAST(:fromDate AS timestamp) IS NULL OR wt.createdAt >= :fromDate) " +
-            "AND (CAST(:toDate AS timestamp) IS NULL OR wt.createdAt <= :toDate)"
+            "AND (CAST(:fromDate AS timestamp) IS NULL OR " +
+            "    (:dateType = 'CREATED_AT' AND wt.createdAt >= :fromDate) OR " +
+            "    (:dateType = 'UPDATED_AT' AND wt.updatedAt >= :fromDate) " +
+            ") " +
+
+            "AND (CAST(:toDate AS timestamp) IS NULL OR " +
+            "    (:dateType = 'CREATED_AT' AND wt.createdAt <= :toDate) OR " +
+            "    (:dateType = 'UPDATED_AT' AND wt.updatedAt <= :toDate) " +
+            ")"
     )
     Page<WarehouseTransactionEntity> findWarehouseTransactionsWithFilter(
             @Param("keyword") String keyword,
             @Param("type") WarehouseTransactionType type,
             @Param("status") WarehouseTransactionStatus status,
+            @Param("dateType") String dateType,
             @Param("fromDate") LocalDateTime fromDate,
             @Param("toDate") LocalDateTime toDate,
             Pageable pageable

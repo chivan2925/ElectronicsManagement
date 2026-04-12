@@ -2,6 +2,7 @@ package org.example.electronics.controller.admin;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.electronics.dto.request.admin.AdminLoginRequestDTO;
@@ -35,5 +36,16 @@ public class AdminAuthController {
         AdminLoginResponseDTO adminLoginResponseDTO = adminAuthService.login(adminLoginRequestDTO);
 
         return ResponseEntity.ok(adminLoginResponseDTO);
+    }
+
+    @PostMapping("/logout")
+    @Operation(summary = "Đăng xuất Admin", description = "Vô hiệu hóa Token hiện tại bằng cách đưa vào Blacklist.")
+    public ResponseEntity<String> logout(HttpServletRequest request) {
+
+        String authHeader = request.getHeader("Authorization");
+
+        adminAuthService.logout(authHeader);
+
+        return ResponseEntity.ok("Đăng xuất thành công!");
     }
 }

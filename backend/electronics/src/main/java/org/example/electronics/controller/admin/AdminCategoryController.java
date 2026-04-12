@@ -8,6 +8,7 @@ import org.example.electronics.dto.request.admin.AdminCategoryRequestDTO;
 import org.example.electronics.dto.request.admin.status.AdminUpdateProductStatusRequestDTO;
 import org.example.electronics.dto.response.admin.category.AdminCategoryResponseDTO;
 import org.example.electronics.dto.response.admin.category.AdminDetailCategoryResponseDTO;
+import org.example.electronics.entity.enums.DateFilterType;
 import org.example.electronics.entity.enums.ProductStatus;
 import org.example.electronics.service.admin.AdminCategoryService;
 import org.springframework.data.domain.Page;
@@ -82,7 +83,6 @@ public class AdminCategoryController {
         return ResponseEntity.noContent().build();
     }
 
-    //Size mặc định (số lượng phần tử 1 trang) của @PageableDefault là 10
     @GetMapping
     @Operation(
             summary = "Lấy danh sách danh mục Cha (Có tìm kiếm và lọc)",
@@ -91,11 +91,12 @@ public class AdminCategoryController {
     public ResponseEntity<Page<AdminCategoryResponseDTO>> getAllParentCategories(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) ProductStatus status,
+            @RequestParam(defaultValue = "CREATED_AT") DateFilterType dateType,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
             @PageableDefault(sort = "updatedAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable
     ) {
-        Page<AdminCategoryResponseDTO> allParentCategoriesPage = adminCategoryService.getAllParentCategories(keyword, status, fromDate, toDate, pageable);
+        Page<AdminCategoryResponseDTO> allParentCategoriesPage = adminCategoryService.getAllParentCategories(keyword, status, dateType, fromDate, toDate, pageable);
 
         return ResponseEntity.ok(allParentCategoriesPage);
     }
@@ -109,11 +110,12 @@ public class AdminCategoryController {
             @PathVariable Integer parentId,
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) ProductStatus status,
+            @RequestParam(defaultValue = "CREATED_AT") DateFilterType dateType,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
             @PageableDefault(sort = "updatedAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable
     ) {
-        Page<AdminCategoryResponseDTO> allSubCategoriesPage = adminCategoryService.getAllSubCategories(parentId, keyword, status, fromDate, toDate, pageable);
+        Page<AdminCategoryResponseDTO> allSubCategoriesPage = adminCategoryService.getAllSubCategories(parentId, keyword, status, dateType, fromDate, toDate, pageable);
 
         return ResponseEntity.ok(allSubCategoriesPage);
     }

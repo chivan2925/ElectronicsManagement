@@ -3,6 +3,7 @@ package org.example.electronics.service.admin.impl;
 import lombok.RequiredArgsConstructor;
 import org.example.electronics.dto.response.admin.AdminReviewResponseDTO;
 import org.example.electronics.entity.ReviewEntity;
+import org.example.electronics.entity.enums.DateFilterType;
 import org.example.electronics.mapper.ReviewMapper;
 import org.example.electronics.repository.ProductRepository;
 import org.example.electronics.repository.ReviewRepository;
@@ -30,6 +31,7 @@ public class AdminReviewServiceImpl implements AdminReviewService {
     public Page<AdminReviewResponseDTO> getAllReviewsByProductId(
             Integer productId,
             String keyword,
+            DateFilterType dateType,
             LocalDate fromDate,
             LocalDate toDate,
             Pageable pageable
@@ -43,7 +45,9 @@ public class AdminReviewServiceImpl implements AdminReviewService {
 
         String finalKeyword = StringUtils.hasText(keyword) ? keyword.trim() : null;
 
-        Page<ReviewEntity> reviewEntityPage = reviewRepository.findReviewsWithFilterByProductId(productId, finalKeyword, startDateTime, endDateTime, pageable);
+        String typeString = dateType != null ? dateType.name() : DateFilterType.CREATED_AT.name();
+
+        Page<ReviewEntity> reviewEntityPage = reviewRepository.findReviewsWithFilterByProductId(productId, finalKeyword, typeString, startDateTime, endDateTime, pageable);
 
         return reviewEntityPage.map(reviewMapper::toAdminResponseDTO);
     }

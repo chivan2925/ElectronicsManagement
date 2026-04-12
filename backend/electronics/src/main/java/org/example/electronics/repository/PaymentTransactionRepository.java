@@ -34,8 +34,13 @@ public interface PaymentTransactionRepository extends JpaRepository<PaymentTrans
             "AND (:type IS NULL OR p.type = :type) " +
             "AND (:status IS NULL OR p.status = :status) " +
 
-            "AND (CAST(:fromDate AS timestamp) IS NULL OR p.createdAt >= :fromDate) " +
-            "AND (CAST(:toDate AS timestamp) IS NULL OR p.createdAt <= :toDate)",
+            "AND (CAST(:fromDate AS timestamp) IS NULL OR " +
+            "    (:dateType = 'CREATED_AT' AND p.createdAt >= :fromDate) " +
+            ") " +
+
+            "AND (CAST(:toDate AS timestamp) IS NULL OR " +
+            "    (:dateType = 'CREATED_AT' AND p.createdAt <= :toDate) " +
+            ")",
 
             countQuery = "SELECT COUNT(p) FROM PaymentTransactionEntity p " +
                     "WHERE 1=1 " +
@@ -46,13 +51,20 @@ public interface PaymentTransactionRepository extends JpaRepository<PaymentTrans
                     ")) " +
                     "AND (:type IS NULL OR p.type = :type) " +
                     "AND (:status IS NULL OR p.status = :status) " +
-                    "AND (CAST(:fromDate AS timestamp) IS NULL OR p.createdAt >= :fromDate) " +
-                    "AND (CAST(:toDate AS timestamp) IS NULL OR p.createdAt <= :toDate)"
+
+                    "AND (CAST(:fromDate AS timestamp) IS NULL OR " +
+                    "    (:dateType = 'CREATED_AT' AND p.createdAt >= :fromDate) " +
+                    ") " +
+
+                    "AND (CAST(:toDate AS timestamp) IS NULL OR " +
+                    "    (:dateType = 'CREATED_AT' AND p.createdAt <= :toDate) " +
+                    ")"
     )
     Page<PaymentTransactionEntity> findPaymentsWithFilter(
             @Param("keyword") String keyword,
             @Param("type") PaymentTransactionType type,
             @Param("status") PaymentTransactionStatus status,
+            @Param("dateType") String dateType,
             @Param("fromDate") LocalDateTime fromDate,
             @Param("toDate") LocalDateTime toDate,
             Pageable pageable

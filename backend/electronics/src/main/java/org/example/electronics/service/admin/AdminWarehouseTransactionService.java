@@ -4,6 +4,7 @@ import org.example.electronics.dto.request.admin.status.AdminUpdateWarehouseTran
 import org.example.electronics.dto.request.admin.warehouse.transaction.AdminWarehouseTransactionRequestDTO;
 import org.example.electronics.dto.response.admin.warehouse.transaction.AdminWarehouseTransactionResponseDTO;
 import org.example.electronics.entity.ReturnRequestEntity;
+import org.example.electronics.entity.enums.DateFilterType;
 import org.example.electronics.entity.enums.WarehouseTransactionStatus;
 import org.example.electronics.entity.enums.WarehouseTransactionType;
 import org.springframework.data.domain.Page;
@@ -17,7 +18,7 @@ public interface AdminWarehouseTransactionService {
     AdminWarehouseTransactionResponseDTO updateWarehouseTransaction(Integer warehouseTransactionId, AdminWarehouseTransactionRequestDTO adminWarehouseTransactionRequestDTO, Integer staffId);
     AdminWarehouseTransactionResponseDTO updateStatusWarehouseTransaction(Integer warehouseTransactionId, AdminUpdateWarehouseTransactionTypeStatusRequestDTO adminUpdateWarehouseTransactionTypeStatusRequestDTO, Integer staffId);
     void deleteWarehouseTransaction(Integer warehouseTransactionId, Integer staffId);
-    Page<AdminWarehouseTransactionResponseDTO> getAllWarehouseTransactions(String keyword, WarehouseTransactionType type, WarehouseTransactionStatus status, LocalDate fromDate, LocalDate toDate, Pageable pageable);
+    Page<AdminWarehouseTransactionResponseDTO> getAllWarehouseTransactions(String keyword, WarehouseTransactionType type, WarehouseTransactionStatus status, DateFilterType dateType, LocalDate fromDate, LocalDate toDate, Pageable pageable);
     AdminWarehouseTransactionResponseDTO getWarehouseTransactionById(Integer warehouseTransactionId);
 
     void autoCreateReturnWarehouseTransaction(ReturnRequestEntity returnRequestEntity, Integer staffId);

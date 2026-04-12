@@ -10,6 +10,7 @@ import org.example.electronics.entity.CategoryEntity;
 import org.example.electronics.entity.CouponEntity;
 import org.example.electronics.entity.enums.CouponStatus;
 import org.example.electronics.entity.enums.CouponTimeStatus;
+import org.example.electronics.entity.enums.DateFilterType;
 import org.example.electronics.mapper.CouponMapper;
 import org.example.electronics.repository.BrandRepository;
 import org.example.electronics.repository.CategoryRepository;
@@ -105,13 +106,15 @@ public class AdminCouponServiceImpl implements AdminCouponService {
 
     @Transactional(readOnly = true)
     @Override
-    public Page<AdminCouponResponseDTO> getAllCoupons(String keyword, CouponTimeStatus timeStatus, CouponStatus status, LocalDate fromDate, LocalDate toDate, Pageable pageable) {
+    public Page<AdminCouponResponseDTO> getAllCoupons(String keyword, CouponTimeStatus timeStatus, CouponStatus status, DateFilterType dateType, LocalDate fromDate, LocalDate toDate, Pageable pageable) {
         LocalDateTime startDateTime = DateTimeUtils.getStartOfDay(fromDate);
         LocalDateTime endDateTime = DateTimeUtils.getEndOfDay(toDate);
 
         String finalKeyword = StringUtils.hasText(keyword) ? keyword.trim() : null;
 
-        Page<CouponEntity> couponEntityPage = couponRepository.findCouponsWithFilter(finalKeyword, timeStatus, status, startDateTime, endDateTime, pageable);
+        String typeString = dateType != null ? dateType.name() : DateFilterType.CREATED_AT.name();
+
+        Page<CouponEntity> couponEntityPage = couponRepository.findCouponsWithFilter(finalKeyword, timeStatus, status, typeString, startDateTime, endDateTime, pageable);
 
         return couponEntityPage.map(couponMapper::toAdminResponseDTO);
     }

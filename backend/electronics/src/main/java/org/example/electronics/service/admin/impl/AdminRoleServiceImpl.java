@@ -8,6 +8,7 @@ import org.example.electronics.dto.response.admin.role.AdminDetailRoleResponseDT
 import org.example.electronics.dto.response.admin.role.AdminRoleResponseDTO;
 import org.example.electronics.entity.PermissionEntity;
 import org.example.electronics.entity.RoleEntity;
+import org.example.electronics.entity.enums.DateFilterType;
 import org.example.electronics.entity.enums.UserStatus;
 import org.example.electronics.mapper.RoleMapper;
 import org.example.electronics.repository.PermissionRepository;
@@ -101,13 +102,15 @@ public class AdminRoleServiceImpl implements AdminRoleService {
 
     @Transactional(readOnly = true)
     @Override
-    public Page<AdminRoleResponseDTO> getAllRoles(String keyword, UserStatus status, LocalDate fromDate, LocalDate toDate, Pageable pageable) {
+    public Page<AdminRoleResponseDTO> getAllRoles(String keyword, UserStatus status, DateFilterType dateType, LocalDate fromDate, LocalDate toDate, Pageable pageable) {
         LocalDateTime startDateTime = DateTimeUtils.getStartOfDay(fromDate);
         LocalDateTime endDateTime = DateTimeUtils.getEndOfDay(toDate);
 
         String finalKeyword = StringUtils.hasText(keyword) ? keyword.trim() : null;
 
-        Page<RoleEntity> roleEntityPage = roleRepository.findRolesWithFilter(finalKeyword, status, startDateTime, endDateTime, pageable);
+        String typeString = dateType != null ? dateType.name() : DateFilterType.CREATED_AT.name();
+
+        Page<RoleEntity> roleEntityPage = roleRepository.findRolesWithFilter(finalKeyword, status, typeString, startDateTime, endDateTime, pageable);
 
         return roleEntityPage.map(roleMapper::toAdminResponseDTO);
     }

@@ -4,6 +4,7 @@ import org.example.electronics.dto.request.admin.warehouse.AdminWarehouseRequest
 import org.example.electronics.dto.request.admin.warehouse.AdminUpdateWarehouseStatusRequestDTO;
 import org.example.electronics.dto.response.admin.warehouse.AdminWarehouseResponseDTO;
 import org.example.electronics.entity.StaffEntity;
+import org.example.electronics.entity.enums.DateFilterType;
 import org.example.electronics.entity.enums.WarehouseStatus;
 import org.example.electronics.entity.order.OrderEntity;
 import org.springframework.data.domain.Page;
@@ -17,7 +18,7 @@ public interface AdminWarehouseService {
     AdminWarehouseResponseDTO updateWarehouse(Integer warehouseId, AdminWarehouseRequestDTO adminWarehouseRequestDTO);
     AdminWarehouseResponseDTO updateStatusWarehouse(Integer warehouseId, AdminUpdateWarehouseStatusRequestDTO adminUpdateWarehouseStatusRequestDTO);
     void deleteWarehouse(Integer warehouseId);
-    Page<AdminWarehouseResponseDTO> getAllWarehouses(String keyword, WarehouseStatus status, LocalDate fromDate, LocalDate toDate, Pageable pageable);
+    Page<AdminWarehouseResponseDTO> getAllWarehouses(String keyword, WarehouseStatus status, DateFilterType dateType, LocalDate fromDate, LocalDate toDate, Pageable pageable);
     AdminWarehouseResponseDTO getWarehouseById(Integer warehouseId);
 
     void processCancelledAndReturnedOrder(OrderEntity orderEntity, StaffEntity currentStaffEntity);

@@ -8,6 +8,7 @@ import org.example.electronics.dto.request.admin.warehouse.AdminWarehouseRequest
 import org.example.electronics.dto.response.admin.warehouse.AdminWarehouseResponseDTO;
 import org.example.electronics.entity.StaffEntity;
 import org.example.electronics.entity.VariantEntity;
+import org.example.electronics.entity.enums.DateFilterType;
 import org.example.electronics.entity.enums.WarehouseStatus;
 import org.example.electronics.entity.enums.WarehouseTransactionStatus;
 import org.example.electronics.entity.enums.WarehouseTransactionType;
@@ -182,13 +183,15 @@ public class AdminWarehouseServiceImpl implements AdminWarehouseService {
 
     @Transactional(readOnly = true)
     @Override
-    public Page<AdminWarehouseResponseDTO> getAllWarehouses(String keyword, WarehouseStatus status, LocalDate fromDate, LocalDate toDate, Pageable pageable) {
+    public Page<AdminWarehouseResponseDTO> getAllWarehouses(String keyword, WarehouseStatus status, DateFilterType dateType, LocalDate fromDate, LocalDate toDate, Pageable pageable) {
         LocalDateTime startDateTime = DateTimeUtils.getStartOfDay(fromDate);
         LocalDateTime endDateTime = DateTimeUtils.getEndOfDay(toDate);
 
         String finalKeyword = StringUtils.hasText(keyword) ? keyword.trim() : null;
 
-        Page<WarehouseEntity> warehouseEntityPagePage = warehouseRepository.findWarehousesWithFilter(finalKeyword, status, startDateTime, endDateTime, pageable);
+        String typeString = dateType != null ? dateType.name() : DateFilterType.CREATED_AT.name();
+
+        Page<WarehouseEntity> warehouseEntityPagePage = warehouseRepository.findWarehousesWithFilter(finalKeyword, status, typeString, startDateTime, endDateTime, pageable);
 
         return warehouseEntityPagePage.map(warehouseMapper::toAdminResponseDTO);
     }

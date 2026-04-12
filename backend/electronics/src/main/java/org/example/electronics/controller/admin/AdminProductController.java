@@ -9,6 +9,7 @@ import org.example.electronics.dto.request.admin.status.AdminUpdateProductStatus
 import org.example.electronics.dto.response.admin.AdminReviewResponseDTO;
 import org.example.electronics.dto.response.admin.product.AdminDetailProductResponseDTO;
 import org.example.electronics.dto.response.admin.product.AdminProductResponseDTO;
+import org.example.electronics.entity.enums.DateFilterType;
 import org.example.electronics.entity.enums.ProductStatus;
 import org.example.electronics.service.admin.AdminProductService;
 import org.example.electronics.service.admin.AdminReviewService;
@@ -97,11 +98,12 @@ public class AdminProductController {
     public ResponseEntity<Page<AdminProductResponseDTO>> getAllProducts(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) ProductStatus status,
+            @RequestParam(defaultValue = "CREATED_AT") DateFilterType dateType,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
             @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        Page<AdminProductResponseDTO> adminProductResponseDTOPage = adminProductService.getAllProducts(keyword, status, fromDate, toDate, pageable);
+        Page<AdminProductResponseDTO> adminProductResponseDTOPage = adminProductService.getAllProducts(keyword, status, dateType, fromDate, toDate, pageable);
 
         return ResponseEntity.ok(adminProductResponseDTOPage);
     }
@@ -127,11 +129,12 @@ public class AdminProductController {
     public ResponseEntity<Page<AdminReviewResponseDTO>> getAllProductReviews(
             @PathVariable Integer productId,
             @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "CREATED_AT") DateFilterType dateType,
             @RequestParam(required = false) LocalDate fromDate,
             @RequestParam(required = false) LocalDate toDate,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        Page<AdminReviewResponseDTO> reviewsPage = adminReviewService.getAllReviewsByProductId(productId, keyword, fromDate, toDate, pageable);
+        Page<AdminReviewResponseDTO> reviewsPage = adminReviewService.getAllReviewsByProductId(productId, keyword, dateType, fromDate, toDate, pageable);
 
         return ResponseEntity.ok(reviewsPage);
     }

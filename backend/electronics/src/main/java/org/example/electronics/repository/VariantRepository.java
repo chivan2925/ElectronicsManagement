@@ -37,8 +37,15 @@ public interface VariantRepository extends JpaRepository<VariantEntity, Integer>
 
             "AND (:status IS NULL OR v.status = :status) " +
 
-            "AND (CAST(:fromDate AS timestamp) IS NULL OR v.createdAt >= :fromDate) " +
-            "AND (CAST(:toDate AS timestamp) IS NULL OR v.createdAt <= :toDate)",
+            "AND (CAST(:fromDate AS timestamp) IS NULL OR " +
+            "    (:dateType = 'CREATED_AT' AND v.createdAt >= :fromDate) OR " +
+            "    (:dateType = 'UPDATED_AT' AND v.updatedAt >= :fromDate) " +
+            ") " +
+
+            "AND (CAST(:toDate AS timestamp) IS NULL OR " +
+            "    (:dateType = 'CREATED_AT' AND v.createdAt <= :toDate) OR " +
+            "    (:dateType = 'UPDATED_AT' AND v.updatedAt <= :toDate) " +
+            ")",
 
             countQuery = "SELECT COUNT(v) FROM VariantEntity v " +
                     "WHERE 1=1 " +
@@ -48,12 +55,21 @@ public interface VariantRepository extends JpaRepository<VariantEntity, Integer>
                     "    OR LOWER(v.slug) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
                     ")) " +
                     "AND (:status IS NULL OR v.status = :status) " +
-                    "AND (CAST(:fromDate AS timestamp) IS NULL OR v.createdAt >= :fromDate) " +
-                    "AND (CAST(:toDate AS timestamp) IS NULL OR v.createdAt <= :toDate)"
+
+                    "AND (CAST(:fromDate AS timestamp) IS NULL OR " +
+                    "    (:dateType = 'CREATED_AT' AND v.createdAt >= :fromDate) OR " +
+                    "    (:dateType = 'UPDATED_AT' AND v.updatedAt >= :fromDate) " +
+                    ") " +
+
+                    "AND (CAST(:toDate AS timestamp) IS NULL OR " +
+                    "    (:dateType = 'CREATED_AT' AND v.createdAt <= :toDate) OR " +
+                    "    (:dateType = 'UPDATED_AT' AND v.updatedAt <= :toDate) " +
+                    ")"
     )
     Page<VariantEntity> findVariantsWithFilter(
             @Param("keyword") String keyword,
             @Param("status") ProductStatus status,
+            @Param("dateType") String dateType,
             @Param("fromDate") LocalDateTime fromDate,
             @Param("toDate") LocalDateTime toDate,
             Pageable pageable

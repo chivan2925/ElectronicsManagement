@@ -14,8 +14,11 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.Objects;
+import java.util.UUID;
 
 @Component
 public class JwtUtils {
@@ -41,6 +44,7 @@ public class JwtUtils {
         if (principal instanceof UserDetails userPrincipal) {
             return Jwts.builder()
                     .subject(userPrincipal.getUsername())
+                    .id(UUID.randomUUID().toString())
                     .issuedAt(new Date())
                     .expiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
                     .signWith(key())
@@ -80,5 +84,27 @@ public class JwtUtils {
         }
 
         return false;
+    }
+
+    public String extractTokenId(String token) {
+        return Jwts.parser()
+                .verifyWith(key())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .getId();
+    }
+
+    public LocalDateTime extractExpiration(String token) {
+        Date expirationDate = Jwts.parser()
+                .verifyWith(key())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .getExpiration();
+
+        return expirationDate.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
     }
 }

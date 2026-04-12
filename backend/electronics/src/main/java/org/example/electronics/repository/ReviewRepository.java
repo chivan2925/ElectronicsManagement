@@ -18,12 +18,20 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity, Integer> {
             "    OR LOWER(r.content) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
             ")) " +
 
-            "AND (CAST(:fromDate AS timestamp) IS NULL OR r.createdAt >= :fromDate) " +
-            "AND (CAST(:toDate AS timestamp) IS NULL OR r.createdAt <= :toDate)"
+            "AND (CAST(:fromDate AS timestamp) IS NULL OR " +
+            "    (:dateType = 'CREATED_AT' AND r.createdAt >= :fromDate) OR " +
+            "    (:dateType = 'UPDATED_AT' AND r.updatedAt >= :fromDate) " +
+            ") " +
+
+            "AND (CAST(:toDate AS timestamp) IS NULL OR " +
+            "    (:dateType = 'CREATED_AT' AND r.createdAt <= :toDate) OR " +
+            "    (:dateType = 'UPDATED_AT' AND r.updatedAt <= :toDate) " +
+            ")"
     )
     Page<ReviewEntity> findReviewsWithFilterByProductId(
             @Param("productId") Integer productId,
             @Param("keyword") String keyword,
+            @Param("dateType") String dateType,
             @Param("fromDate") LocalDateTime fromDate,
             @Param("toDate") LocalDateTime toDate,
             Pageable pageable

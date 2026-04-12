@@ -8,6 +8,7 @@ import org.example.electronics.config.payment.VNPayConfig;
 import org.example.electronics.dto.response.admin.AdminPaymentTransactionResponseDTO;
 import org.example.electronics.entity.PaymentTransactionEntity;
 import org.example.electronics.entity.ReturnRequestEntity;
+import org.example.electronics.entity.enums.DateFilterType;
 import org.example.electronics.entity.enums.PaymentProvider;
 import org.example.electronics.entity.enums.PaymentTransactionStatus;
 import org.example.electronics.entity.enums.PaymentTransactionType;
@@ -51,13 +52,15 @@ public class AdminPaymentTransactionServiceImpl implements AdminPaymentTransacti
 
     @Transactional(readOnly = true)
     @Override
-    public Page<AdminPaymentTransactionResponseDTO> getAllPaymentTransactions(String keyword, PaymentTransactionType type, PaymentTransactionStatus status, LocalDate fromDate, LocalDate toDate, Pageable pageable) {
+    public Page<AdminPaymentTransactionResponseDTO> getAllPaymentTransactions(String keyword, PaymentTransactionType type, PaymentTransactionStatus status, DateFilterType dateType, LocalDate fromDate, LocalDate toDate, Pageable pageable) {
         LocalDateTime startDateTime = DateTimeUtils.getStartOfDay(fromDate);
         LocalDateTime endDateTime = DateTimeUtils.getEndOfDay(toDate);
 
         String finalKeyword = StringUtils.hasText(keyword) ? keyword.trim() : null;
 
-        Page<PaymentTransactionEntity> entityPage = paymentTransactionRepository.findPaymentsWithFilter(finalKeyword, type, status, startDateTime, endDateTime, pageable);
+        String typeString = dateType != null ? dateType.name() : DateFilterType.CREATED_AT.name();
+
+        Page<PaymentTransactionEntity> entityPage = paymentTransactionRepository.findPaymentsWithFilter(finalKeyword, type, status, typeString, startDateTime, endDateTime, pageable);
 
         return entityPage.map(paymentTransactionMapper::toAdminResponseDTO);
     }

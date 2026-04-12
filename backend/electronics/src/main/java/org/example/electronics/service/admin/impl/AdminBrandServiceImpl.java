@@ -6,6 +6,7 @@ import org.example.electronics.dto.request.admin.AdminBrandRequestDTO;
 import org.example.electronics.dto.request.admin.status.AdminUpdateProductStatusRequestDTO;
 import org.example.electronics.dto.response.admin.AdminBrandResponseDTO;
 import org.example.electronics.entity.BrandEntity;
+import org.example.electronics.entity.enums.DateFilterType;
 import org.example.electronics.entity.enums.ProductStatus;
 import org.example.electronics.mapper.BrandMapper;
 import org.example.electronics.repository.BrandRepository;
@@ -84,13 +85,15 @@ public class AdminBrandServiceImpl implements AdminBrandService {
 
     @Transactional(readOnly = true)
     @Override
-    public Page<AdminBrandResponseDTO> getAllBrands(String keyword, ProductStatus status, LocalDate fromDate, LocalDate toDate, Pageable pageable) {
+    public Page<AdminBrandResponseDTO> getAllBrands(String keyword, ProductStatus status, DateFilterType dateType, LocalDate fromDate, LocalDate toDate, Pageable pageable) {
         LocalDateTime startDateTime = DateTimeUtils.getStartOfDay(fromDate);
         LocalDateTime endDateTime = DateTimeUtils.getEndOfDay(toDate);
 
         String finalKeyword = StringUtils.hasText(keyword) ? keyword.trim() : null;
 
-        Page<BrandEntity> brandEntityPage = brandRepository.findBrandsWithFilter(finalKeyword, status, startDateTime, endDateTime, pageable);
+        String typeString = dateType != null ? dateType.name() : DateFilterType.CREATED_AT.name();
+
+        Page<BrandEntity> brandEntityPage = brandRepository.findBrandsWithFilter(finalKeyword, status, typeString, startDateTime, endDateTime, pageable);
 
         return brandEntityPage.map(brandMapper::toAdminResponseDTO);
     }

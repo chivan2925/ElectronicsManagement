@@ -413,6 +413,12 @@ Table warehouse_transactions {
   updated_at datetime [default: `now()`, not null]
 }
 
+Table invalidated_tokens {
+  id varchar(255) [pk]
+  expiry_time timestamp [not null]
+  created_at datetime [default: `now()`, not null]
+}
+
 // =======================
 // JOIN / RELATION TABLES
 // =======================

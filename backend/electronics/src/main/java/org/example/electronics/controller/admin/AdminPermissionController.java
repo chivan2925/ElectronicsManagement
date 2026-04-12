@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.example.electronics.dto.response.admin.AdminPermissionResponseDTO;
+import org.example.electronics.entity.enums.DateFilterType;
 import org.example.electronics.service.admin.AdminPermissionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,11 +34,12 @@ public class AdminPermissionController {
     )
     public ResponseEntity<Page<AdminPermissionResponseDTO>> getAllPermissions(
             @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "CREATED_AT") DateFilterType dateType,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
             @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        Page<AdminPermissionResponseDTO> adminPermissionResponseDTOPage = adminPermissionService.getAllPermissions(keyword, fromDate, toDate, pageable);
+        Page<AdminPermissionResponseDTO> adminPermissionResponseDTOPage = adminPermissionService.getAllPermissions(keyword, dateType, fromDate, toDate, pageable);
 
         return ResponseEntity.ok(adminPermissionResponseDTOPage);
     }

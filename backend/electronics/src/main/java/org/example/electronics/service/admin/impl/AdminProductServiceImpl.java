@@ -11,6 +11,7 @@ import org.example.electronics.entity.BrandEntity;
 import org.example.electronics.entity.CategoryEntity;
 import org.example.electronics.entity.MediaEntity;
 import org.example.electronics.entity.ProductEntity;
+import org.example.electronics.entity.enums.DateFilterType;
 import org.example.electronics.entity.enums.ProductStatus;
 import org.example.electronics.mapper.MediaMapper;
 import org.example.electronics.mapper.ProductMapper;
@@ -142,13 +143,15 @@ public class AdminProductServiceImpl implements AdminProductService {
 
     @Transactional(readOnly = true)
     @Override
-    public Page<AdminProductResponseDTO> getAllProducts(String keyword, ProductStatus status, LocalDate fromDate, LocalDate toDate, Pageable pageable) {
+    public Page<AdminProductResponseDTO> getAllProducts(String keyword, ProductStatus status, DateFilterType dateType, LocalDate fromDate, LocalDate toDate, Pageable pageable) {
         LocalDateTime startDateTime = DateTimeUtils.getStartOfDay(fromDate);
         LocalDateTime endDateTime = DateTimeUtils.getEndOfDay(toDate);
 
         String finalKeyword = StringUtils.hasText(keyword) ? keyword.trim() : null;
 
-        Page<ProductEntity> productEntityPage = productRepository.findProductsWithFilter(finalKeyword, status, startDateTime, endDateTime, pageable);
+        String typeString = dateType != null ? dateType.name() : DateFilterType.CREATED_AT.name();
+
+        Page<ProductEntity> productEntityPage = productRepository.findProductsWithFilter(finalKeyword, status, typeString, startDateTime, endDateTime, pageable);
 
         return productEntityPage.map(productMapper::toAdminResponseDTO);
     }

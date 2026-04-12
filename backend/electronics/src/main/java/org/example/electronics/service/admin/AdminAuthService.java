@@ -6,4 +6,6 @@ import org.example.electronics.dto.response.admin.AdminLoginResponseDTO;
 public interface AdminAuthService {
 
     AdminLoginResponseDTO login(AdminLoginRequestDTO adminLoginRequestDTO);
+
+    void logout(String authHeader);
 }

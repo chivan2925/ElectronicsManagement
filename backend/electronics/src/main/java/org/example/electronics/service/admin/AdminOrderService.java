@@ -16,7 +16,7 @@ public interface AdminOrderService {
 
     Page<AdminOrderResponseDTO> getAllOrders(String keyword, OrderStatus status, PaymentMethodType type,
                                              PaymentStatus paymentStatus, ShippingProvider provider, ShippingStatus shippingStatus,
-                                             LocalDate fromDate, LocalDate toDate, Pageable pageable);
+                                             DateFilterType dateType, LocalDate fromDate, LocalDate toDate, Pageable pageable);
 
     AdminOrderDetailResponseDTO getOrderById(Integer orderId);
 }

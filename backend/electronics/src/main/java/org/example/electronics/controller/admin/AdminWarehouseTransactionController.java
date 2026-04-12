@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.electronics.dto.request.admin.status.AdminUpdateWarehouseTransactionTypeStatusRequestDTO;
 import org.example.electronics.dto.request.admin.warehouse.transaction.AdminWarehouseTransactionRequestDTO;
 import org.example.electronics.dto.response.admin.warehouse.transaction.AdminWarehouseTransactionResponseDTO;
+import org.example.electronics.entity.enums.DateFilterType;
 import org.example.electronics.entity.enums.WarehouseTransactionStatus;
 import org.example.electronics.entity.enums.WarehouseTransactionType;
 import org.example.electronics.security.auth.admin.StaffDetails;
@@ -109,11 +110,12 @@ public class AdminWarehouseTransactionController {
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) WarehouseTransactionType type,
             @RequestParam(required = false) WarehouseTransactionStatus status,
+            @RequestParam(defaultValue = "CREATED_AT") DateFilterType dateType,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
             @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        Page<AdminWarehouseTransactionResponseDTO> responseDTOPage = adminWarehouseTransactionService.getAllWarehouseTransactions(keyword, type, status, fromDate, toDate, pageable);
+        Page<AdminWarehouseTransactionResponseDTO> responseDTOPage = adminWarehouseTransactionService.getAllWarehouseTransactions(keyword, type, status, dateType, fromDate, toDate, pageable);
 
         return ResponseEntity.ok(responseDTOPage);
     }

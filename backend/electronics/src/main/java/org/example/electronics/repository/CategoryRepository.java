@@ -34,12 +34,20 @@ public interface CategoryRepository extends JpaRepository<CategoryEntity, Intege
 
             "AND (:status IS NULL OR c.status = :status) " +
 
-            "AND (CAST(:fromDate AS timestamp) IS NULL OR c.createdAt >= :fromDate) " +
-            "AND (CAST(:toDate AS timestamp) IS NULL OR c.createdAt <= :toDate)"
+            "AND (CAST(:fromDate AS timestamp) IS NULL OR " +
+            "    (:dateType = 'CREATED_AT' AND c.createdAt >= :fromDate) OR " +
+            "    (:dateType = 'UPDATED_AT' AND c.updatedAt >= :fromDate) " +
+            ") " +
+
+            "AND (CAST(:toDate AS timestamp) IS NULL OR " +
+            "    (:dateType = 'CREATED_AT' AND c.createdAt <= :toDate) OR " +
+            "    (:dateType = 'UPDATED_AT' AND c.updatedAt <= :toDate) " +
+            ")"
     )
     Page<CategoryEntity> findParentCategoriesWithFilter(
             @Param("keyword") String keyword,
             @Param("status") ProductStatus status,
+            @Param("dateType") String dateType,
             @Param("fromDate") LocalDateTime fromDate,
             @Param("toDate") LocalDateTime toDate,
             Pageable pageable
@@ -55,13 +63,21 @@ public interface CategoryRepository extends JpaRepository<CategoryEntity, Intege
 
             "AND (:status IS NULL OR c.status = :status) " +
 
-            "AND (CAST(:fromDate AS timestamp) IS NULL OR c.createdAt >= :fromDate) " +
-            "AND (CAST(:toDate AS timestamp) IS NULL OR c.createdAt <= :toDate)"
+            "AND (CAST(:fromDate AS timestamp) IS NULL OR " +
+            "    (:dateType = 'CREATED_AT' AND c.createdAt >= :fromDate) OR " +
+            "    (:dateType = 'UPDATED_AT' AND c.updatedAt >= :fromDate) " +
+            ") " +
+
+            "AND (CAST(:toDate AS timestamp) IS NULL OR " +
+            "    (:dateType = 'CREATED_AT' AND c.createdAt <= :toDate) OR " +
+            "    (:dateType = 'UPDATED_AT' AND c.updatedAt <= :toDate) " +
+            ")"
     )
     Page<CategoryEntity> findSubCategoriesWithFilter(
             @Param("parentId") Integer parentId,
             @Param("keyword") String keyword,
             @Param("status") ProductStatus status,
+            @Param("dateType") String dateType,
             @Param("fromDate") LocalDateTime fromDate,
             @Param("toDate") LocalDateTime toDate,
             Pageable pageable

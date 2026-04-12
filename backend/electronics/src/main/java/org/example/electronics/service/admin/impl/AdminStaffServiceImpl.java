@@ -7,6 +7,7 @@ import org.example.electronics.dto.request.admin.status.AdminUpdateUserStatusReq
 import org.example.electronics.dto.response.admin.AdminStaffResponseDTO;
 import org.example.electronics.entity.RoleEntity;
 import org.example.electronics.entity.StaffEntity;
+import org.example.electronics.entity.enums.DateFilterType;
 import org.example.electronics.entity.enums.UserStatus;
 import org.example.electronics.mapper.StaffMapper;
 import org.example.electronics.repository.RoleRepository;
@@ -109,13 +110,15 @@ public class AdminStaffServiceImpl implements AdminStaffService {
 
     @Transactional(readOnly = true)
     @Override
-    public Page<AdminStaffResponseDTO> getAllStaffs(String keyword, UserStatus status, LocalDate fromDate, LocalDate toDate, Pageable pageable) {
+    public Page<AdminStaffResponseDTO> getAllStaffs(String keyword, UserStatus status, DateFilterType dateType, LocalDate fromDate, LocalDate toDate, Pageable pageable) {
         LocalDateTime startDateTime = DateTimeUtils.getStartOfDay(fromDate);
         LocalDateTime endDateTime = DateTimeUtils.getEndOfDay(toDate);
 
         String finalKeyword = StringUtils.hasText(keyword) ? keyword.trim() : null;
 
-        Page<StaffEntity> staffEntityPage = staffRepository.findStaffsWithFilter(finalKeyword, status, startDateTime, endDateTime, pageable);
+        String typeString = dateType != null ? dateType.name() : DateFilterType.ASSIGNED_AT.name();
+
+        Page<StaffEntity> staffEntityPage = staffRepository.findStaffsWithFilter(finalKeyword, status, typeString, startDateTime, endDateTime, pageable);
 
         return staffEntityPage.map(staffMapper::toAdminResponseDTO);
     }

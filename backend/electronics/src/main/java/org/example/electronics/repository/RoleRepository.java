@@ -26,12 +26,20 @@ public interface RoleRepository extends JpaRepository<RoleEntity, Integer> {
 
             "AND (:status IS NULL OR r.status = :status) " +
 
-            "AND (CAST(:fromDate AS timestamp) IS NULL OR r.createdAt >= :fromDate) " +
-            "AND (CAST(:toDate AS timestamp) IS NULL OR r.createdAt <= :toDate)"
+            "AND (CAST(:fromDate AS timestamp) IS NULL OR " +
+            "    (:dateType = 'CREATED_AT' AND r.createdAt >= :fromDate) OR " +
+            "    (:dateType = 'UPDATED_AT' AND r.updatedAt >= :fromDate) " +
+            ") " +
+
+            "AND (CAST(:toDate AS timestamp) IS NULL OR " +
+            "    (:dateType = 'CREATED_AT' AND r.createdAt <= :toDate) OR " +
+            "    (:dateType = 'UPDATED_AT' AND r.updatedAt <= :toDate) " +
+            ")"
     )
     Page<RoleEntity> findRolesWithFilter(
             @Param("keyword") String keyword,
             @Param("status") UserStatus status,
+            @Param("dateType") String dateType,
             @Param("fromDate") LocalDateTime fromDate,
             @Param("toDate") LocalDateTime toDate,
             Pageable pageable

@@ -6,6 +6,7 @@ import org.example.electronics.dto.request.admin.status.AdminUpdateReturnRequest
 import org.example.electronics.dto.response.admin.returnrequest.AdminDetailReturnRequestResponseDTO;
 import org.example.electronics.dto.response.admin.returnrequest.AdminReturnRequestResponseDTO;
 import org.example.electronics.entity.ReturnRequestEntity;
+import org.example.electronics.entity.enums.DateFilterType;
 import org.example.electronics.entity.enums.ReturnRequestStatus;
 import org.example.electronics.mapper.ReturnRequestMapper;
 import org.example.electronics.repository.ReturnRequestRepository;
@@ -85,13 +86,15 @@ public class AdminReturnRequestServiceImpl implements AdminReturnRequestService 
 
     @Transactional(readOnly = true)
     @Override
-    public Page<AdminReturnRequestResponseDTO> getAllReturnRequests(String keyword, ReturnRequestStatus status, LocalDate fromDate, LocalDate toDate, Pageable pageable) {
+    public Page<AdminReturnRequestResponseDTO> getAllReturnRequests(String keyword, ReturnRequestStatus status, DateFilterType dateType, LocalDate fromDate, LocalDate toDate, Pageable pageable) {
         LocalDateTime startDateTime = DateTimeUtils.getStartOfDay(fromDate);
         LocalDateTime endDateTime = DateTimeUtils.getEndOfDay(toDate);
 
         String finalKeyword = StringUtils.hasText(keyword) ? keyword.trim() : null;
 
-        Page<ReturnRequestEntity> returnRequestEntityPage = returnRequestRepository.findAllReturnRequestsWithFilter(finalKeyword, status, startDateTime, endDateTime, pageable);
+        String typeString = dateType != null ? dateType.name() : DateFilterType.CREATED_AT.name();
+
+        Page<ReturnRequestEntity> returnRequestEntityPage = returnRequestRepository.findAllReturnRequestsWithFilter(finalKeyword, status, typeString, startDateTime, endDateTime, pageable);
 
         return returnRequestEntityPage.map(returnRequestMapper::toAdminResponseDTO);
     }

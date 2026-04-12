@@ -5,7 +5,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.electronics.repository.InvalidatedTokenRepository;
 import org.example.electronics.security.auth.admin.StaffDetailsService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,15 +21,13 @@ import java.io.IOException;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtils jwtUtils;
     private final StaffDetailsService staffDetailsService;
 
-    public JwtAuthenticationFilter(JwtUtils jwtUtils, StaffDetailsService staffDetailsService) {
-        this.jwtUtils = jwtUtils;
-        this.staffDetailsService = staffDetailsService;
-    }
+    private final InvalidatedTokenRepository invalidatedTokenRepository;
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest httpServletRequest,
@@ -37,14 +37,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String jwt = parseJwt(httpServletRequest);
 
             if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
-                String email = jwtUtils.getEmailFromJwtToken(jwt);
-                UserDetails userDetails = staffDetailsService.loadUserByUsername(email);
-                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities()
-                );
-                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
 
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                String tokenId = jwtUtils.extractTokenId(jwt);
+
+                if (tokenId != null && !invalidatedTokenRepository.existsById(tokenId)) {
+                    String email = jwtUtils.getEmailFromJwtToken(jwt);
+
+                    UserDetails userDetails = staffDetailsService.loadUserByUsername(email);
+                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities()
+                    );
+                    authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
+
+                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                }
+                else {
+                    log.warn("Cảnh báo: Phát hiện Token đã bị đăng xuất cố tình truy cập. TokenId: {}", tokenId);
+                }
             }
         }
         catch (Exception e) {

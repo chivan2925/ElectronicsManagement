@@ -31,13 +31,21 @@ public interface CouponRepository extends JpaRepository<CouponEntity, Integer> {
 
             "AND (:status IS NULL OR c.status = :status) " +
 
-            "AND (CAST(:fromDate AS timestamp) IS NULL OR c.createdAt >= :fromDate) " +
-            "AND (CAST(:toDate AS timestamp) IS NULL OR c.createdAt <= :toDate)"
+            "AND (CAST(:fromDate AS timestamp) IS NULL OR " +
+            "    (:dateType = 'CREATED_AT' AND c.createdAt >= :fromDate) OR " +
+            "    (:dateType = 'UPDATED_AT' AND c.updatedAt >= :fromDate) " +
+            ") " +
+
+            "AND (CAST(:toDate AS timestamp) IS NULL OR " +
+            "    (:dateType = 'CREATED_AT' AND c.createdAt <= :toDate) OR " +
+            "    (:dateType = 'UPDATED_AT' AND c.updatedAt <= :toDate) " +
+            ")"
     )
     Page<CouponEntity> findCouponsWithFilter(
             @Param("keyword") String keyword,
             @Param("timeStatus") CouponTimeStatus timeStatus,
             @Param("status") CouponStatus status,
+            @Param("dateType") String dateType,
             @Param("fromDate") LocalDateTime fromDate,
             @Param("toDate") LocalDateTime toDate,
             Pageable pageable

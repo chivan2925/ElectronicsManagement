@@ -7,6 +7,7 @@ import org.example.electronics.dto.request.admin.status.AdminUpdateProductStatus
 import org.example.electronics.dto.response.admin.category.AdminCategoryResponseDTO;
 import org.example.electronics.dto.response.admin.category.AdminDetailCategoryResponseDTO;
 import org.example.electronics.entity.CategoryEntity;
+import org.example.electronics.entity.enums.DateFilterType;
 import org.example.electronics.entity.enums.ProductStatus;
 import org.example.electronics.mapper.CategoryMapper;
 import org.example.electronics.repository.CategoryRepository;
@@ -131,20 +132,22 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
 
     @Transactional(readOnly = true)
     @Override
-    public Page<AdminCategoryResponseDTO> getAllParentCategories(String keyword, ProductStatus status, LocalDate fromDate, LocalDate toDate, Pageable pageable) {
+    public Page<AdminCategoryResponseDTO> getAllParentCategories(String keyword, ProductStatus status, DateFilterType dateType, LocalDate fromDate, LocalDate toDate, Pageable pageable) {
         LocalDateTime startDateTime = DateTimeUtils.getStartOfDay(fromDate);
         LocalDateTime endDateTime = DateTimeUtils.getEndOfDay(toDate);
 
         String finalKeyword = StringUtils.hasText(keyword) ? keyword.trim() : null;
 
-        Page<CategoryEntity> categoryEntityPage = categoryRepository.findParentCategoriesWithFilter(finalKeyword, status, startDateTime, endDateTime, pageable);
+        String typeString = dateType != null ? dateType.name() : DateFilterType.CREATED_AT.name();
+
+        Page<CategoryEntity> categoryEntityPage = categoryRepository.findParentCategoriesWithFilter(finalKeyword, status, typeString, startDateTime, endDateTime, pageable);
 
         return categoryEntityPage.map(categoryMapper::toAdminResponseDTO);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public Page<AdminCategoryResponseDTO> getAllSubCategories(Integer parentId, String keyword, ProductStatus status, LocalDate fromDate, LocalDate toDate, Pageable pageable) {
+    public Page<AdminCategoryResponseDTO> getAllSubCategories(Integer parentId, String keyword, ProductStatus status, DateFilterType dateType, LocalDate fromDate, LocalDate toDate, Pageable pageable) {
         if(!categoryRepository.existsById(parentId)) {
             throw new EntityNotFoundException("Không tìm thấy danh mục cha với ID: " + parentId);
         }
@@ -154,7 +157,9 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
 
         String finalKeyword = StringUtils.hasText(keyword) ? keyword.trim() : null;
 
-        Page<CategoryEntity> categoryEntityPage = categoryRepository.findSubCategoriesWithFilter(parentId, finalKeyword, status, startDateTime, endDateTime, pageable);
+        String typeString = dateType != null ? dateType.name() : DateFilterType.CREATED_AT.name();
+
+        Page<CategoryEntity> categoryEntityPage = categoryRepository.findSubCategoriesWithFilter(parentId, finalKeyword, status, typeString, startDateTime, endDateTime, pageable);
 
         return categoryEntityPage.map(categoryMapper::toAdminResponseDTO);
     }

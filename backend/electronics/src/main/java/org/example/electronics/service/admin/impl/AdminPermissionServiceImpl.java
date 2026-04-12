@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.example.electronics.dto.response.admin.AdminPermissionResponseDTO;
 import org.example.electronics.entity.PermissionEntity;
+import org.example.electronics.entity.enums.DateFilterType;
 import org.example.electronics.mapper.PermissionMapper;
 import org.example.electronics.repository.PermissionRepository;
 import org.example.electronics.service.admin.AdminPermissionService;
@@ -26,13 +27,15 @@ public class AdminPermissionServiceImpl implements AdminPermissionService {
 
     @Transactional(readOnly = true)
     @Override
-    public Page<AdminPermissionResponseDTO> getAllPermissions(String keyword, LocalDate fromDate, LocalDate toDate, Pageable pageable) {
+    public Page<AdminPermissionResponseDTO> getAllPermissions(String keyword, DateFilterType dateType, LocalDate fromDate, LocalDate toDate, Pageable pageable) {
         LocalDateTime startDateTime = DateTimeUtils.getStartOfDay(fromDate);
         LocalDateTime endDateTime = DateTimeUtils.getEndOfDay(toDate);
 
         String finalKeyword = StringUtils.hasText(keyword) ? keyword.trim() : null;
 
-        Page<PermissionEntity> permissionEntityPage = permissionRepository.findPermissionsWithFilter(finalKeyword, startDateTime, endDateTime, pageable);
+        String typeString = dateType != null ? dateType.name() : DateFilterType.CREATED_AT.name();
+
+        Page<PermissionEntity> permissionEntityPage = permissionRepository.findPermissionsWithFilter(finalKeyword, typeString, startDateTime, endDateTime, pageable);
 
         return permissionEntityPage.map(permissionMapper::toAdminResponseDTO);
     }

@@ -1,5 +1,6 @@
 package org.example.electronics.security;
 
+import lombok.RequiredArgsConstructor;
 import org.example.electronics.security.auth.admin.StaffDetailsService;
 import org.example.electronics.security.jwt.JwtAuthEntryPoint;
 import org.example.electronics.security.jwt.JwtAuthenticationFilter;
@@ -21,17 +22,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     private final StaffDetailsService staffDetailsService;
     private final JwtAuthEntryPoint jwtAuthEntryPoint;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-
-    public SecurityConfig(StaffDetailsService staffDetailsService, JwtAuthEntryPoint jwtAuthEntryPoint, JwtAuthenticationFilter jwtAuthenticationFilter) {
-        this.staffDetailsService = staffDetailsService;
-        this.jwtAuthEntryPoint = jwtAuthEntryPoint;
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {

@@ -30,8 +30,15 @@ public interface OrderRepository extends JpaRepository<OrderEntity, Integer> {
             "AND (:provider IS NULL OR o.shippingProvider = :provider) " +
             "AND (:shippingStatus IS NULL OR o.shippingStatus = :shippingStatus) " +
 
-            "AND (CAST(:fromDate AS timestamp) IS NULL OR o.createdAt >= :fromDate) " +
-            "AND (CAST(:toDate AS timestamp) IS NULL OR o.createdAt <= :toDate)"
+            "AND (CAST(:fromDate AS timestamp) IS NULL OR " +
+            "    (:dateType = 'CREATED_AT' AND o.createdAt >= :fromDate) OR " +
+            "    (:dateType = 'UPDATED_AT' AND o.updatedAt >= :fromDate) " +
+            ") " +
+
+            "AND (CAST(:toDate AS timestamp) IS NULL OR " +
+            "    (:dateType = 'CREATED_AT' AND o.createdAt <= :toDate) OR " +
+            "    (:dateType = 'UPDATED_AT' AND o.updatedAt <= :toDate) " +
+            ")"
     )
     Page<OrderEntity> findOrdersWithFilter(
             @Param("keyword") String keyword,
@@ -40,6 +47,7 @@ public interface OrderRepository extends JpaRepository<OrderEntity, Integer> {
             @Param("paymentStatus") PaymentStatus paymentStatus,
             @Param("provider") ShippingProvider provider,
             @Param("shippingStatus") ShippingStatus shippingStatus,
+            @Param("dateType") String dateType,
             @Param("fromDate") LocalDateTime fromDate,
             @Param("toDate") LocalDateTime toDate,
             Pageable pageable

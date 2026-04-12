@@ -58,11 +58,12 @@ public class AdminOrderController {
             @RequestParam(required = false) PaymentStatus paymentStatus,
             @RequestParam(required = false) ShippingProvider provider,
             @RequestParam(required = false) ShippingStatus shippingStatus,
+            @RequestParam(defaultValue = "CREATED_AT") DateFilterType dateType,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
             @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        Page<AdminOrderResponseDTO> adminOrderResponseDTOPage = adminOrderService.getAllOrders(keyword, status, type, paymentStatus, provider, shippingStatus, fromDate, toDate, pageable);
+        Page<AdminOrderResponseDTO> adminOrderResponseDTOPage = adminOrderService.getAllOrders(keyword, status, type, paymentStatus, provider, shippingStatus, dateType, fromDate, toDate, pageable);
 
         return ResponseEntity.ok(adminOrderResponseDTOPage);
     }

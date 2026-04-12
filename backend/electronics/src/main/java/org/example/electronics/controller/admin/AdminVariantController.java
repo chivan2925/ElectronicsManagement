@@ -8,6 +8,7 @@ import org.example.electronics.dto.request.admin.status.AdminUpdateProductStatus
 import org.example.electronics.dto.request.admin.AdminVariantRequestDTO;
 import org.example.electronics.dto.response.admin.variant.AdminDetailVariantResponseDTO;
 import org.example.electronics.dto.response.admin.variant.AdminVariantResponseDTO;
+import org.example.electronics.entity.enums.DateFilterType;
 import org.example.electronics.entity.enums.ProductStatus;
 import org.example.electronics.service.admin.AdminVariantService;
 import org.springframework.data.domain.Page;
@@ -94,11 +95,12 @@ public class AdminVariantController {
     public ResponseEntity<Page<AdminVariantResponseDTO>> getAllVariants(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) ProductStatus status,
+            @RequestParam(defaultValue = "CREATED_AT") DateFilterType dateType,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
             @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        Page<AdminVariantResponseDTO> adminVariantResponseDTOPage = adminVariantService.getAllVariants(keyword, status, fromDate, toDate, pageable);
+        Page<AdminVariantResponseDTO> adminVariantResponseDTOPage = adminVariantService.getAllVariants(keyword, status, dateType, fromDate, toDate, pageable);
 
         return ResponseEntity.ok(adminVariantResponseDTOPage);
     }

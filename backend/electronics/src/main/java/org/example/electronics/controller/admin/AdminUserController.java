@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.electronics.dto.request.admin.status.AdminUpdateUserStatusRequestDTO;
 import org.example.electronics.dto.response.admin.AdminUserResponseDTO;
+import org.example.electronics.entity.enums.DateFilterType;
 import org.example.electronics.entity.enums.UserStatus;
 import org.example.electronics.service.admin.AdminUserService;
 import org.springframework.data.domain.Page;
@@ -60,11 +61,12 @@ public class AdminUserController {
     public ResponseEntity<Page<AdminUserResponseDTO>> getAllUsers(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) UserStatus status,
+            @RequestParam(defaultValue = "CREATED_AT") DateFilterType dateType,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
             @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        Page<AdminUserResponseDTO> allUsersPage = adminUserService.getAllUsers(keyword, status, fromDate, toDate, pageable);
+        Page<AdminUserResponseDTO> allUsersPage = adminUserService.getAllUsers(keyword, status, dateType, fromDate, toDate, pageable);
 
         return ResponseEntity.ok(allUsersPage);
     }

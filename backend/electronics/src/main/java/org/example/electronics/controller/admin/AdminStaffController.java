@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.electronics.dto.request.admin.AdminStaffRequestDTO;
 import org.example.electronics.dto.request.admin.status.AdminUpdateUserStatusRequestDTO;
 import org.example.electronics.dto.response.admin.AdminStaffResponseDTO;
+import org.example.electronics.entity.enums.DateFilterType;
 import org.example.electronics.entity.enums.UserStatus;
 import org.example.electronics.service.admin.AdminStaffService;
 import org.springframework.data.domain.Page;
@@ -93,11 +94,12 @@ public class AdminStaffController {
     public ResponseEntity<Page<AdminStaffResponseDTO>> getAllStaffs(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) UserStatus status,
+            @RequestParam(defaultValue = "ASSIGNED_AT") DateFilterType dateType,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
             @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        Page<AdminStaffResponseDTO> adminStaffResponseDTOPage = adminStaffService.getAllStaffs(keyword, status, fromDate, toDate, pageable);
+        Page<AdminStaffResponseDTO> adminStaffResponseDTOPage = adminStaffService.getAllStaffs(keyword, status, dateType, fromDate, toDate, pageable);
 
         return ResponseEntity.ok(adminStaffResponseDTOPage);
     }
