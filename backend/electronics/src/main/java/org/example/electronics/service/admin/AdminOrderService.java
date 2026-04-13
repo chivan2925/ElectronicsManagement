@@ -4,9 +4,9 @@ import org.example.electronics.dto.request.admin.order.AdminUpdateOrderRequestDT
 import org.example.electronics.dto.response.admin.order.AdminOrderDetailResponseDTO;
 import org.example.electronics.dto.response.admin.order.AdminOrderResponseDTO;
 import org.example.electronics.entity.enums.*;
+import org.example.electronics.entity.order.OrderEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 
@@ -19,4 +19,6 @@ public interface AdminOrderService {
                                              DateFilterType dateType, LocalDate fromDate, LocalDate toDate, Pageable pageable);
 
     AdminOrderDetailResponseDTO getOrderById(Integer orderId);
+
+    void cancelSingleExpiredOrder(OrderEntity order);
 }

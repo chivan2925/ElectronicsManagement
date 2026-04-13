@@ -2,6 +2,7 @@ package org.example.electronics.service.admin.impl;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.electronics.dto.request.admin.status.AdminUpdateWarehouseTransactionTypeStatusRequestDTO;
 import org.example.electronics.dto.request.admin.warehouse.transaction.AdminWarehouseTransactionDetailRequestDTO;
 import org.example.electronics.dto.request.admin.warehouse.transaction.AdminWarehouseTransactionRequestDTO;
@@ -11,6 +12,8 @@ import org.example.electronics.entity.VariantEntity;
 import org.example.electronics.entity.enums.DateFilterType;
 import org.example.electronics.entity.enums.WarehouseTransactionStatus;
 import org.example.electronics.entity.enums.WarehouseTransactionType;
+import org.example.electronics.entity.order.OrderDetailEntity;
+import org.example.electronics.entity.order.OrderEntity;
 import org.example.electronics.entity.warehouse.WarehouseDetailEntity;
 import org.example.electronics.entity.warehouse.WarehouseEntity;
 import org.example.electronics.entity.warehouse.transaction.WarehouseTransactionDetailEntity;
@@ -32,6 +35,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AdminWarehouseTransactionServiceImpl implements AdminWarehouseTransactionService {
 
     private final WarehouseTransactionMapper warehouseTransactionMapper;
@@ -348,19 +352,81 @@ public class AdminWarehouseTransactionServiceImpl implements AdminWarehouseTrans
         WarehouseTransactionEntity newWarehouseTransaction = WarehouseTransactionEntity.builder()
                 .code("RETURN-" + returnRequestEntity.getId() + "-" + System.currentTimeMillis())
                 .type(WarehouseTransactionType.RETURN)
-                .staff(staffRepository.getReferenceById(staffId))
+                .staff(staffId != null ? staffRepository.getReferenceById(staffId) : null)
                 .warehouse(originalWarehouse)
                 .order(returnRequestEntity.getOrder())
                 .returnRequest(returnRequestEntity)
                 .build();
 
-        WarehouseTransactionDetailEntity detail = WarehouseTransactionDetailEntity.builder()
+        WarehouseTransactionDetailEntity txDetail = WarehouseTransactionDetailEntity.builder()
                 .variant(returnRequestEntity.getVariant())
                 .quantity(returnRequestEntity.getQuantity())
                 .build();
-        newWarehouseTransaction.addWarehouseTransactionDetail(detail);
+        newWarehouseTransaction.addWarehouseTransactionDetail(txDetail);
+
+        processWarehouseUpdate(newWarehouseTransaction);
 
         warehouseTransactionRepository.save(newWarehouseTransaction);
+
+        log.info("Đã tự động tạo phiếu kho RETURN cho đơn hàng ID: {}", returnRequestEntity.getId());
+    }
+
+    @Transactional
+    public void autoCreateCancelRestockTransaction(OrderEntity order) {
+        WarehouseEntity warehouse = warehouseRepository.findAll().stream()
+                .findFirst().orElseThrow(() -> new IllegalStateException("Hệ thống chưa có kho hàng nào để hoàn trả"));
+
+        WarehouseTransactionEntity cancelRestockTx = WarehouseTransactionEntity.builder()
+                .code("CANCEL-" + order.getId() + "-" + System.currentTimeMillis())
+                .type(WarehouseTransactionType.CANCEL_RESTOCK)
+                .staff(null)
+                .warehouse(warehouse)
+                .order(order)
+                .build();
+
+        for (OrderDetailEntity orderDetail : order.getOrderDetails()) {
+            WarehouseTransactionDetailEntity txDetail = WarehouseTransactionDetailEntity.builder()
+                    .variant(orderDetail.getVariant())
+                    .quantity(orderDetail.getQuantity())
+                    .build();
+
+            cancelRestockTx.addWarehouseTransactionDetail(txDetail);
+        }
+
+        processWarehouseUpdate(cancelRestockTx);
+
+        warehouseTransactionRepository.save(cancelRestockTx);
+
+        log.info("Đã tự động tạo phiếu kho CANCEL_RESTOCK cho đơn hàng ID: {}", order.getId());
+    }
+
+    @Override
+    public void autoCreateNewExportWarehouseTransaction(OrderEntity order, Integer staffId) {
+        WarehouseEntity warehouse = warehouseRepository.findAll().stream()
+                .findFirst().orElseThrow(() -> new IllegalStateException("Hệ thống chưa có kho hàng nào để xuất"));
+
+        WarehouseTransactionEntity newTx = WarehouseTransactionEntity.builder()
+                .code("EXPORT-" + order.getId() + "-" + System.currentTimeMillis())
+                .type(WarehouseTransactionType.EXPORT)
+                .warehouse(warehouse)
+                .order(order)
+                .staff(staffId != null ? staffRepository.getReferenceById(staffId) : null)
+                .build();
+
+        for (OrderDetailEntity orderDetail: order.getOrderDetails()) {
+            WarehouseTransactionDetailEntity txDetail = WarehouseTransactionDetailEntity.builder()
+                    .variant(orderDetail.getVariant())
+                    .quantity(orderDetail.getQuantity())
+                    .build();
+
+            newTx.addWarehouseTransactionDetail(txDetail);
+        }
+
+        processWarehouseUpdate(newTx);
+
+        warehouseTransactionRepository.save(newTx);
+
+        log.info("Đã tự động tạo phiếu xuất kho EXPORT cho đơn hàng ID: {}", order.getId());
     }
 
     private void checkWarehouseTransactionEditableOrDeletable(WarehouseTransactionEntity warehouseTransaction) {

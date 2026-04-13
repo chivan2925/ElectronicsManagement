@@ -79,6 +79,7 @@ Enum warehouse_transaction_type {
   IMPORT
   EXPORT
   RETURN
+  CANCEL_RESTOCK
 }
 Enum warehouse_transaction_status {
   PENDING

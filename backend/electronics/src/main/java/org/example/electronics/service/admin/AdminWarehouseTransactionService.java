@@ -7,6 +7,7 @@ import org.example.electronics.entity.ReturnRequestEntity;
 import org.example.electronics.entity.enums.DateFilterType;
 import org.example.electronics.entity.enums.WarehouseTransactionStatus;
 import org.example.electronics.entity.enums.WarehouseTransactionType;
+import org.example.electronics.entity.order.OrderEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -22,4 +23,6 @@ public interface AdminWarehouseTransactionService {
     AdminWarehouseTransactionResponseDTO getWarehouseTransactionById(Integer warehouseTransactionId);
 
     void autoCreateReturnWarehouseTransaction(ReturnRequestEntity returnRequestEntity, Integer staffId);
+    void autoCreateCancelRestockTransaction(OrderEntity order);
+    void autoCreateNewExportWarehouseTransaction(OrderEntity order, Integer staffId);
 }

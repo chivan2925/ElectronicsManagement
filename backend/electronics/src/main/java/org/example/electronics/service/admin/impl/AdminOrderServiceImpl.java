@@ -2,6 +2,7 @@ package org.example.electronics.service.admin.impl;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.electronics.dto.request.admin.order.AdminUpdateOrderRequestDTO;
 import org.example.electronics.dto.response.admin.order.AdminOrderDetailResponseDTO;
 import org.example.electronics.dto.response.admin.order.AdminOrderResponseDTO;
@@ -13,6 +14,7 @@ import org.example.electronics.repository.OrderRepository;
 import org.example.electronics.repository.StaffRepository;
 import org.example.electronics.service.admin.AdminOrderService;
 import org.example.electronics.service.admin.AdminWarehouseService;
+import org.example.electronics.service.admin.AdminWarehouseTransactionService;
 import org.example.electronics.util.DateTimeUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,12 +29,16 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AdminOrderServiceImpl implements AdminOrderService {
 
     private final OrderMapper orderMapper;
+
     private final OrderRepository orderRepository;
     private final StaffRepository staffRepository;
+
     private final AdminWarehouseService adminWarehouseService;
+    private final AdminWarehouseTransactionService adminWarehouseTransactionService;
 
     private static final Map<OrderStatus, Set<OrderStatus>> ALLOWED_ORDER_TRANSITIONS = Map.of(
             OrderStatus.PENDING, Set.of(OrderStatus.PROCESSING, OrderStatus.CANCELLED),
@@ -64,8 +70,6 @@ public class AdminOrderServiceImpl implements AdminOrderService {
     @Transactional
     @Override
     public AdminOrderResponseDTO updateOrder(Integer orderId, AdminUpdateOrderRequestDTO adminUpdateOrderRequestDTO, Integer staffId) {
-        StaffEntity currentStaffProxy = staffRepository.getReferenceById(staffId);
-
         OrderEntity existingOrderEntity = orderRepository.findOrderByIdWithDetails(orderId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Không tìm thấy đơn hàng với id: " + orderId
@@ -82,12 +86,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
             throw new IllegalArgumentException("Phải nhập mã vận đơn khi trạng thái giao hàng là ĐANG GIAO hoặc ĐÃ GIAO");
         }
 
-        boolean isNowCancelledOrReturned = adminUpdateOrderRequestDTO.status() == OrderStatus.CANCELLED ||
-                                        adminUpdateOrderRequestDTO.status() == OrderStatus.RETURNED;
-
-        if (isNowCancelledOrReturned) {
-            adminWarehouseService.processCancelledAndReturnedOrder(existingOrderEntity, currentStaffProxy);
-        }
+        handleWarehouseActionsOnStatusChange(existingOrderEntity, adminUpdateOrderRequestDTO, staffId);
 
         existingOrderEntity.setStatus(adminUpdateOrderRequestDTO.status());
         existingOrderEntity.setPaymentStatus(adminUpdateOrderRequestDTO.paymentStatus());
@@ -101,8 +100,6 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         if (adminUpdateOrderRequestDTO.paymentStatus() == PaymentStatus.PAID && existingOrderEntity.getPaidAt() == null) {
             existingOrderEntity.setPaidAt(LocalDateTime.now());
         }
-
-        existingOrderEntity = orderRepository.save(existingOrderEntity);
 
         return orderMapper.toAdminResponseDTO(existingOrderEntity);
     }
@@ -203,5 +200,32 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                     "Không thể chỉnh sửa nội dung! Đơn hàng đang ở trạng thái " + order.getStatus() + ". Chỉ được phép sửa khi đang PENDING."
             );
         }
+    }
+
+    private void handleWarehouseActionsOnStatusChange(OrderEntity currentOrder, AdminUpdateOrderRequestDTO requestDTO, Integer staffId) {
+        OrderStatus currentStatus = currentOrder.getStatus();
+        OrderStatus newStatus = requestDTO.status();
+
+        if (currentStatus != newStatus && (newStatus == OrderStatus.CANCELLED || newStatus == OrderStatus.RETURNED)) {
+            StaffEntity currentStaffProxy = staffRepository.getReferenceById(staffId);
+            adminWarehouseService.processCancelledAndReturnedOrder(currentOrder, currentStaffProxy);
+        }
+
+        if (currentStatus == OrderStatus.PENDING && newStatus == OrderStatus.PROCESSING) {
+            adminWarehouseTransactionService.autoCreateNewExportWarehouseTransaction(currentOrder, staffId);
+        }
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void cancelSingleExpiredOrder(OrderEntity order) {
+        order.setStatus(OrderStatus.CANCELLED);
+        order.setPaymentStatus(PaymentStatus.FAILED);
+        order.setNote("Hệ thống tự động hủy do quá hạn thanh toán 15 phút.");
+
+        adminWarehouseTransactionService.autoCreateCancelRestockTransaction(order);
+
+        orderRepository.save(order);
+
+        log.info("Đã tự động hủy đơn hàng ID: {} do quá hạn và hoàn lại tồn kho.", order.getId());
     }
 }
