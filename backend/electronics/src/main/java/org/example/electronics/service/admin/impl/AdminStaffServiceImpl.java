@@ -2,7 +2,8 @@ package org.example.electronics.service.admin.impl;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.example.electronics.dto.request.admin.AdminStaffRequestDTO;
+import org.example.electronics.dto.request.admin.staff.AdminCreateStaffRequestDTO;
+import org.example.electronics.dto.request.admin.staff.AdminUpdateStaffRequestDTO;
 import org.example.electronics.dto.request.admin.status.AdminUpdateUserStatusRequestDTO;
 import org.example.electronics.dto.response.admin.AdminStaffResponseDTO;
 import org.example.electronics.entity.RoleEntity;
@@ -16,12 +17,14 @@ import org.example.electronics.service.admin.AdminStaffService;
 import org.example.electronics.util.DateTimeUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -31,37 +34,50 @@ public class AdminStaffServiceImpl implements AdminStaffService {
     private final StaffRepository staffRepository;
     private final RoleRepository roleRepository;
 
+    private final PasswordEncoder passwordEncoder;
+
     @Transactional
     @Override
-    public AdminStaffResponseDTO createStaff(AdminStaffRequestDTO adminStaffRequestDTO) {
-        if(staffRepository.existsByUsername(adminStaffRequestDTO.username()) ||
-            staffRepository.existsByEmail(adminStaffRequestDTO.email()) ||
-            staffRepository.existsByPhoneNumber(adminStaffRequestDTO.phoneNumber())) {
+    public AdminStaffResponseDTO createStaff(AdminCreateStaffRequestDTO adminCreateStaffRequestDTO) {
+        if(staffRepository.existsByUsername(adminCreateStaffRequestDTO.username()) ||
+            staffRepository.existsByEmail(adminCreateStaffRequestDTO.email()) ||
+            staffRepository.existsByPhoneNumber(adminCreateStaffRequestDTO.phoneNumber())) {
 
             throw new IllegalArgumentException("Username, email hoặc số điện thoại này đã tồn tại");
         }
 
-        RoleEntity roleEntity = roleRepository.findById(adminStaffRequestDTO.roleId())
+        RoleEntity roleEntity = roleRepository.findById(adminCreateStaffRequestDTO.roleId())
                 .orElseThrow(() -> new EntityNotFoundException(
-                        "Không tìm thấy Chức vụ với ID: " + adminStaffRequestDTO.roleId()
+                        "Không tìm thấy Chức vụ với ID: " + adminCreateStaffRequestDTO.roleId()
                 ));
 
-        StaffEntity newStaffEntity = staffMapper.toNewEntity(adminStaffRequestDTO);
+        StaffEntity newStaffEntity = staffMapper.toNewEntity(adminCreateStaffRequestDTO);
+        String newRawPassword = null;
+
+        if (!StringUtils.hasText(adminCreateStaffRequestDTO.password())) {
+
+            newRawPassword = generateRandomPassword();
+
+            newStaffEntity.setHashedPassword(passwordEncoder.encode(newRawPassword));
+        }
+        else {
+
+            newStaffEntity.setHashedPassword(passwordEncoder.encode(adminCreateStaffRequestDTO.password()));
+        }
 
         newStaffEntity.setRole(roleEntity);
-        newStaffEntity.setHashedPassword("Chưa có BCrypt" + adminStaffRequestDTO.password());
 
         newStaffEntity = staffRepository.save(newStaffEntity);
 
-        return staffMapper.toAdminResponseDTO(newStaffEntity);
+        return staffMapper.toAdminResponseDTOWithPassword(newStaffEntity, newRawPassword);
     }
 
     @Transactional
     @Override
-    public AdminStaffResponseDTO updateStaff(Integer staffId, AdminStaffRequestDTO adminStaffRequestDTO) {
-        if(staffRepository.existsByUsernameAndIdNot(adminStaffRequestDTO.username(), staffId) ||
-             staffRepository.existsByEmailAndIdNot(adminStaffRequestDTO.email(), staffId) ||
-             staffRepository.existsByPhoneNumberAndIdNot(adminStaffRequestDTO.phoneNumber(), staffId)) {
+    public AdminStaffResponseDTO updateStaff(Integer staffId, AdminUpdateStaffRequestDTO adminUpdateStaffRequestDTO) {
+        if(staffRepository.existsByUsernameAndIdNot(adminUpdateStaffRequestDTO.username(), staffId) ||
+             staffRepository.existsByEmailAndIdNot(adminUpdateStaffRequestDTO.email(), staffId) ||
+             staffRepository.existsByPhoneNumberAndIdNot(adminUpdateStaffRequestDTO.phoneNumber(), staffId)) {
 
             throw new IllegalArgumentException("Username, email hoặc số điện thoại này đã bị trùng với một nhân viên khác");
         }
@@ -71,15 +87,14 @@ public class AdminStaffServiceImpl implements AdminStaffService {
                         "Không tìm thấy nhân viên với id: " + staffId
                 ));
 
-        RoleEntity newRoleEntity = roleRepository.findById(adminStaffRequestDTO.roleId())
+        RoleEntity newRoleEntity = roleRepository.findById(adminUpdateStaffRequestDTO.roleId())
                 .orElseThrow(() -> new EntityNotFoundException(
-                        "Không tìm thấy Chức vụ với ID: " + adminStaffRequestDTO.roleId()
+                        "Không tìm thấy Chức vụ với ID: " + adminUpdateStaffRequestDTO.roleId()
                 ));
 
-        staffMapper.updateEntityFromRequest(adminStaffRequestDTO, existingStaffEntity);
+        staffMapper.updateEntityFromRequest(adminUpdateStaffRequestDTO, existingStaffEntity);
 
         existingStaffEntity.setRole(newRoleEntity);
-        existingStaffEntity.setHashedPassword("Chưa có BCrypt" + adminStaffRequestDTO.password());
 
         return staffMapper.toAdminResponseDTO(existingStaffEntity);
     }
@@ -132,5 +147,25 @@ public class AdminStaffServiceImpl implements AdminStaffService {
                 ));
 
         return staffMapper.toAdminResponseDTO(existingStaffEntity);
+    }
+
+    @Transactional
+    @Override
+    public String resetPassword(Integer staffId) {
+        StaffEntity existingStaffEntity = staffRepository.findById(staffId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Không tìm thấy nhân viên với id: " + staffId
+                ));
+
+        String newRawPassword = generateRandomPassword();
+
+        String hashedPassword = passwordEncoder.encode(newRawPassword);
+        existingStaffEntity.setHashedPassword(hashedPassword);
+
+        return newRawPassword;
+    }
+
+    private String generateRandomPassword() {
+        return UUID.randomUUID().toString().substring(0, 8).toUpperCase() + "@" + (int)(Math.random() * 1000);
     }
 }

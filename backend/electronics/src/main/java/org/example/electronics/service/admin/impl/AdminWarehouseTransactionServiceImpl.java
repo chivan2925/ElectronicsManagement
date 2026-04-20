@@ -377,7 +377,7 @@ public class AdminWarehouseTransactionServiceImpl implements AdminWarehouseTrans
                 .findFirst().orElseThrow(() -> new IllegalStateException("Hệ thống chưa có kho hàng nào để hoàn trả"));
 
         WarehouseTransactionEntity cancelRestockTx = WarehouseTransactionEntity.builder()
-                .code("CANCEL-" + order.getId() + "-" + System.currentTimeMillis())
+                .code("CANCEL_RESTOCK-" + order.getId() + "-" + System.currentTimeMillis())
                 .type(WarehouseTransactionType.CANCEL_RESTOCK)
                 .staff(null)
                 .warehouse(warehouse)

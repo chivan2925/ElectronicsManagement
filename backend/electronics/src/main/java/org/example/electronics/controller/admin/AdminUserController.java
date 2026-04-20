@@ -42,7 +42,8 @@ public class AdminUserController {
     }
 
     @DeleteMapping("/{userId}")
-    @Operation(summary = "Xóa User (Soft Delete)",
+    @Operation(
+            summary = "Xóa User (Soft Delete)",
             description = "Chuyển trạng thái của User thành DELETED."
     )
     public ResponseEntity<Void> deleteUser (

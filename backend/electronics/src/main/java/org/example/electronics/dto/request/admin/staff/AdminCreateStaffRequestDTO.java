@@ -1,4 +1,4 @@
-package org.example.electronics.dto.request.admin;
+package org.example.electronics.dto.request.admin.staff;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -9,7 +9,7 @@ import org.example.electronics.entity.enums.UserStatus;
 
 import java.time.LocalDate;
 
-public record AdminStaffRequestDTO(
+public record AdminCreateStaffRequestDTO(
         @NotBlank(message = "Họ tên đầy đủ nhân viên không được để trống")
         String fullName,
 
@@ -38,7 +38,6 @@ public record AdminStaffRequestDTO(
         @NotNull(message = "Chức vụ nhân viên không được null")
         Integer roleId,
 
-        @NotBlank(message = "Mật khẩu nhân viên không được để trống")
         String password,
 
         @NotNull(message = "Trạng thái nhân viên không được null")

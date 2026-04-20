@@ -1,10 +1,13 @@
 package org.example.electronics.controller.admin;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.electronics.dto.request.admin.AdminStaffRequestDTO;
+import org.example.electronics.dto.request.admin.staff.AdminCreateStaffRequestDTO;
+import org.example.electronics.dto.request.admin.staff.AdminUpdateStaffRequestDTO;
 import org.example.electronics.dto.request.admin.status.AdminUpdateUserStatusRequestDTO;
 import org.example.electronics.dto.response.admin.AdminStaffResponseDTO;
 import org.example.electronics.entity.enums.DateFilterType;
@@ -38,9 +41,9 @@ public class AdminStaffController {
             description = "Thêm một nhân viên mới vào hệ thống. Cần truyền vào đầy đủ thông tin cá nhân và ID của Chức vụ (Role) tương ứng."
     )
     public ResponseEntity<AdminStaffResponseDTO> createStaff(
-            @Valid @RequestBody AdminStaffRequestDTO adminStaffRequestDTO
+            @Valid @RequestBody AdminCreateStaffRequestDTO adminCreateStaffRequestDTO
     ) {
-        AdminStaffResponseDTO adminStaffResponseDTO = adminStaffService.createStaff(adminStaffRequestDTO);
+        AdminStaffResponseDTO adminStaffResponseDTO = adminStaffService.createStaff(adminCreateStaffRequestDTO);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(adminStaffResponseDTO);
     }
@@ -52,9 +55,9 @@ public class AdminStaffController {
     )
     public ResponseEntity<AdminStaffResponseDTO> updateStaff(
             @PathVariable Integer staffId,
-            @Valid @RequestBody AdminStaffRequestDTO adminStaffRequestDTO
+            @Valid @RequestBody AdminUpdateStaffRequestDTO adminUpdateStaffRequestDTO
     ) {
-        AdminStaffResponseDTO adminStaffResponseDTO = adminStaffService.updateStaff(staffId, adminStaffRequestDTO);
+        AdminStaffResponseDTO adminStaffResponseDTO = adminStaffService.updateStaff(staffId, adminUpdateStaffRequestDTO);
 
         return ResponseEntity.ok(adminStaffResponseDTO);
     }
@@ -115,5 +118,22 @@ public class AdminStaffController {
         AdminStaffResponseDTO adminStaffResponseDTO = adminStaffService.getStaffById(staffId);
 
         return ResponseEntity.ok(adminStaffResponseDTO);
+    }
+
+    @PostMapping("/{staffId}/reset-password")
+    @Operation(
+            summary = "Khởi tạo lại mật khẩu cho nhân viên (Reset Password)",
+            description = "Admin sử dụng API này khi nhân viên quên mật khẩu. Hệ thống sẽ tự động sinh ra một mật khẩu ngẫu nhiên mới, mã hóa và lưu vào Database. Kết quả trả về là mật khẩu thô (Plain text) để Admin copy và gửi cho nhân viên đó."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Reset mật khẩu thành công. Trả về mật khẩu thô."),
+            @ApiResponse(responseCode = "404", description = "Không tìm thấy nhân viên với ID tương ứng.")
+    })
+    public ResponseEntity<String> resetPassword(
+            @PathVariable Integer staffId
+    ) {
+        String defaultRawPassword = adminStaffService.resetPassword(staffId);
+
+        return ResponseEntity.ok(defaultRawPassword);
     }
 }
