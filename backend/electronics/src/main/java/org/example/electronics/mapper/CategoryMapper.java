@@ -15,8 +15,6 @@ public interface CategoryMapper {
     @Mapping(source = "parentId", target = "parent.id")
     CategoryEntity toNewEntity(AdminCategoryRequestDTO adminCategoryRequestDTO);
 
-    @Mapping(source = "parent.id", target = "parentId")
-    @Mapping(source = "parent.name", target = "parentName")
     AdminCategoryResponseDTO toAdminResponseDTO(CategoryEntity categoryEntity);
 
     @Mapping(source = "parent.id", target = "parentId")

@@ -27,7 +27,6 @@ public interface WarehouseTransactionMapper {
     @Mapping(source = "returnRequest.id", target = "returnRequestId")
     AdminWarehouseTransactionResponseDTO toAdminResponseDTO(WarehouseTransactionEntity warehouseTransactionEntity);
 
-    @SuppressWarnings("unused")
     @Mapping(source = "variant.id", target = "variantId")
     @Mapping(source = "variant.name", target = "variantName")
     AdminWarehouseTransactionDetailResponseDTO toDetailResponseDTO(WarehouseTransactionDetailEntity warehouseTransactionDetailEntity);

@@ -1,25 +1,24 @@
 package org.example.electronics.util;
 
+import java.util.Set;
+
 import org.example.electronics.entity.MediaEntity;
 import org.mapstruct.Named;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Component
 public class MediaUtils {
 
     @Named("getPrimaryImage")
-    @SuppressWarnings("unused")
-    public String getPrimaryImage(List<MediaEntity> mediaEntityList) {
-        if (mediaEntityList == null || mediaEntityList.isEmpty()) {
+    public String getPrimaryImage(Set<MediaEntity> mediaEntitySet) {
+        if (mediaEntitySet == null || mediaEntitySet.isEmpty()) {
             return null;
         }
 
-        return mediaEntityList.stream()
+        return mediaEntitySet.stream()
                 .filter(media -> Boolean.TRUE.equals(media.getIsPrimary()))
                 .map(MediaEntity::getImageUrl)
                 .findFirst()
-                .orElse(mediaEntityList.getFirst().getImageUrl());
+                .orElseGet(() -> mediaEntitySet.iterator().next().getImageUrl());
     }
 }

@@ -26,7 +26,6 @@ public interface OrderMapper {
     @Mapping(source = "coupon.code", target = "couponCode")
     AdminOrderDetailResponseDTO toAdminDetailResponseDTO(OrderEntity orderEntity);
 
-    @SuppressWarnings("unused")
     @Mapping(source = "variant.id", target = "variantId")
     @Mapping(source = "variant.name", target = "variantName")
     AdminOrderItemResponseDTO toAdminItemResponseDTO(OrderDetailEntity orderDetailEntity);

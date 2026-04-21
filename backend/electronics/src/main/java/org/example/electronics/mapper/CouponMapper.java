@@ -4,7 +4,11 @@ import org.example.electronics.dto.request.admin.AdminCouponRequestDTO;
 import org.example.electronics.dto.response.admin.AdminCouponResponseDTO;
 import org.example.electronics.entity.CouponEntity;
 import org.example.electronics.entity.enums.CouponTimeStatus;
-import org.mapstruct.*;
+import org.mapstruct.AfterMapping;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.ReportingPolicy;
 
 @Mapper(
         componentModel = "spring",
@@ -25,7 +29,6 @@ public interface CouponMapper {
     void updateEntityFromRequest(AdminCouponRequestDTO adminCouponRequestDTO,
                                  @MappingTarget CouponEntity couponEntity);
 
-    @SuppressWarnings("unused")
     @AfterMapping
     default void setTimeStatus(CouponEntity entity, @MappingTarget AdminCouponResponseDTO.AdminCouponResponseDTOBuilder dtoBuilder) {
 

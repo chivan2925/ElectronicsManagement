@@ -13,7 +13,7 @@ public interface ReturnRequestMapper {
     @Mapping(source = "user.id", target = "userId")
     @Mapping(source = "order.id", target = "orderId")
     @Mapping(source = "variant.id", target = "variantId")
-    @Mapping(source = "handleByStaff.id", target = "handleByStaffId")
+    @Mapping(source = "handledByStaff.id", target = "handledByStaffId")
     AdminReturnRequestResponseDTO toAdminResponseDTO(ReturnRequestEntity returnRequestEntity);
 
     @Mapping(source = "user.id", target = "userId")
@@ -22,6 +22,6 @@ public interface ReturnRequestMapper {
     @Mapping(source = "user.phoneNumber", target = "userPhoneNumber")
     @Mapping(source = "order.id", target = "orderId")
     @Mapping(source = "variant.id", target = "variantId")
-    @Mapping(source = "handleByStaff.id", target = "handleByStaff.id")
+    @Mapping(source = "handledByStaff.id", target = "handledByStaffId")
     AdminDetailReturnRequestResponseDTO toAdminDetailResponseDTO(ReturnRequestEntity returnRequestEntity);
 }

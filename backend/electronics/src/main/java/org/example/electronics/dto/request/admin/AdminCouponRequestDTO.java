@@ -1,12 +1,18 @@
 package org.example.electronics.dto.request.admin;
 
-import jakarta.validation.constraints.*;
-import org.example.electronics.entity.enums.CouponStatus;
-import org.example.electronics.entity.enums.CouponTimeStatus;
-import org.example.electronics.entity.enums.CouponType;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+
+import org.example.electronics.entity.enums.CouponStatus;
+import org.example.electronics.entity.enums.CouponType;
+
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
 
 public record AdminCouponRequestDTO(
 

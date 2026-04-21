@@ -21,7 +21,6 @@ public interface WarehouseMapper {
 
     AdminWarehouseResponseDTO toAdminResponseDTO(WarehouseEntity warehouseEntity);
 
-    @SuppressWarnings("unused")
     @Mapping(source = "variant.id", target = "variantId")
     @Mapping(source = "variant.name", target = "variantName")
     AdminWarehouseDetailResponseDTO toDetailResponseDTO(WarehouseDetailEntity warehouseDetailEntity);
