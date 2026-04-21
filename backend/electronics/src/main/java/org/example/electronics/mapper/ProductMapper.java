@@ -19,27 +19,28 @@ public interface ProductMapper {
     @Mapping(target = "category", ignore = true)
     @Mapping(target = "brand", ignore = true)
     @Mapping(target = "media", ignore = true)
-    ProductEntity toEntity(AdminProductRequestDTO adminProductRequestDTO);
+    ProductEntity toNewEntity(AdminProductRequestDTO adminProductRequestDTO);
 
     @Mapping(source = "category.id", target = "categoryId")
     @Mapping(source = "category.name", target = "categoryName")
     @Mapping(source = "brand.id", target = "brandId")
     @Mapping(source = "brand.name", target = "brandName")
     @Mapping(source = "media", target = "primaryImageUrl", qualifiedByName = "getPrimaryImage")
-    AdminProductResponseDTO toResponseDTO(ProductEntity productEntity);
+    AdminProductResponseDTO toAdminResponseDTO(ProductEntity productEntity);
 
     @Mapping(source = "category.id", target = "categoryId")
     @Mapping(source = "category.name", target = "categoryName")
     @Mapping(source = "brand.id", target = "brandId")
     @Mapping(source = "brand.name", target = "brandName")
-    AdminDetailProductResponseDTO toDetailResponseDTO(ProductEntity productEntity);
+    AdminDetailProductResponseDTO toAdminDetailResponseDTO(ProductEntity productEntity);
 
     @Mapping(target = "category", ignore = true)
     @Mapping(target = "brand", ignore = true)
     @Mapping(target = "media", ignore = true)
-    void updateEntityFromDTO(AdminProductRequestDTO adminProductRequestDTO,
-                             @MappingTarget ProductEntity productEntity);
+    void updateEntityFromRequest(AdminProductRequestDTO adminProductRequestDTO,
+                                 @MappingTarget ProductEntity productEntity);
 
+    @SuppressWarnings("unused")
     @Named("getPrimaryImage")
     default String getPrimaryImage(List<MediaEntity> mediaEntityList) {
         if (mediaEntityList == null || mediaEntityList.isEmpty()) {

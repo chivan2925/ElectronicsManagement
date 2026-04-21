@@ -1,7 +1,8 @@
 package org.example.electronics.mapper;
 
 import org.example.electronics.dto.request.admin.AdminRoleRequestDTO;
-import org.example.electronics.dto.response.admin.AdminRoleResponseDTO;
+import org.example.electronics.dto.response.admin.role.AdminDetailRoleResponseDTO;
+import org.example.electronics.dto.response.admin.role.AdminRoleResponseDTO;
 import org.example.electronics.entity.RoleEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -16,11 +17,13 @@ import org.mapstruct.ReportingPolicy;
 public interface RoleMapper {
 
     @Mapping(target = "permissions", ignore = true)
-    RoleEntity toEntity(AdminRoleRequestDTO adminRoleRequestDTO);
+    RoleEntity toNewEntity(AdminRoleRequestDTO adminRoleRequestDTO);
 
-    AdminRoleResponseDTO toResponseDTO(RoleEntity roleEntity);
+    AdminRoleResponseDTO toAdminResponseDTO(RoleEntity roleEntity);
+
+    AdminDetailRoleResponseDTO toAdminDetailResponseDTO(RoleEntity roleEntity);
 
     @Mapping(target = "permissions", ignore = true)
-    void updateEntityFromDTO(AdminRoleRequestDTO adminRoleRequestDTO,
-                             @MappingTarget RoleEntity roleEntity);
+    void updateEntityFromRequest(AdminRoleRequestDTO adminRoleRequestDTO,
+                                 @MappingTarget RoleEntity roleEntity);
 }

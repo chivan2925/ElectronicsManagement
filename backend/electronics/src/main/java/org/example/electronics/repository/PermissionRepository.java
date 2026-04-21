@@ -19,10 +19,19 @@ public interface PermissionRepository extends JpaRepository<PermissionEntity, In
             "    OR LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
             ")) " +
 
-            "AND (:fromDate IS NULL OR p.createdAt >= :fromDate) " +
-            "AND (:toDate IS NULL OR p.createdAt <= :toDate)")
+            "AND (CAST(:fromDate AS timestamp) IS NULL OR " +
+            "    (:dateType = 'CREATED_AT' AND p.createdAt >= :fromDate) OR " +
+            "    (:dateType = 'UPDATED_AT' AND p.updatedAt >= :fromDate) " +
+            ") " +
+
+            "AND (CAST(:toDate AS timestamp) IS NULL OR " +
+            "    (:dateType = 'CREATED_AT' AND p.createdAt <= :toDate) OR " +
+            "    (:dateType = 'UPDATED_AT' AND p.updatedAt <= :toDate) " +
+            ")"
+    )
     Page<PermissionEntity> findPermissionsWithFilter(
             @Param("keyword") String keyword,
+            @Param("dateType") String dateType,
             @Param("fromDate") LocalDateTime fromDate,
             @Param("toDate") LocalDateTime toDate,
             Pageable pageable

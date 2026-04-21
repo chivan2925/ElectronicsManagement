@@ -1,7 +1,6 @@
 package org.example.electronics.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.example.electronics.entity.enums.ProductStatus;
 import org.hibernate.annotations.CreationTimestamp;
@@ -22,7 +21,7 @@ public class BrandEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, unique = true, length = 100)
     private String name;
 
     @Column(name = "image_url")

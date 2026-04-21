@@ -2,6 +2,7 @@ package org.example.electronics.repository;
 
 import org.example.electronics.entity.VariantEntity;
 import org.example.electronics.entity.enums.ProductStatus;
+import org.example.electronics.entity.warehouse.WarehouseDetailEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 public interface VariantRepository extends JpaRepository<VariantEntity, Integer> {
@@ -35,8 +37,15 @@ public interface VariantRepository extends JpaRepository<VariantEntity, Integer>
 
             "AND (:status IS NULL OR v.status = :status) " +
 
-            "AND (:fromDate IS NULL OR v.createdAt >= :fromDate) " +
-            "AND (:toDate IS NULL OR v.createdAt <= :toDate)",
+            "AND (CAST(:fromDate AS timestamp) IS NULL OR " +
+            "    (:dateType = 'CREATED_AT' AND v.createdAt >= :fromDate) OR " +
+            "    (:dateType = 'UPDATED_AT' AND v.updatedAt >= :fromDate) " +
+            ") " +
+
+            "AND (CAST(:toDate AS timestamp) IS NULL OR " +
+            "    (:dateType = 'CREATED_AT' AND v.createdAt <= :toDate) OR " +
+            "    (:dateType = 'UPDATED_AT' AND v.updatedAt <= :toDate) " +
+            ")",
 
             countQuery = "SELECT COUNT(v) FROM VariantEntity v " +
                     "WHERE 1=1 " +
@@ -46,12 +55,21 @@ public interface VariantRepository extends JpaRepository<VariantEntity, Integer>
                     "    OR LOWER(v.slug) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
                     ")) " +
                     "AND (:status IS NULL OR v.status = :status) " +
-                    "AND (:fromDate IS NULL OR v.createdAt >= :fromDate) " +
-                    "AND (:toDate IS NULL OR v.createdAt <= :toDate)"
+
+                    "AND (CAST(:fromDate AS timestamp) IS NULL OR " +
+                    "    (:dateType = 'CREATED_AT' AND v.createdAt >= :fromDate) OR " +
+                    "    (:dateType = 'UPDATED_AT' AND v.updatedAt >= :fromDate) " +
+                    ") " +
+
+                    "AND (CAST(:toDate AS timestamp) IS NULL OR " +
+                    "    (:dateType = 'CREATED_AT' AND v.createdAt <= :toDate) OR " +
+                    "    (:dateType = 'UPDATED_AT' AND v.updatedAt <= :toDate) " +
+                    ")"
     )
     Page<VariantEntity> findVariantsWithFilter(
             @Param("keyword") String keyword,
             @Param("status") ProductStatus status,
+            @Param("dateType") String dateType,
             @Param("fromDate") LocalDateTime fromDate,
             @Param("toDate") LocalDateTime toDate,
             Pageable pageable
@@ -61,5 +79,11 @@ public interface VariantRepository extends JpaRepository<VariantEntity, Integer>
             "LEFT JOIN FETCH v.product " +
             "LEFT JOIN FETCH v.media " +
             "WHERE v.id = :id")
-    Optional<VariantEntity> findVariantWithDetailsById(@Param("id") Integer variantId);
+    Optional<VariantEntity> findVariantWithBasicDetailsById(@Param("id") Integer variantId);
+
+    @Query("SELECT wD FROM WarehouseDetailEntity wD " +
+            "JOIN FETCH wD.warehouse " +
+            "JOIN FETCH wD.variant " +
+            "WHERE wD.variant.id = :variantId AND wD.quantity > 0")
+    List<WarehouseDetailEntity> findWarehouseStocksByVariantId(@Param("variantId") Integer variantId);
 }

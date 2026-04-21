@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 public interface StaffRepository extends JpaRepository<StaffEntity, Integer> {
 
@@ -22,6 +23,8 @@ public interface StaffRepository extends JpaRepository<StaffEntity, Integer> {
     boolean existsByEmailAndIdNot(String email, Integer id);
     boolean existsByPhoneNumberAndIdNot(String phoneNumber, Integer id);
 
+    Optional<StaffEntity> findByEmail(String email);
+
     @Query("SELECT s FROM StaffEntity s WHERE 1=1 " +
 
             "AND (:keyword IS NULL OR ( " +
@@ -33,11 +36,20 @@ public interface StaffRepository extends JpaRepository<StaffEntity, Integer> {
 
             "AND (:status IS NULL OR s.status = :status) " +
 
-            "AND (:fromDate IS NULL OR s.assignedAt >= :fromDate) " +
-            "AND (:toDate IS NULL OR s.assignedAt <= :toDate)")
+            "AND (CAST(:fromDate AS timestamp) IS NULL OR " +
+            "    (:dateType = 'ASSIGNED_AT' AND s.assignedAt >= :fromDate) OR " +
+            "    (:dateType = 'UPDATED_AT' AND s.updatedAt >= :fromDate) " +
+            ") " +
+
+            "AND (CAST(:toDate AS timestamp) IS NULL OR " +
+            "    (:dateType = 'ASSIGNED_AT' AND s.assignedAt <= :toDate) OR " +
+            "    (:dateType = 'UPDATED_AT' AND s.updatedAt <= :toDate) " +
+            ")"
+    )
     Page<StaffEntity> findStaffsWithFilter(
             @Param("keyword") String keyword,
             @Param("status") UserStatus status,
+            @Param("dateType") String dateType,
             @Param("fromDate") LocalDateTime fromDate,
             @Param("toDate") LocalDateTime toDate,
             Pageable pageable

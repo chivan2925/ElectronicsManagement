@@ -1,11 +1,14 @@
 package org.example.electronics.service.admin.impl;
 
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.example.electronics.dto.request.admin.AdminRoleRequestDTO;
-import org.example.electronics.dto.request.admin.AdminUpdateUserStatusRequestDTO;
-import org.example.electronics.dto.response.admin.AdminRoleResponseDTO;
+import org.example.electronics.dto.request.admin.status.AdminUpdateUserStatusRequestDTO;
+import org.example.electronics.dto.response.admin.role.AdminDetailRoleResponseDTO;
+import org.example.electronics.dto.response.admin.role.AdminRoleResponseDTO;
 import org.example.electronics.entity.PermissionEntity;
 import org.example.electronics.entity.RoleEntity;
+import org.example.electronics.entity.enums.DateFilterType;
 import org.example.electronics.entity.enums.UserStatus;
 import org.example.electronics.mapper.RoleMapper;
 import org.example.electronics.repository.PermissionRepository;
@@ -25,19 +28,13 @@ import java.util.HashSet;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class AdminRoleServiceImpl implements AdminRoleService {
 
     private final RoleMapper roleMapper;
     private final RoleRepository roleRepository;
     private final StaffRepository staffRepository;
     private final PermissionRepository permissionRepository;
-
-    public AdminRoleServiceImpl(RoleMapper roleMapper, RoleRepository roleRepository, StaffRepository staffRepository, PermissionRepository permissionRepository) {
-        this.roleMapper = roleMapper;
-        this.roleRepository = roleRepository;
-        this.staffRepository = staffRepository;
-        this.permissionRepository = permissionRepository;
-    }
 
     @Transactional
     @Override
@@ -46,14 +43,14 @@ public class AdminRoleServiceImpl implements AdminRoleService {
             throw new IllegalArgumentException("Tên chức vụ này đã tồn tại.");
         }
 
-        RoleEntity newRoleEntity = roleMapper.toEntity(adminRoleRequestDTO);
+        RoleEntity newRoleEntity = roleMapper.toNewEntity(adminRoleRequestDTO);
 
         List<PermissionEntity> permissionEntityList = permissionRepository.findAllById(adminRoleRequestDTO.permissionIds());
         newRoleEntity.setPermissions(new HashSet<>(permissionEntityList));
 
         newRoleEntity = roleRepository.save(newRoleEntity);
 
-        return roleMapper.toResponseDTO(newRoleEntity);
+        return roleMapper.toAdminResponseDTO(newRoleEntity);
     }
 
     @Transactional
@@ -67,14 +64,12 @@ public class AdminRoleServiceImpl implements AdminRoleService {
                         "Không tìm thấy chức vụ với id: " + roleId
                 ));
 
-        roleMapper.updateEntityFromDTO(adminRoleRequestDTO, existingRoleEntity);
+        roleMapper.updateEntityFromRequest(adminRoleRequestDTO, existingRoleEntity);
 
         List<PermissionEntity> permissionEntityList = permissionRepository.findAllById(adminRoleRequestDTO.permissionIds());
         existingRoleEntity.setPermissions(new HashSet<>(permissionEntityList));
 
-        existingRoleEntity = roleRepository.save(existingRoleEntity);
-
-        return roleMapper.toResponseDTO(existingRoleEntity);
+        return roleMapper.toAdminResponseDTO(existingRoleEntity);
     }
 
     @Transactional
@@ -87,9 +82,7 @@ public class AdminRoleServiceImpl implements AdminRoleService {
 
         existingRoleEntity.setStatus(adminUpdateUserStatusRequestDTO.status());
 
-        existingRoleEntity = roleRepository.save(existingRoleEntity);
-
-        return roleMapper.toResponseDTO(existingRoleEntity);
+        return roleMapper.toAdminResponseDTO(existingRoleEntity);
     }
 
     @Transactional
@@ -105,31 +98,31 @@ public class AdminRoleServiceImpl implements AdminRoleService {
                 ));
 
         existingRoleEntity.setStatus(UserStatus.DELETED);
-
-        roleRepository.save(existingRoleEntity);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public Page<AdminRoleResponseDTO> getAllRoles(String keyword, UserStatus status, LocalDate fromDate, LocalDate toDate, Pageable pageable) {
+    public Page<AdminRoleResponseDTO> getAllRoles(String keyword, UserStatus status, DateFilterType dateType, LocalDate fromDate, LocalDate toDate, Pageable pageable) {
         LocalDateTime startDateTime = DateTimeUtils.getStartOfDay(fromDate);
         LocalDateTime endDateTime = DateTimeUtils.getEndOfDay(toDate);
 
         String finalKeyword = StringUtils.hasText(keyword) ? keyword.trim() : null;
 
-        Page<RoleEntity> roleEntityPage = roleRepository.findRolesWithFilter(finalKeyword, status, startDateTime, endDateTime, pageable);
+        String typeString = dateType != null ? dateType.name() : DateFilterType.CREATED_AT.name();
 
-        return roleEntityPage.map(roleMapper::toResponseDTO);
+        Page<RoleEntity> roleEntityPage = roleRepository.findRolesWithFilter(finalKeyword, status, typeString, startDateTime, endDateTime, pageable);
+
+        return roleEntityPage.map(roleMapper::toAdminResponseDTO);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public AdminRoleResponseDTO getRoleById(Integer roleId) {
-        RoleEntity existingRoleEntity = roleRepository.findById(roleId)
+    public AdminDetailRoleResponseDTO getRoleById(Integer roleId) {
+        RoleEntity existingRoleEntity = roleRepository.findRoleWithDetailsById(roleId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Không tìm thấy chức vụ với id: " + roleId
                 ));
 
-        return roleMapper.toResponseDTO(existingRoleEntity);
+        return roleMapper.toAdminDetailResponseDTO(existingRoleEntity);
     }
 }

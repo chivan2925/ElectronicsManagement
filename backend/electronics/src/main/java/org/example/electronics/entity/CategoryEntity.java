@@ -3,6 +3,7 @@ package org.example.electronics.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.example.electronics.entity.enums.ProductStatus;
+import org.example.electronics.entity.warehouse.WarehouseDetailEntity;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -52,4 +53,14 @@ public class CategoryEntity {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    public void addSubCategory(CategoryEntity subCategory) {
+        subCategoryList.add(subCategory);
+        subCategory.setParent(this);
+    }
+
+    public void removeSubCategory(CategoryEntity subCategory) {
+        subCategoryList.remove(subCategory);
+        subCategory.setParent(null);
+    }
 }

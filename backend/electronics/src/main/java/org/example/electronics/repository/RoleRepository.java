@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 public interface RoleRepository extends JpaRepository<RoleEntity, Integer> {
 
@@ -25,13 +26,27 @@ public interface RoleRepository extends JpaRepository<RoleEntity, Integer> {
 
             "AND (:status IS NULL OR r.status = :status) " +
 
-            "AND (:fromDate IS NULL OR r.createdAt >= :fromDate) " +
-            "AND (:toDate IS NULL OR r.createdAt <= :toDate)")
+            "AND (CAST(:fromDate AS timestamp) IS NULL OR " +
+            "    (:dateType = 'CREATED_AT' AND r.createdAt >= :fromDate) OR " +
+            "    (:dateType = 'UPDATED_AT' AND r.updatedAt >= :fromDate) " +
+            ") " +
+
+            "AND (CAST(:toDate AS timestamp) IS NULL OR " +
+            "    (:dateType = 'CREATED_AT' AND r.createdAt <= :toDate) OR " +
+            "    (:dateType = 'UPDATED_AT' AND r.updatedAt <= :toDate) " +
+            ")"
+    )
     Page<RoleEntity> findRolesWithFilter(
             @Param("keyword") String keyword,
             @Param("status") UserStatus status,
+            @Param("dateType") String dateType,
             @Param("fromDate") LocalDateTime fromDate,
             @Param("toDate") LocalDateTime toDate,
             Pageable pageable
     );
+
+    @Query("SELECT r FROM RoleEntity r " +
+            "LEFT JOIN FETCH r.permissions " +
+            "WHERE r.id = :id")
+    Optional<RoleEntity> findRoleWithDetailsById(@Param("id") Integer roleId);
 }

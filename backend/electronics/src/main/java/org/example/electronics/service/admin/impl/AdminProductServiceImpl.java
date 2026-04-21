@@ -1,8 +1,9 @@
 package org.example.electronics.service.admin.impl;
 
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.example.electronics.dto.request.admin.AdminProductRequestDTO;
-import org.example.electronics.dto.request.admin.AdminUpdateProductStatusRequestDTO;
+import org.example.electronics.dto.request.admin.status.AdminUpdateProductStatusRequestDTO;
 import org.example.electronics.dto.request.admin.media.AdminNestedMediaRequestDTO;
 import org.example.electronics.dto.response.admin.product.AdminDetailProductResponseDTO;
 import org.example.electronics.dto.response.admin.product.AdminProductResponseDTO;
@@ -10,13 +11,11 @@ import org.example.electronics.entity.BrandEntity;
 import org.example.electronics.entity.CategoryEntity;
 import org.example.electronics.entity.MediaEntity;
 import org.example.electronics.entity.ProductEntity;
+import org.example.electronics.entity.enums.DateFilterType;
 import org.example.electronics.entity.enums.ProductStatus;
 import org.example.electronics.mapper.MediaMapper;
 import org.example.electronics.mapper.ProductMapper;
-import org.example.electronics.repository.CategoryRepository;
-import org.example.electronics.repository.MediaRepository;
-import org.example.electronics.repository.ProductRepository;
-import org.example.electronics.repository.VariantRepository;
+import org.example.electronics.repository.*;
 import org.example.electronics.service.admin.AdminProductService;
 import org.example.electronics.util.DateTimeUtils;
 import org.springframework.data.domain.Page;
@@ -30,6 +29,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class AdminProductServiceImpl implements AdminProductService {
 
     private final ProductMapper productMapper;
@@ -39,16 +39,6 @@ public class AdminProductServiceImpl implements AdminProductService {
     private final VariantRepository variantRepository;
     private final MediaMapper mediaMapper;
     private final MediaRepository mediaRepository;
-
-    public AdminProductServiceImpl(ProductMapper productMapper, ProductRepository productRepository, CategoryRepository categoryRepository, BrandRepository brandRepository, VariantRepository variantRepository, MediaMapper mediaMapper, MediaRepository mediaRepository) {
-        this.productMapper = productMapper;
-        this.productRepository = productRepository;
-        this.categoryRepository = categoryRepository;
-        this.brandRepository = brandRepository;
-        this.variantRepository = variantRepository;
-        this.mediaMapper = mediaMapper;
-        this.mediaRepository = mediaRepository;
-    }
 
     @Transactional
     @Override
@@ -68,7 +58,7 @@ public class AdminProductServiceImpl implements AdminProductService {
                         "Không tìm thấy thương hiệu với id: " + adminProductRequestDTO.brandId()
                 ));
 
-        ProductEntity newProductEntity = productMapper.toEntity(adminProductRequestDTO);
+        ProductEntity newProductEntity = productMapper.toNewEntity(adminProductRequestDTO);
 
         newProductEntity.setCategory(existingCategoryEntity);
         newProductEntity.setBrand(existingBrandEntity);
@@ -80,7 +70,7 @@ public class AdminProductServiceImpl implements AdminProductService {
         if(adminNestedMediaRequestDTOList != null && !adminNestedMediaRequestDTOList.isEmpty()) {
             List<MediaEntity> mediaEntityList = adminNestedMediaRequestDTOList.stream()
                     .map(mediaDTO -> {
-                        MediaEntity mediaEntity = mediaMapper.nestedDTO_toEntity(mediaDTO);
+                        MediaEntity mediaEntity = mediaMapper.nestedDTO_toNewEntity(mediaDTO);
                         mediaEntity.setProduct(savedProductEntity);
                         return mediaEntity;
                     })
@@ -89,7 +79,7 @@ public class AdminProductServiceImpl implements AdminProductService {
             mediaRepository.saveAll(mediaEntityList);
         }
 
-        return productMapper.toResponseDTO(savedProductEntity);
+        return productMapper.toAdminResponseDTO(savedProductEntity);
     }
 
     @Transactional
@@ -115,14 +105,12 @@ public class AdminProductServiceImpl implements AdminProductService {
                         "Không tìm thấy thương hiệu với id: " + adminProductRequestDTO.brandId()
                 ));
 
-        productMapper.updateEntityFromDTO(adminProductRequestDTO, existingProductEntity);
+        productMapper.updateEntityFromRequest(adminProductRequestDTO, existingProductEntity);
 
         existingProductEntity.setCategory(existingCategoryEntity);
         existingProductEntity.setBrand(existingBrandEntity);
 
-        existingProductEntity = productRepository.save(existingProductEntity);
-
-        return productMapper.toResponseDTO(existingProductEntity);
+        return productMapper.toAdminResponseDTO(existingProductEntity);
     }
 
     @Transactional
@@ -135,9 +123,7 @@ public class AdminProductServiceImpl implements AdminProductService {
 
         existingProductEntity.setStatus(adminUpdateProductStatusRequestDTO.status());
 
-        existingProductEntity = productRepository.save(existingProductEntity);
-
-        return productMapper.toResponseDTO(existingProductEntity);
+        return productMapper.toAdminResponseDTO(existingProductEntity);
     }
 
     @Transactional
@@ -153,21 +139,21 @@ public class AdminProductServiceImpl implements AdminProductService {
                 ));
 
         existingProductEntity.setStatus(ProductStatus.DELETED);
-
-        productRepository.save(existingProductEntity);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public Page<AdminProductResponseDTO> getAllProducts(String keyword, ProductStatus status, LocalDate fromDate, LocalDate toDate, Pageable pageable) {
+    public Page<AdminProductResponseDTO> getAllProducts(String keyword, ProductStatus status, DateFilterType dateType, LocalDate fromDate, LocalDate toDate, Pageable pageable) {
         LocalDateTime startDateTime = DateTimeUtils.getStartOfDay(fromDate);
         LocalDateTime endDateTime = DateTimeUtils.getEndOfDay(toDate);
 
         String finalKeyword = StringUtils.hasText(keyword) ? keyword.trim() : null;
 
-        Page<ProductEntity> productEntityPage = productRepository.findProductsWithFilter(finalKeyword, status, startDateTime, endDateTime, pageable);
+        String typeString = dateType != null ? dateType.name() : DateFilterType.CREATED_AT.name();
 
-        return productEntityPage.map(productMapper::toResponseDTO);
+        Page<ProductEntity> productEntityPage = productRepository.findProductsWithFilter(finalKeyword, status, typeString, startDateTime, endDateTime, pageable);
+
+        return productEntityPage.map(productMapper::toAdminResponseDTO);
     }
 
     @Transactional(readOnly = true)
@@ -178,6 +164,6 @@ public class AdminProductServiceImpl implements AdminProductService {
                         "Không tìm thấy sản phẩm với id: " + productId
                 ));
 
-        return productMapper.toDetailResponseDTO(existingProductEntity);
+        return productMapper.toAdminDetailResponseDTO(existingProductEntity);
     }
 }

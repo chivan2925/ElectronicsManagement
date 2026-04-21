@@ -1,7 +1,8 @@
 package org.example.electronics.mapper;
 
 import org.example.electronics.dto.request.admin.AdminCategoryRequestDTO;
-import org.example.electronics.dto.response.admin.AdminCategoryResponseDTO;
+import org.example.electronics.dto.response.admin.category.AdminCategoryResponseDTO;
+import org.example.electronics.dto.response.admin.category.AdminDetailCategoryResponseDTO;
 import org.example.electronics.entity.CategoryEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -12,13 +13,18 @@ import org.mapstruct.ReportingPolicy;
 public interface CategoryMapper {
 
     @Mapping(source = "parentId", target = "parent.id")
-    CategoryEntity toEntity(AdminCategoryRequestDTO adminCategoryRequestDTO);
+    CategoryEntity toNewEntity(AdminCategoryRequestDTO adminCategoryRequestDTO);
 
     @Mapping(source = "parent.id", target = "parentId")
     @Mapping(source = "parent.name", target = "parentName")
-    AdminCategoryResponseDTO toResponseDTO(CategoryEntity categoryEntity);
+    AdminCategoryResponseDTO toAdminResponseDTO(CategoryEntity categoryEntity);
+
+    @Mapping(source = "parent.id", target = "parentId")
+    @Mapping(source = "parent.name", target = "parentName")
+    AdminDetailCategoryResponseDTO toAdminDetailResponseDTO(CategoryEntity categoryEntity);
 
     @Mapping(target = "parent", ignore = true)
-    void updateEntityFromDTO(AdminCategoryRequestDTO adminCategoryRequestDTO,
-                             @MappingTarget CategoryEntity categoryEntity);
+    @Mapping(target = "subCategoryList", ignore = true)
+    void updateEntityFromRequest(AdminCategoryRequestDTO adminCategoryRequestDTO,
+                                 @MappingTarget CategoryEntity categoryEntity);
 }

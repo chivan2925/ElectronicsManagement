@@ -3,14 +3,18 @@ package org.example.electronics.controller.admin;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.example.electronics.dto.request.admin.AdminCategoryRequestDTO;
-import org.example.electronics.dto.request.admin.AdminUpdateProductStatusRequestDTO;
-import org.example.electronics.dto.response.admin.AdminCategoryResponseDTO;
+import org.example.electronics.dto.request.admin.status.AdminUpdateProductStatusRequestDTO;
+import org.example.electronics.dto.response.admin.category.AdminCategoryResponseDTO;
+import org.example.electronics.dto.response.admin.category.AdminDetailCategoryResponseDTO;
+import org.example.electronics.entity.enums.DateFilterType;
 import org.example.electronics.entity.enums.ProductStatus;
 import org.example.electronics.service.admin.AdminCategoryService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,14 +23,11 @@ import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/admin/categories")
+@RequiredArgsConstructor
 @Tag(name = "1. Category Management", description = "Các API dùng để quản lý Danh mục sản phẩm")
 public class AdminCategoryController {
 
     private final AdminCategoryService adminCategoryService;
-
-    public AdminCategoryController(AdminCategoryService adminCategoryService) {
-        this.adminCategoryService = adminCategoryService;
-    }
 
     @PostMapping
     @Operation(
@@ -82,7 +83,6 @@ public class AdminCategoryController {
         return ResponseEntity.noContent().build();
     }
 
-    //Size mặc định (số lượng phần tử 1 trang) của @PageableDefault là 10
     @GetMapping
     @Operation(
             summary = "Lấy danh sách danh mục Cha (Có tìm kiếm và lọc)",
@@ -91,11 +91,12 @@ public class AdminCategoryController {
     public ResponseEntity<Page<AdminCategoryResponseDTO>> getAllParentCategories(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) ProductStatus status,
-            @RequestParam(required = false) LocalDate fromDate,
-            @RequestParam(required = false) LocalDate toDate,
-            @PageableDefault(sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable
+            @RequestParam(defaultValue = "CREATED_AT") DateFilterType dateType,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
+            @PageableDefault(sort = "updatedAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable
     ) {
-        Page<AdminCategoryResponseDTO> allParentCategoriesPage = adminCategoryService.getAllParentCategories(keyword, status, fromDate, toDate, pageable);
+        Page<AdminCategoryResponseDTO> allParentCategoriesPage = adminCategoryService.getAllParentCategories(keyword, status, dateType, fromDate, toDate, pageable);
 
         return ResponseEntity.ok(allParentCategoriesPage);
     }
@@ -109,11 +110,12 @@ public class AdminCategoryController {
             @PathVariable Integer parentId,
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) ProductStatus status,
-            @RequestParam(required = false) LocalDate fromDate,
-            @RequestParam(required = false) LocalDate toDate,
-            @PageableDefault(sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable
+            @RequestParam(defaultValue = "CREATED_AT") DateFilterType dateType,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
+            @PageableDefault(sort = "updatedAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable
     ) {
-        Page<AdminCategoryResponseDTO> allSubCategoriesPage = adminCategoryService.getAllSubCategories(parentId, keyword, status, fromDate, toDate, pageable);
+        Page<AdminCategoryResponseDTO> allSubCategoriesPage = adminCategoryService.getAllSubCategories(parentId, keyword, status, dateType, fromDate, toDate, pageable);
 
         return ResponseEntity.ok(allSubCategoriesPage);
     }
@@ -123,11 +125,11 @@ public class AdminCategoryController {
             summary = "Lấy chi tiết danh mục",
             description = "Lấy thông tin của 1 danh mục cụ thể dựa vào ID."
     )
-    public ResponseEntity<AdminCategoryResponseDTO> getCategoryById(
+    public ResponseEntity<AdminDetailCategoryResponseDTO> getCategoryById(
             @PathVariable Integer categoryId
     ) {
-        AdminCategoryResponseDTO adminCategoryResponseDTO = adminCategoryService.getCategoryById(categoryId);
+        AdminDetailCategoryResponseDTO adminDetailCategoryResponseDTO = adminCategoryService.getCategoryById(categoryId);
 
-        return ResponseEntity.ok(adminCategoryResponseDTO);
+        return ResponseEntity.ok(adminDetailCategoryResponseDTO);
     }
 }

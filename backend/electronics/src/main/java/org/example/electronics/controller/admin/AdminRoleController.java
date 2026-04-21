@@ -3,15 +3,19 @@ package org.example.electronics.controller.admin;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.example.electronics.dto.request.admin.AdminRoleRequestDTO;
-import org.example.electronics.dto.request.admin.AdminUpdateUserStatusRequestDTO;
-import org.example.electronics.dto.response.admin.AdminRoleResponseDTO;
+import org.example.electronics.dto.request.admin.status.AdminUpdateUserStatusRequestDTO;
+import org.example.electronics.dto.response.admin.role.AdminDetailRoleResponseDTO;
+import org.example.electronics.dto.response.admin.role.AdminRoleResponseDTO;
+import org.example.electronics.entity.enums.DateFilterType;
 import org.example.electronics.entity.enums.UserStatus;
 import org.example.electronics.service.admin.AdminRoleService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,14 +24,14 @@ import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/admin/roles")
-@Tag(name = "3. Role Management", description = "Các API dành cho Admin để quản lý Vai trò / Chức vụ của nhân viên")
+@RequiredArgsConstructor
+@Tag(
+        name = "3. Role Management",
+        description = "Các API dành cho Admin để quản lý Vai trò / Chức vụ của nhân viên"
+)
 public class AdminRoleController {
 
     private final AdminRoleService adminRoleService;
-
-    public AdminRoleController(AdminRoleService adminRoleService) {
-        this.adminRoleService = adminRoleService;
-    }
 
     @PostMapping
     @Operation(
@@ -91,11 +95,12 @@ public class AdminRoleController {
     public ResponseEntity<Page<AdminRoleResponseDTO>> getAllRoles(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) UserStatus status,
-            @RequestParam(required = false) LocalDate fromDate,
-            @RequestParam(required = false) LocalDate toDate,
-            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+            @RequestParam(defaultValue = "CREATED_AT") DateFilterType dateType,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
+            @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        Page<AdminRoleResponseDTO> allRolesPage = adminRoleService.getAllRoles(keyword, status, fromDate, toDate, pageable);
+        Page<AdminRoleResponseDTO> allRolesPage = adminRoleService.getAllRoles(keyword, status, dateType, fromDate, toDate, pageable);
 
         return ResponseEntity.ok(allRolesPage);
     }
@@ -105,11 +110,11 @@ public class AdminRoleController {
             summary = "Xem chi tiết 1 chức vụ",
             description = "Lấy toàn bộ thông tin của một chức vụ cụ thể dựa vào ID."
     )
-    public ResponseEntity<AdminRoleResponseDTO> getRoleById(
+    public ResponseEntity<AdminDetailRoleResponseDTO> getRoleById(
             @PathVariable Integer roleId
     ) {
-        AdminRoleResponseDTO adminRoleResponseDTO = adminRoleService.getRoleById(roleId);
+        AdminDetailRoleResponseDTO adminDetailRoleResponseDTO = adminRoleService.getRoleById(roleId);
 
-        return ResponseEntity.ok(adminRoleResponseDTO);
+        return ResponseEntity.ok(adminDetailRoleResponseDTO);
     }
 }

@@ -1,6 +1,7 @@
 package org.example.electronics.service.admin.impl;
 
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.example.electronics.dto.request.admin.media.AdminAddMediaRequestDTO;
 import org.example.electronics.dto.request.admin.media.AdminUpdateMediaOrderRequestDTO;
 import org.example.electronics.dto.response.admin.AdminMediaResponseDTO;
@@ -16,19 +17,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class AdminMediaServiceImpl implements AdminMediaService {
 
     private final MediaMapper mediaMapper;
     private final MediaRepository mediaRepository;
     private final ProductRepository productRepository;
     private final VariantRepository variantRepository;
-
-    public AdminMediaServiceImpl(MediaMapper mediaMapper, MediaRepository mediaRepository, ProductRepository productRepository, VariantRepository variantRepository) {
-        this.mediaMapper = mediaMapper;
-        this.mediaRepository = mediaRepository;
-        this.productRepository = productRepository;
-        this.variantRepository = variantRepository;
-    }
 
     @Transactional
     @Override
@@ -44,7 +39,7 @@ public class AdminMediaServiceImpl implements AdminMediaService {
             throw new IllegalArgumentException("Một media không thể vừa là media của sản phẩm, vừa là media của biến thể.");
         }
 
-        MediaEntity newMediaEntity = mediaMapper.toEntity(adminAddMediaRequestDTO);
+        MediaEntity newMediaEntity = mediaMapper.toNewEntity(adminAddMediaRequestDTO);
 
         if (productId != null) {
             ProductEntity existingProductEntity = productRepository.findById(productId)
@@ -65,7 +60,7 @@ public class AdminMediaServiceImpl implements AdminMediaService {
 
         newMediaEntity = mediaRepository.save(newMediaEntity);
 
-        return mediaMapper.toResponseDTO(newMediaEntity);
+        return mediaMapper.toAdminResponseDTO(newMediaEntity);
     }
 
     @Transactional
@@ -98,8 +93,6 @@ public class AdminMediaServiceImpl implements AdminMediaService {
         }
 
         existingMediaEntity.setIsPrimary(true);
-
-        mediaRepository.save(existingMediaEntity);
     }
 
     @Transactional
@@ -112,8 +105,6 @@ public class AdminMediaServiceImpl implements AdminMediaService {
 
         existingMediaEntity.setDisplayOrder(adminUpdateMediaOrderRequestDTO.displayOrder());
 
-        existingMediaEntity = mediaRepository.save(existingMediaEntity);
-
-        return mediaMapper.toResponseDTO(existingMediaEntity);
+        return mediaMapper.toAdminResponseDTO(existingMediaEntity);
     }
 }

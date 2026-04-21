@@ -1,7 +1,7 @@
 package org.example.electronics.dto.response.admin.product;
 
 import org.example.electronics.dto.response.admin.AdminMediaResponseDTO;
-import org.example.electronics.dto.response.admin.AdminVariantResponseDTO;
+import org.example.electronics.dto.response.admin.variant.AdminVariantResponseDTO;
 import org.example.electronics.entity.enums.ProductStatus;
 
 import java.time.LocalDateTime;

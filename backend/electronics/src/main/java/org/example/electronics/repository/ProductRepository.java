@@ -21,6 +21,8 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Integer>
 
     boolean existsBySlugAndIdNot(String slug, Integer id);
 
+    boolean existsByCategoryId(Integer categoryId);
+
     @Query(value = "SELECT p FROM ProductEntity p " +
             "LEFT JOIN FETCH p.category " +
             "LEFT JOIN FETCH p.brand " +
@@ -34,8 +36,15 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Integer>
 
             "AND (:status IS NULL OR p.status = :status) " +
 
-            "AND (:fromDate IS NULL OR p.createdAt >= :fromDate) " +
-            "AND (:toDate IS NULL OR p.createdAt <= :toDate)",
+            "AND (CAST(:fromDate AS timestamp) IS NULL OR " +
+            "    (:dateType = 'CREATED_AT' AND p.createdAt >= :fromDate) OR " +
+            "    (:dateType = 'UPDATED_AT' AND p.updatedAt >= :fromDate) " +
+            ") " +
+
+            "AND (CAST(:toDate AS timestamp) IS NULL OR " +
+            "    (:dateType = 'CREATED_AT' AND p.createdAt <= :toDate) OR " +
+            "    (:dateType = 'UPDATED_AT' AND p.updatedAt <= :toDate) " +
+            ")",
 
             countQuery = "SELECT COUNT(p) FROM ProductEntity p " +
                     "WHERE 1=1 " +
@@ -45,12 +54,21 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Integer>
                     "    OR LOWER(p.slug) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
                     ")) " +
                     "AND (:status IS NULL OR p.status = :status) " +
-                    "AND (:fromDate IS NULL OR p.createdAt >= :fromDate) " +
-                    "AND (:toDate IS NULL OR p.createdAt <= :toDate)"
+
+                    "AND (CAST(:fromDate AS timestamp) IS NULL OR " +
+                    "    (:dateType = 'CREATED_AT' AND p.createdAt >= :fromDate) OR " +
+                    "    (:dateType = 'UPDATED_AT' AND p.updatedAt >= :fromDate) " +
+                    ") " +
+
+                    "AND (CAST(:toDate AS timestamp) IS NULL OR " +
+                    "    (:dateType = 'CREATED_AT' AND p.createdAt <= :toDate) OR " +
+                    "    (:dateType = 'UPDATED_AT' AND p.updatedAt <= :toDate) " +
+                    ")"
     )
     Page<ProductEntity> findProductsWithFilter(
             @Param("keyword") String keyword,
             @Param("status") ProductStatus status,
+            @Param("dateType") String dateType,
             @Param("fromDate") LocalDateTime fromDate,
             @Param("toDate") LocalDateTime toDate,
             Pageable pageable

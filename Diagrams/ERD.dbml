@@ -3,6 +3,7 @@
 // =======================
 Enum order_status {
   PENDING
+  PROCESSING
   COMPLETED
   CANCELLED
   RETURNED
@@ -22,8 +23,8 @@ Enum user_status {
 }
 
 Enum coupon_status {
-  VALID
-  EXPIRED
+  ACTIVE
+  INACTIVE
   DELETED
 }
 
@@ -40,6 +41,18 @@ Enum payment_status {
   PENDING
   PAID
   FAILED
+  REFUNDED
+}
+
+Enum payment_provider {
+  COD
+  VNPAY
+  MOMO
+}
+
+Enum payment_transaction_type {
+  PAYMENT
+  REFUND
 }
 
 Enum payment_transaction_status {
@@ -57,19 +70,23 @@ Enum return_request_type {
 Enum return_request_status {
   PENDING
   APPROVED
+  COMPLETED
   REJECTED
   CANCELLED
 }
 
-Enum transaction_type {
-  IN
-  OUT
+Enum warehouse_transaction_type {
+  IMPORT
+  EXPORT
+  RETURN
+  CANCEL_RESTOCK
 }
-Enum transaction_status {
+Enum warehouse_transaction_status {
   PENDING
-  SUCCESS
+  COMPLETED
   FAILED
   CANCELLED
+  DELETED
 }
 
 Enum shipping_provider {
@@ -84,6 +101,7 @@ Enum shipping_status {
   PENDING
   SHIPPING
   DELIVERED
+  RETURNED
   CANCELLED
 }
 
@@ -98,27 +116,6 @@ Enum gender_type {
   FEMALE
   OTHER
   PREFER_NOT_TO_SAY
-}
-
-Enum review_status {
-  PENDING
-  APPROVED
-  REJECTED
-  DELETED
-}
-
-Enum report_status {
-  PENDING
-  RESOLVED
-  REJECTED
-  DELETED
-}
-
-Enum handling_measure_type {
-  NONE
-  WARNING
-  TEMPORARY_HIDE_PRODUCT
-  PERMANENT_DELETE_PRODUCT
 }
 
 // =======================
@@ -155,7 +152,7 @@ Table variants {
   color varchar(50)
   specs_json json
   price decimal(12,3) [not null]
-  stock int [not null]
+  total_stock int [not null]
   status product_status [default: product_status.ACTIVE, not null]
   created_at datetime [default: `now()`, not null]
   updated_at datetime [default: `now()`, not null]
@@ -253,7 +250,7 @@ Table categories {
 
 Table brands {
   id int [pk, increment]
-  name varchar(100) [not null]
+  name varchar(100) [unique, not null]
   image_url varchar(255)
   status product_status [default: product_status.ACTIVE, not null]
   created_at datetime [default: `now()`, not null]
@@ -264,15 +261,15 @@ Table coupons {
   id int [pk, increment]
   category_id int [Ref: > categories.id]
   brand_id int [Ref: > brands.id]
-  code varchar(20) [not null]
+  code varchar(20) [unique, not null]
   type coupon_type [not null]
   value decimal(12,3)
   min_order decimal(12,3)
-  starts_at datetime
-  ends_at datetime
+  start_date datetime [not null]
+  end_date datetime [not null]
   usage_limit int
   max_discount decimal(12,3)
-  status coupon_status [default: coupon_status.VALID, not null]
+  status coupon_status [coupon_status.ACTIVE, not null]
   created_at datetime [default: `now()`, not null]
   updated_at datetime [default: `now()`, not null]
 
@@ -294,14 +291,14 @@ Table orders {
   id int [pk, increment]
   user_id int [Ref: > users.id, not null]
   coupon_id int [Ref: > coupons.id]
-  code varchar(20) [not null]
+  code varchar(20) [unique, not null]
   shipping_name varchar(100) [not null]
-  shipping_phone varchar(20) [not null]
+  shipping_phone varchar(10) [not null]
   shipping_line varchar(255) [not null]
   shipping_ward varchar(50) [not null]
   shipping_district varchar(50) [not null]
   shipping_province varchar(50) [not null]
-  tracking_code varchar(20) [not null]
+  tracking_code varchar(20) [unique]
   status order_status [default: order_status.PENDING, not null]
   payment_method payment_method_type [not null]
   payment_status payment_status [default: payment_status.PENDING, not null]
@@ -309,16 +306,16 @@ Table orders {
   shipping_fee decimal(12,3) [not null]
   subtotal decimal(12,3) [not null]
   total decimal(12,3) [not null]
-  created_at datetime [default: `now()`, not null]
-  updated_at datetime [default: `now()`, not null]
-  paid_at datetime
   note text
   shipping_provider shipping_provider [not null]
   shipping_status shipping_status [default: shipping_status.PENDING, not null]
+  paid_at datetime
+  created_at datetime [default: `now()`, not null]
+  updated_at datetime [default: `now()`, not null]
 
   checks {
     `discount >= 0` [name: "chk_discount_non_negative"]
-    `discount <= subtotal` [name: "chk_discount_logic"]
+    `discount <= subtotal` [name: "chk_discount_smaller_or_equal_subtotal"]
     `shipping_fee >= 0` [name: "chk_shipping_fee_non_negative"]
     `subtotal >= 0` [name: "chk_subtotal_non_negative"]
     `total >= 0` [name: "chk_total_non_negative"]
@@ -327,15 +324,20 @@ Table orders {
 
 Table payment_transactions {
   id int [pk, increment]
-  order_id int [Ref: > orders.id, not null]
-  provider varchar(20) [not null]
-  provider_payment_id varchar(20) [not null]
+  order_id int [Ref: > orders.id]
+  return_request_id int [Ref: > return_requests.id]
+  type payment_transaction_type [not null]
+  provider payment_provider [not null]
+  provider_payment_id varchar(255)
   amount decimal(12,3) [not null]
+  note text
   status payment_transaction_status [default: payment_transaction_status.PENDING, not null]
+  payment_time datetime
+  payload_json json
   created_at datetime [default: `now()`, not null]
 
   checks {
-    `amount >= 0` [name: "chk_amount_non_negative"]
+    `amount > 0` [name: "chk_amount_positive"]
   }
 }
 
@@ -344,18 +346,20 @@ Table return_requests {
   user_id int [Ref: > users.id, not null]
   order_id int [Ref: > orders.id, not null]
   variant_id int [Ref: > variants.id, not null]
-  handled_by_staff_id int [Ref: > staffs.id, not null]
+  quantity int [not null]
+  handled_by_staff_id int [Ref: > staffs.id]
   type return_request_type [not null]
-  reason text
+  reason text [not null]
   refund_amount decimal(12,3) [not null]
   refund_method payment_method_type [not null]
+  evidence_json json
   status return_request_status [default: return_request_status.PENDING, not null]
   created_at datetime [default: `now()`, not null]
   updated_at datetime [default: `now()`, not null]
   resolved_at datetime
-  evidence_json json
 
   checks {
+    `quantity > 0` [name: "chk_quantity_positive"]
     `refund_amount >= 0` [name: "chk_refund_amount_non_negative"]
   }
 }
@@ -365,11 +369,9 @@ Table reviews {
   product_id int [Ref: > products.id, not null]
   user_id int [Ref: > users.id, not null]
   order_id int [Ref: > orders.id, not null]
-  variant_id int [Ref: > variants.id, not null]
   rating_star int [not null]
   content text
   photos_json json
-  status review_status [default: review_status.PENDING, not null]
   created_at datetime [default: `now()`, not null]
   updated_at datetime [default: `now()`, not null]
 
@@ -400,28 +402,22 @@ Table warehouses {
 
 Table warehouse_transactions {
   id int [pk, increment]
+  code varchar(20) [unique, not null]
   warehouse_id int [Ref: > warehouses.id, not null]
   staff_id int [Ref: > staffs.id, not null]
   order_id int [Ref: > orders.id]
   return_request_id int [Ref: > return_requests.id]
-  type transaction_type [not null]
-  status transaction_status [default: transaction_status.PENDING, not null]
+  type warehouse_transaction_type [not null]
+  status warehouse_transaction_status [default: warehouse_transaction_status.PENDING, not null]
   note text
   created_at datetime [default: `now()`, not null]
   updated_at datetime [default: `now()`, not null]
 }
 
-Table reports {
-  id int [pk, increment]
-  user_id int [Ref: > users.id, not null]
-  product_id int [Ref: > products.id, not null]
-  staff_id int [Ref: > staffs.id]
-  reason text [not null]
-  proof_json json [not null]
-  status report_status [default: report_status.PENDING, not null]
-  handling_measures handling_measure_type [default: handling_measure_type.NONE, not null]
+Table invalidated_tokens {
+  id varchar(255) [pk]
+  expiry_time timestamp [not null]
   created_at datetime [default: `now()`, not null]
-  updated_at datetime [default: `now()`, not null]
 }
 
 // =======================

@@ -49,7 +49,7 @@ public class StaffEntity {
     @Column(nullable = false)
     private String address;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "role_id", nullable = false)
     private RoleEntity role;
 

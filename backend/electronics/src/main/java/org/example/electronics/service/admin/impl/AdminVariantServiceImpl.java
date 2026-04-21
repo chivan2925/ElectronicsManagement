@@ -1,14 +1,19 @@
 package org.example.electronics.service.admin.impl;
 
 import jakarta.persistence.EntityNotFoundException;
-import org.example.electronics.dto.request.admin.AdminUpdateProductStatusRequestDTO;
+import lombok.RequiredArgsConstructor;
+import org.example.electronics.dto.request.admin.status.AdminUpdateProductStatusRequestDTO;
 import org.example.electronics.dto.request.admin.AdminVariantRequestDTO;
 import org.example.electronics.dto.request.admin.media.AdminNestedMediaRequestDTO;
-import org.example.electronics.dto.response.admin.AdminVariantResponseDTO;
+import org.example.electronics.dto.response.admin.variant.AdminDetailVariantResponseDTO;
+import org.example.electronics.dto.response.admin.variant.AdminVariantResponseDTO;
+import org.example.electronics.dto.response.admin.variant.AdminVariantWarehouseStockResponseDTO;
 import org.example.electronics.entity.MediaEntity;
 import org.example.electronics.entity.ProductEntity;
 import org.example.electronics.entity.VariantEntity;
+import org.example.electronics.entity.enums.DateFilterType;
 import org.example.electronics.entity.enums.ProductStatus;
+import org.example.electronics.entity.warehouse.WarehouseDetailEntity;
 import org.example.electronics.mapper.MediaMapper;
 import org.example.electronics.mapper.VariantMapper;
 import org.example.electronics.repository.MediaRepository;
@@ -22,11 +27,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class AdminVariantServiceImpl implements AdminVariantService {
 
     private final VariantMapper variantMapper;
@@ -34,14 +41,6 @@ public class AdminVariantServiceImpl implements AdminVariantService {
     private final ProductRepository productRepository;
     private final MediaMapper mediaMapper;
     private final MediaRepository mediaRepository;
-
-    public AdminVariantServiceImpl(VariantMapper variantMapper, VariantRepository variantRepository, ProductRepository productRepository, MediaMapper mediaMapper, MediaRepository mediaRepository) {
-        this.variantMapper = variantMapper;
-        this.variantRepository = variantRepository;
-        this.productRepository = productRepository;
-        this.mediaMapper = mediaMapper;
-        this.mediaRepository = mediaRepository;
-    }
 
     @Transactional
     @Override
@@ -56,7 +55,7 @@ public class AdminVariantServiceImpl implements AdminVariantService {
                         "Không tìm thấy sản phẩm với id: " + adminVariantRequestDTO.productId()
                 ));
 
-        VariantEntity newVariantEntity = variantMapper.toEntity(adminVariantRequestDTO);
+        VariantEntity newVariantEntity = variantMapper.toNewEntity(adminVariantRequestDTO);
 
         newVariantEntity.setProduct(existingProductEntity);
 
@@ -67,7 +66,7 @@ public class AdminVariantServiceImpl implements AdminVariantService {
         if(adminNestedMediaRequestDTOList != null && !adminNestedMediaRequestDTOList.isEmpty()) {
             List<MediaEntity> mediaEntityList = adminNestedMediaRequestDTOList.stream()
                     .map(mediaDTO -> {
-                        MediaEntity mediaEntity = mediaMapper.nestedDTO_toEntity(mediaDTO);
+                        MediaEntity mediaEntity = mediaMapper.nestedDTO_toNewEntity(mediaDTO);
                         mediaEntity.setVariant(savedVariantEntity);
                         return mediaEntity;
                     })
@@ -76,7 +75,7 @@ public class AdminVariantServiceImpl implements AdminVariantService {
             mediaRepository.saveAll(mediaEntityList);
         }
 
-        return variantMapper.toResponseDTO(savedVariantEntity);
+        return variantMapper.toAdminResponseDTO(savedVariantEntity);
     }
 
     @Transactional
@@ -97,13 +96,11 @@ public class AdminVariantServiceImpl implements AdminVariantService {
                         "Không tìm thấy sản phẩm với id: " + adminVariantRequestDTO.productId()
                 ));
 
-        variantMapper.updateEntityFromDTO(adminVariantRequestDTO, existingVariantEntity);
+        variantMapper.updateEntityFromRequest(adminVariantRequestDTO, existingVariantEntity);
 
         existingVariantEntity.setProduct(existingProductEntity);
 
-        existingVariantEntity = variantRepository.save(existingVariantEntity);
-
-        return variantMapper.toResponseDTO(existingVariantEntity);
+        return variantMapper.toAdminResponseDTO(existingVariantEntity);
     }
 
     @Transactional
@@ -116,9 +113,7 @@ public class AdminVariantServiceImpl implements AdminVariantService {
 
         existingVariantEntity.setStatus(adminUpdateProductStatusRequestDTO.status());
 
-        existingVariantEntity = variantRepository.save(existingVariantEntity);
-
-        return variantMapper.toResponseDTO(existingVariantEntity);
+        return variantMapper.toAdminResponseDTO(existingVariantEntity);
     }
 
     @Transactional
@@ -130,31 +125,49 @@ public class AdminVariantServiceImpl implements AdminVariantService {
                 ));
 
         existingVariantEntity.setStatus(ProductStatus.DELETED);
-
-        variantRepository.save(existingVariantEntity);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public Page<AdminVariantResponseDTO> getAllVariants(String keyword, ProductStatus status, LocalDate fromDate, LocalDate toDate, Pageable pageable) {
+    public Page<AdminVariantResponseDTO> getAllVariants(String keyword, ProductStatus status, DateFilterType dateType, LocalDate fromDate, LocalDate toDate, Pageable pageable) {
         LocalDateTime startDateTime = DateTimeUtils.getStartOfDay(fromDate);
         LocalDateTime endDateTime = DateTimeUtils.getEndOfDay(toDate);
 
         String finalKeyword = StringUtils.hasText(keyword) ? keyword.trim() : null;
 
-        Page<VariantEntity> variantEntityPage = variantRepository.findVariantsWithFilter(finalKeyword, status, startDateTime, endDateTime, pageable);
+        String typeString = dateType != null ? dateType.name() : DateFilterType.CREATED_AT.name();
 
-        return variantEntityPage.map(variantMapper::toResponseDTO);
+        Page<VariantEntity> variantEntityPage = variantRepository.findVariantsWithFilter(finalKeyword, status, typeString, startDateTime, endDateTime, pageable);
+
+        return variantEntityPage.map(variantMapper::toAdminResponseDTO);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public AdminVariantResponseDTO getVariantById(Integer variantId) {
-        VariantEntity existingVariantEntity = variantRepository.findVariantWithDetailsById(variantId)
+    public AdminDetailVariantResponseDTO getVariantById(Integer variantId) {
+        VariantEntity existingVariantEntity = variantRepository.findVariantWithBasicDetailsById(variantId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Không tìm thấy biến thể với id: " + variantId
                 ));
 
-        return variantMapper.toResponseDTO(existingVariantEntity);
+        List<WarehouseDetailEntity> warehouseDetailEntityList = variantRepository.findWarehouseStocksByVariantId(variantId);
+
+        List<AdminVariantWarehouseStockResponseDTO> warehouseStockResponseDTOList = warehouseDetailEntityList.stream()
+                .map(variantMapper::toWarehouseStockDTO)
+                .toList();
+
+        int totalStock = warehouseDetailEntityList.stream()
+                .mapToInt(WarehouseDetailEntity::getQuantity)
+                .sum();
+
+        BigDecimal totalWarehouseValue = existingVariantEntity.getPrice()
+                .multiply(BigDecimal.valueOf(totalStock));
+
+        return variantMapper.toAdminDetailResponseDTO(
+                existingVariantEntity,
+                warehouseStockResponseDTOList,
+                totalStock,
+                totalWarehouseValue
+        );
     }
 }

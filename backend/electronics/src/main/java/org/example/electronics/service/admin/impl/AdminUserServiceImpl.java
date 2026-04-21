@@ -1,9 +1,11 @@
 package org.example.electronics.service.admin.impl;
 
 import jakarta.persistence.EntityNotFoundException;
-import org.example.electronics.dto.request.admin.AdminUpdateUserStatusRequestDTO;
+import lombok.RequiredArgsConstructor;
+import org.example.electronics.dto.request.admin.status.AdminUpdateUserStatusRequestDTO;
 import org.example.electronics.dto.response.admin.AdminUserResponseDTO;
 import org.example.electronics.entity.UserEntity;
+import org.example.electronics.entity.enums.DateFilterType;
 import org.example.electronics.entity.enums.UserStatus;
 import org.example.electronics.mapper.UserMapper;
 import org.example.electronics.repository.UserRepository;
@@ -19,15 +21,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Service
+@RequiredArgsConstructor
 public class AdminUserServiceImpl implements AdminUserService {
 
     private final UserMapper userMapper;
     private final UserRepository userRepository;
-
-    public AdminUserServiceImpl(UserMapper userMapper, UserRepository userRepository) {
-        this.userMapper = userMapper;
-        this.userRepository = userRepository;
-    }
 
     @Transactional
     @Override
@@ -39,9 +37,7 @@ public class AdminUserServiceImpl implements AdminUserService {
 
         userEntity.setStatus(adminUpdateUserStatusRequestDTO.status());
 
-        userEntity = userRepository.save(userEntity);
-
-        return userMapper.toResponseDTO(userEntity);
+        return userMapper.toAdminResponseDTO(userEntity);
     }
 
     @Transactional
@@ -53,21 +49,21 @@ public class AdminUserServiceImpl implements AdminUserService {
                 ));
 
         userEntity.setStatus(UserStatus.DELETED);
-
-        userRepository.save(userEntity);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public Page<AdminUserResponseDTO> getAllUsers(String keyword, UserStatus status, LocalDate fromDate, LocalDate toDate, Pageable pageable) {
+    public Page<AdminUserResponseDTO> getAllUsers(String keyword, UserStatus status, DateFilterType dateType, LocalDate fromDate, LocalDate toDate, Pageable pageable) {
         LocalDateTime startDateTime = DateTimeUtils.getStartOfDay(fromDate);
         LocalDateTime endDateTime = DateTimeUtils.getEndOfDay(toDate);
 
         String finalKeyword = StringUtils.hasText(keyword) ? keyword.trim() : null;
 
-        Page<UserEntity> userEntityPage = userRepository.findUsersWithFilter(finalKeyword, status, startDateTime, endDateTime, pageable);
+        String typeString = dateType != null ? dateType.name() : DateFilterType.CREATED_AT.name();
 
-        return userEntityPage.map(userMapper::toResponseDTO);
+        Page<UserEntity> userEntityPage = userRepository.findUsersWithFilter(finalKeyword, status, typeString, startDateTime, endDateTime, pageable);
+
+        return userEntityPage.map(userMapper::toAdminResponseDTO);
     }
 
     @Transactional(readOnly = true)
@@ -78,6 +74,6 @@ public class AdminUserServiceImpl implements AdminUserService {
                         "Không tìm thấy user với id: " + userId
                 ));
 
-        return userMapper.toResponseDTO(existingUserEntity);
+        return userMapper.toAdminResponseDTO(existingUserEntity);
     }
 }

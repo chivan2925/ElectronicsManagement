@@ -1,6 +1,7 @@
 package org.example.electronics.mapper;
 
-import org.example.electronics.dto.request.admin.AdminStaffRequestDTO;
+import org.example.electronics.dto.request.admin.staff.AdminCreateStaffRequestDTO;
+import org.example.electronics.dto.request.admin.staff.AdminUpdateStaffRequestDTO;
 import org.example.electronics.dto.response.admin.AdminStaffResponseDTO;
 import org.example.electronics.entity.StaffEntity;
 import org.mapstruct.Mapper;
@@ -16,14 +17,16 @@ public interface StaffMapper {
 
     @Mapping(target = "role", ignore = true)
     @Mapping(target = "hashedPassword", ignore = true)
-    StaffEntity toEntity(AdminStaffRequestDTO adminStaffRequestDTO);
+    StaffEntity toNewEntity(AdminCreateStaffRequestDTO adminCreateStaffRequestDTO);
 
     @Mapping(source = "role.id", target = "roleId")
     @Mapping(source = "role.name", target = "roleName")
-    AdminStaffResponseDTO toResponseDTO(StaffEntity staffEntity);
+    @Mapping(target = "rawPassword", ignore = true)
+    AdminStaffResponseDTO toAdminResponseDTO(StaffEntity staffEntity);
+
+    AdminStaffResponseDTO toAdminResponseDTOWithPassword(StaffEntity entity, String rawPassword);
 
     @Mapping(target = "role", ignore = true)
-    @Mapping(target = "hashedPassword", ignore = true)
-    void updateEntityFromDTO(AdminStaffRequestDTO adminStaffRequestDTO,
-                             @MappingTarget StaffEntity staffEntity);
+    void updateEntityFromRequest(AdminUpdateStaffRequestDTO adminUpdateStaffRequestDTO,
+                                 @MappingTarget StaffEntity staffEntity);
 }

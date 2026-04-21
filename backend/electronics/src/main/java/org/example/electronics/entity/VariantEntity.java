@@ -37,7 +37,7 @@ public class VariantEntity {
     @JoinColumn(name = "product_id", nullable = false)
     private ProductEntity product;
 
-    @OneToMany(mappedBy = "variant", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "variant")
     @Builder.Default
     private Set<MediaEntity> media = new HashSet<>();
 
@@ -57,9 +57,10 @@ public class VariantEntity {
     @Column(nullable = false, precision = 12, scale = 3)
     private BigDecimal price;
 
-    @Column(nullable = false)
-    private Integer stock;
+    @Column(name = "total_stock", nullable = false)
+    private Integer totalStock;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Builder.Default
     private ProductStatus status = ProductStatus.ACTIVE;

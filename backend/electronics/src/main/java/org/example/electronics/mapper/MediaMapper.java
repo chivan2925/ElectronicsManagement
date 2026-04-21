@@ -16,13 +16,13 @@ public interface MediaMapper {
 
     @Mapping(target = "product", ignore = true)
     @Mapping(target = "variant", ignore = true)
-    MediaEntity toEntity(AdminAddMediaRequestDTO adminAddMediaRequestDTO);
+    MediaEntity toNewEntity(AdminAddMediaRequestDTO adminAddMediaRequestDTO);
 
     @Mapping(target = "product", ignore = true)
     @Mapping(target = "variant", ignore = true)
-    MediaEntity nestedDTO_toEntity(AdminNestedMediaRequestDTO adminNestedMediaRequestDTO);
+    MediaEntity nestedDTO_toNewEntity(AdminNestedMediaRequestDTO adminNestedMediaRequestDTO);
 
     @Mapping(source = "product.id", target = "productId")
     @Mapping(source = "variant.id", target = "variantId")
-    AdminMediaResponseDTO toResponseDTO(MediaEntity mediaEntity);
+    AdminMediaResponseDTO toAdminResponseDTO(MediaEntity mediaEntity);
 }

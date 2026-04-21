@@ -1,17 +1,23 @@
 package org.example.electronics.controller.admin;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.example.electronics.dto.request.admin.AdminStaffRequestDTO;
-import org.example.electronics.dto.request.admin.AdminUpdateUserStatusRequestDTO;
+import lombok.RequiredArgsConstructor;
+import org.example.electronics.dto.request.admin.staff.AdminCreateStaffRequestDTO;
+import org.example.electronics.dto.request.admin.staff.AdminUpdateStaffRequestDTO;
+import org.example.electronics.dto.request.admin.status.AdminUpdateUserStatusRequestDTO;
 import org.example.electronics.dto.response.admin.AdminStaffResponseDTO;
+import org.example.electronics.entity.enums.DateFilterType;
 import org.example.electronics.entity.enums.UserStatus;
 import org.example.electronics.service.admin.AdminStaffService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +26,7 @@ import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/admin/staffs")
+@RequiredArgsConstructor
 @Tag(
         name = "5. Staff Management",
         description = "Các API dành cho Admin để quản lý tài khoản Nhân viên (Staff), phân quyền và theo dõi trạng thái hoạt động."
@@ -28,19 +35,15 @@ public class AdminStaffController {
 
     private final AdminStaffService adminStaffService;
 
-    public AdminStaffController(AdminStaffService adminStaffService) {
-        this.adminStaffService = adminStaffService;
-    }
-
     @PostMapping
     @Operation(
             summary = "Tạo mới tài khoản Nhân viên",
             description = "Thêm một nhân viên mới vào hệ thống. Cần truyền vào đầy đủ thông tin cá nhân và ID của Chức vụ (Role) tương ứng."
     )
     public ResponseEntity<AdminStaffResponseDTO> createStaff(
-            @Valid @RequestBody AdminStaffRequestDTO adminStaffRequestDTO
+            @Valid @RequestBody AdminCreateStaffRequestDTO adminCreateStaffRequestDTO
     ) {
-        AdminStaffResponseDTO adminStaffResponseDTO = adminStaffService.createStaff(adminStaffRequestDTO);
+        AdminStaffResponseDTO adminStaffResponseDTO = adminStaffService.createStaff(adminCreateStaffRequestDTO);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(adminStaffResponseDTO);
     }
@@ -52,9 +55,9 @@ public class AdminStaffController {
     )
     public ResponseEntity<AdminStaffResponseDTO> updateStaff(
             @PathVariable Integer staffId,
-            @Valid @RequestBody AdminStaffRequestDTO adminStaffRequestDTO
+            @Valid @RequestBody AdminUpdateStaffRequestDTO adminUpdateStaffRequestDTO
     ) {
-        AdminStaffResponseDTO adminStaffResponseDTO = adminStaffService.updateStaff(staffId, adminStaffRequestDTO);
+        AdminStaffResponseDTO adminStaffResponseDTO = adminStaffService.updateStaff(staffId, adminUpdateStaffRequestDTO);
 
         return ResponseEntity.ok(adminStaffResponseDTO);
     }
@@ -94,11 +97,12 @@ public class AdminStaffController {
     public ResponseEntity<Page<AdminStaffResponseDTO>> getAllStaffs(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) UserStatus status,
-            @RequestParam(required = false) LocalDate fromDate,
-            @RequestParam(required = false) LocalDate toDate,
-            @PageableDefault(sort = "assignedAt", direction = Sort.Direction.DESC) Pageable pageable
+            @RequestParam(defaultValue = "ASSIGNED_AT") DateFilterType dateType,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
+            @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        Page<AdminStaffResponseDTO> adminStaffResponseDTOPage = adminStaffService.getAllStaffs(keyword, status, fromDate, toDate, pageable);
+        Page<AdminStaffResponseDTO> adminStaffResponseDTOPage = adminStaffService.getAllStaffs(keyword, status, dateType, fromDate, toDate, pageable);
 
         return ResponseEntity.ok(adminStaffResponseDTOPage);
     }
@@ -114,5 +118,22 @@ public class AdminStaffController {
         AdminStaffResponseDTO adminStaffResponseDTO = adminStaffService.getStaffById(staffId);
 
         return ResponseEntity.ok(adminStaffResponseDTO);
+    }
+
+    @PostMapping("/{staffId}/reset-password")
+    @Operation(
+            summary = "Khởi tạo lại mật khẩu cho nhân viên (Reset Password)",
+            description = "Admin sử dụng API này khi nhân viên quên mật khẩu. Hệ thống sẽ tự động sinh ra một mật khẩu ngẫu nhiên mới, mã hóa và lưu vào Database. Kết quả trả về là mật khẩu thô (Plain text) để Admin copy và gửi cho nhân viên đó."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Reset mật khẩu thành công. Trả về mật khẩu thô."),
+            @ApiResponse(responseCode = "404", description = "Không tìm thấy nhân viên với ID tương ứng.")
+    })
+    public ResponseEntity<String> resetPassword(
+            @PathVariable Integer staffId
+    ) {
+        String defaultRawPassword = adminStaffService.resetPassword(staffId);
+
+        return ResponseEntity.ok(defaultRawPassword);
     }
 }
