@@ -1,64 +1,79 @@
+import { useMemo, useState } from "react";
 import { FaTimes } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import lap1 from "../../../../assets/lap1.png";
 import lap2 from "../../../../assets/lap2.png";
+import { formatCurrency } from "../../../../data/storefront";
 import CartProduct from "./CartProduct";
-import { useState, useEffect } from "react";
 
 function Cart({ onClose }) {
   const [cartProducts, setCartProducts] = useState([
-    { id: 1, name: "Sản phẩm 1", price: "100.000đ", quantity: 1, image: lap1 },
-    { id: 2, name: "Sản phẩm 2", price: "250.000đ", quantity: 2, image: lap2 },
-    { id: 3, name: "Sản phẩm 3", price: "250.000đ", quantity: 2, image: lap2 },
-    { id: 4, name: "Sản phẩm 4", price: "250.000đ", quantity: 2, image: lap2 },
+    {
+      id: 1,
+      name: "Acer Nitro 5 RTX 4060",
+      price: 25990000,
+      quantity: 1,
+      image: lap1,
+    },
+    {
+      id: 2,
+      name: "Predator X34 OLED cong",
+      price: 32990000,
+      quantity: 1,
+      image: lap2,
+    },
+    {
+      id: 3,
+      name: "Kingston Fury Beast 32GB",
+      price: 3290000,
+      quantity: 2,
+      image: lap2,
+    },
   ]);
-  const [show, setShow] = useState(false);
 
-    useEffect(() => {
-      setShow(true);
-    }, []);
-  const total = cartProducts.reduce((sum, item) => {
-    const price = parseInt(item.price.replace(/\D/g, ""));
-    return sum + price * item.quantity;
-  }, 0);
+  const total = useMemo(
+    () =>
+      cartProducts.reduce((sum, item) => sum + item.price * item.quantity, 0),
+    [cartProducts],
+  );
 
   const handleDeleteProduct = (id) => {
     setCartProducts((prev) => prev.filter((item) => item.id !== id));
   };
-  // Ngăn đóng Cart khi click bên trong
-  const handleCartClick = (e) => {
-    e.stopPropagation();
+
+  const handleQuantityChange = (id, quantity) => {
+    setCartProducts((prev) =>
+      prev.map((item) =>
+        item.id === id
+          ? {
+              ...item,
+              quantity,
+            }
+          : item,
+      ),
+    );
   };
 
   return (
     <div
-  className={`
-    absolute top-full right-0 mt-2
-    w-96 max-w-[calc(100vw-2rem)]
-    bg-white rounded-lg shadow-xl z-50
-    text-dark flex flex-col max-h-[500px]
-    transition-all duration-500 ease-in-out
-    ${show ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2 pointer-events-none"}
-  `}
-  onClick={handleCartClick}
->
-
-      {/* Header */}
-      <div className="flex justify-between items-center p-4 border-b border-gray-200">
-        <h4 className="font-semibold text-lg">
+      className="surface-panel flex w-[360px] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-3xl border border-white/[0.1] text-white shadow-[0_20px_70px_rgba(0,0,0,0.45)]"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div className="flex items-center justify-between border-b border-white/[0.08] px-5 py-4">
+        <h4 className="text-base font-semibold">
           Giỏ hàng ({cartProducts.length})
         </h4>
         <button
+          type="button"
           onClick={onClose}
-          className="text-gray-400 hover:text-gray-600 transition-colors"
+          className="text-white/60 transition-colors hover:text-[var(--accent)]"
           aria-label="Đóng giỏ hàng"
         >
-          <FaTimes size={20} />
+          <FaTimes size={18} />
         </button>
       </div>
 
-      {/* Danh sách sản phẩm  */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-3">
+      <div className="max-h-[380px] flex-1 space-y-3 overflow-y-auto px-5 py-4">
         {cartProducts.length > 0 ? (
           cartProducts.map((item) => (
             <CartProduct
@@ -68,48 +83,32 @@ function Cart({ onClose }) {
               price={item.price}
               quantity={item.quantity}
               image={item.image}
+              onQuantityChange={handleQuantityChange}
               onDelete={handleDeleteProduct}
             />
           ))
         ) : (
-          <div className="text-center text-gray-500 py-8">
+          <div className="py-8 text-center text-white/60">
             <p>Giỏ hàng trống</p>
           </div>
         )}
       </div>
 
-      {/* Footer */}
-      {cartProducts.length === 0 ? (
-        <div className="border-t border-gray-200 p-4 bg-gray-50 hidden">
-          <div className="flex justify-between items-center mb-3">
-            <span className="font-semibold">Tổng cộng:</span>
-            <span className="text-xl font-bold text-red-600">
-              {total.toLocaleString("vi-VN")}đ
-            </span>
-          </div>
-          <Link
-            to="/checkout"
-            className="block w-full bg-blue-600 hover:bg-blue-700 text-white text-center py-3 rounded-lg font-semibold transition-colors"
-          >
-            Thanh toán
-          </Link>
+      <div className="border-t border-white/[0.08] bg-white/[0.02] px-5 py-4">
+        <div className="mb-3 flex items-center justify-between">
+          <span className="text-sm text-white/75">Tổng cộng</span>
+          <span className="text-xl font-bold text-[var(--accent)]">
+            {formatCurrency(total)}
+          </span>
         </div>
-      ) : (
-        <div className="border-t border-gray-200 p-4 bg-gray-50">
-          <div className="flex justify-between items-center mb-3">
-            <span className="font-semibold">Tổng cộng:</span>
-            <span className="text-xl font-bold text-red-600">
-              {total.toLocaleString("vi-VN")}đ
-            </span>
-          </div>
-          <Link
-            to="/checkout"
-            className="block w-full bg-red-700 hover:bg-red-900 text-white text-center py-3 rounded-lg font-semibold transition-colors"
-          >
-            Thanh toán
-          </Link>
-        </div>
-      )}
+        <Link
+          to="/checkout"
+          onClick={onClose}
+          className="block w-full rounded-xl bg-[var(--accent)] py-3 text-center font-semibold text-[#07110d] transition hover:brightness-95"
+        >
+          Thanh toán
+        </Link>
+      </div>
     </div>
   );
 }

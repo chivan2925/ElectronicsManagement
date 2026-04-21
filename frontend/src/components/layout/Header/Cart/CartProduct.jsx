@@ -1,50 +1,68 @@
 import { MdDelete } from "react-icons/md";
+import { formatCurrency } from "../../../../data/storefront";
 
-export default function CartProduct({id,name, price, quantity, image,onDelete}){
-    
-    const handleQuantityChange = (e) => {
-        e.stopPropagation(); // Ngăn đóng Cart
-        console.log("Số lượng mới:", e.target.value);
-    };
+export default function CartProduct({
+  id,
+  name,
+  price,
+  quantity,
+  image,
+  onDelete,
+  onQuantityChange,
+}) {
+  const decreaseQuantity = () => {
+    onQuantityChange(id, Math.max(1, quantity - 1));
+  };
 
-    const handleDelete = (e) => {
-        e.stopPropagation(); // Ngăn đóng Cart
-        onDelete(id);
-    };
+  const increaseQuantity = () => {
+    onQuantityChange(id, quantity + 1);
+  };
 
-    return (
-        <div className="border border-gray-200 rounded-lg p-3 flex items-center gap-3 hover:shadow-md transition-shadow bg-white">
-            
-            <img 
-                src={image} 
-                alt={name} 
-                className="w-20 h-20 object-cover rounded-md flex-shrink-0"
-            />
-            
-            <div className="flex-1 min-w-0">
-                <h4 className="font-medium text-sm truncate text-gray-800">
-                    {name}
-                </h4>
-                <p className="text-red-600 font-semibold text-base mt-1">
-                    {price}
-                </p>
-            </div>
-            
-            <input 
-                type="number" 
-                value={quantity}
-                onChange={handleQuantityChange}
-                onClick={(e) => e.stopPropagation()} // Ngăn đóng khi click vào input
-                min="1"
-                className="w-14 h-9 border border-gray-300 rounded text-center text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-            />
-            
-            <MdDelete 
-                onClick={handleDelete} 
-                className="text-red-700 cursor-pointer hover:text-red-800 transition-colors flex-shrink-0" 
-                size={30} 
-            />
-            
-        </div>
-    )
+  return (
+    <div className="flex items-center gap-3 rounded-2xl border border-white/[0.08] bg-white/[0.03] p-3">
+      <img
+        src={image}
+        alt={name}
+        className="h-16 w-16 flex-shrink-0 rounded-lg object-cover"
+      />
+
+      <div className="min-w-0 flex-1">
+        <h4 className="truncate text-sm font-medium text-white">{name}</h4>
+        <p className="mt-1 text-sm font-semibold text-[var(--accent)]">
+          {formatCurrency(price)}
+        </p>
+      </div>
+
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={decreaseQuantity}
+          className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-white/[0.2] text-white/80 transition hover:text-[var(--accent)]"
+          aria-label="Giảm số lượng"
+        >
+          -
+        </button>
+        <span className="w-5 text-center text-sm font-semibold text-white">
+          {quantity}
+        </span>
+        <button
+          type="button"
+          onClick={increaseQuantity}
+          className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-white/[0.2] text-white/80 transition hover:text-[var(--accent)]"
+          aria-label="Tăng số lượng"
+        >
+          +
+        </button>
+      </div>
+
+      <button
+        type="button"
+        onClick={() => onDelete(id)}
+        className="text-white/50 transition-colors hover:text-red-400"
+        aria-label="Xóa sản phẩm"
+      >
+        <MdDelete size={22} />
+      </button>
+    </div>
+  );
 }

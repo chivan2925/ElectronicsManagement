@@ -8,6 +8,7 @@ import {
   FaUser,
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import Cart from "./Cart/Cart";
 import logo from "../../../assets/logo.png";
 import { primaryNav } from "../../../data/storefront";
 
@@ -32,6 +33,7 @@ function NavItem({ item, onClick }) {
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-50">
@@ -39,7 +41,11 @@ export default function Header() {
         <div className="surface-panel flex items-center gap-3 rounded-full px-4 py-3 sm:px-5">
           <Link className="flex items-center gap-3" to="/">
             <div className="rounded-full border border-white/10 bg-white/[0.06] p-2">
-              <img src={logo} alt="Electronics Management" className="h-9 w-9 object-contain" />
+              <img
+                src={logo}
+                alt="Electronics Management"
+                className="h-9 w-9 object-contain"
+              />
             </div>
             <div className="hidden sm:block">
               <p className="font-display text-sm font-semibold uppercase tracking-[0.32em] text-[var(--accent)]">
@@ -67,31 +73,49 @@ export default function Header() {
           <div className="ml-auto flex items-center gap-2 sm:gap-3">
             <button
               type="button"
-              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-white transition hover:border-[rgba(215,245,111,0.4)] hover:text-[var(--accent)] xl:hidden"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-white transition hover:border-white/40 hover:text-[var(--accent)] xl:hidden"
             >
               <FaSearch />
             </button>
             <button
               type="button"
-              className="hidden h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-white transition hover:border-[rgba(215,245,111,0.4)] hover:text-[var(--accent)] sm:inline-flex"
+              className="hidden h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-white transition hover:border-white/40 hover:text-[var(--accent)] sm:inline-flex"
             >
               <FaUser />
             </button>
-            <Link
-              to="/checkout"
-              className="inline-flex items-center gap-2 rounded-full border border-[rgba(215,245,111,0.18)] bg-[rgba(215,245,111,0.08)] px-4 py-3 text-sm font-semibold text-white transition hover:border-[rgba(215,245,111,0.38)] hover:text-[var(--accent)]"
-            >
-              <span className="relative inline-flex">
-                <FaShoppingCart />
-                <span className="absolute -right-2 -top-2 inline-flex h-4 w-4 items-center justify-center rounded-full bg-[var(--accent)] text-[10px] font-bold text-[#07110d]">
-                  3
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setCartOpen((current) => !current)}
+                className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-[rgb(41,48,50)] px-4 py-3 text-sm font-semibold text-white transition hover:border-white/40 hover:text-[var(--accent)]"
+                aria-label="Mở giỏ hàng"
+              >
+                <span className="relative inline-flex">
+                  <FaShoppingCart />
+                  <span className="absolute -right-2 -top-2 inline-flex h-4 w-4 items-center justify-center rounded-full bg-[var(--accent)] text-[10px] font-bold text-[rgb(24,28,29)]">
+                    4
+                  </span>
                 </span>
-              </span>
-              <span className="hidden sm:inline">Đơn hàng</span>
-            </Link>
+                <span className="hidden sm:inline">Giỏ hàng</span>
+              </button>
+
+              {cartOpen && (
+                <>
+                  <button
+                    type="button"
+                    className="fixed inset-0 z-40 cursor-default bg-black/35"
+                    onClick={() => setCartOpen(false)}
+                    aria-label="Đóng giỏ hàng"
+                  />
+                  <div className="absolute right-0 top-[calc(100%+12px)] z-50">
+                    <Cart onClose={() => setCartOpen(false)} />
+                  </div>
+                </>
+              )}
+            </div>
             <button
               type="button"
-              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-white transition hover:border-[rgba(215,245,111,0.4)] hover:text-[var(--accent)] lg:hidden"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-white transition hover:border-white/40 hover:text-[var(--accent)] lg:hidden"
               onClick={() => setMobileOpen((current) => !current)}
             >
               {mobileOpen ? <FaTimes /> : <FaBars />}
@@ -103,7 +127,10 @@ export default function Header() {
           <div className="surface-panel mt-3 rounded-[28px] p-5 lg:hidden">
             <div className="space-y-4">
               {primaryNav.map((item) => (
-                <div key={item.label} className="flex items-center justify-between">
+                <div
+                  key={item.label}
+                  className="flex items-center justify-between"
+                >
                   <NavItem item={item} onClick={() => setMobileOpen(false)} />
                   <FaArrowRight className="text-xs text-white/[0.45]" />
                 </div>

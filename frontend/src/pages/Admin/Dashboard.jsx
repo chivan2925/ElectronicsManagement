@@ -19,11 +19,11 @@ function Dashboard() {
   return (
     <div className="min-h-screen bg-white text-slate-900">
       <div className="mx-auto flex min-h-screen w-full max-w-[1480px]">
-        <aside className="w-full max-w-[280px] border-r border-slate-200 bg-white px-6 py-8">
-          <p className="font-display text-xl font-bold tracking-tight">
+        <aside className="w-full max-w-[280px] border-r border-[rgb(41,48,50)] bg-[rgb(24,28,29)] px-6 py-8 text-white">
+          <p className="font-display text-xl font-bold tracking-tight text-white">
             Admin Panel
           </p>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-white/65">
             Hệ thống quản trị cửa hàng
           </p>
 
@@ -36,8 +36,8 @@ function Dashboard() {
                 className={({ isActive }) =>
                   `block rounded-xl px-4 py-3 text-sm font-semibold transition ${
                     isActive
-                      ? "bg-slate-900 text-white"
-                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                      ? "bg-[rgb(41,48,50)] text-white"
+                      : "text-white/80 hover:bg-white/10 hover:text-white"
                   }`
                 }
               >

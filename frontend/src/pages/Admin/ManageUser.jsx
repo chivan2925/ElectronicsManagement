@@ -1,114 +1,193 @@
-import React, { useState } from 'react';
-import { Table, Button, Space, Popconfirm, message, Card, Typography, Input, Tag, Statistic, Switch } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, UserOutlined, SearchOutlined, UsergroupAddOutlined, CheckCircleOutlined } from '@ant-design/icons';
-import AddUserForm from './common/AddUserForm';
+import React, { useState } from "react";
+import {
+  Table,
+  Button,
+  Space,
+  Popconfirm,
+  message,
+  Card,
+  Typography,
+  Input,
+  Tag,
+  Statistic,
+  Switch,
+} from "antd";
+import {
+  PlusOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  UserOutlined,
+  SearchOutlined,
+  UsergroupAddOutlined,
+  CheckCircleOutlined,
+} from "@ant-design/icons";
+import AddUserForm from "./common/AddUserForm";
 
 const { Title, Text } = Typography;
 
 const ManageUser = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
-  const [searchText, setSearchText] = useState('');
+  const [searchText, setSearchText] = useState("");
 
   const [dataSource, setDataSource] = useState([
-    { id: 'USER001', name: 'Khách hàng A', email: 'khachA@gmail.com', phone: '0356789123', address: 'Quận 1, HCM', status: true, password: '123' },
-    { id: 'USER002', name: 'Khách hàng B', email: 'khachB@gmail.com', phone: '0356789124', address: 'Quận 3, HCM', status: false, password: '123' },
+    {
+      id: "USER001",
+      name: "Khách hàng A",
+      email: "khachA@gmail.com",
+      phone: "0356789123",
+      address: "Quận 1, HCM",
+      status: true,
+      password: "123",
+    },
+    {
+      id: "USER002",
+      name: "Khách hàng B",
+      email: "khachB@gmail.com",
+      phone: "0356789124",
+      address: "Quận 3, HCM",
+      status: false,
+      password: "123",
+    },
   ]);
 
   const handleSave = (values) => {
     if (editingUser) {
-      setDataSource(dataSource.map(u => u.id === editingUser.id ? { ...u, ...values } : u));
-      message.success('Cập nhật người dùng thành công!');
+      setDataSource(
+        dataSource.map((u) =>
+          u.id === editingUser.id ? { ...u, ...values } : u,
+        ),
+      );
+      message.success("Cập nhật người dùng thành công!");
     } else {
-      const newUser = { id: `USER${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`, ...values };
+      const newUser = {
+        id: `USER${Math.floor(Math.random() * 1000)
+          .toString()
+          .padStart(3, "0")}`,
+        ...values,
+      };
       setDataSource([...dataSource, newUser]);
-      message.success('Thêm người dùng thành công!');
+      message.success("Thêm người dùng thành công!");
     }
     setIsModalOpen(false);
   };
 
   const handleDelete = (id) => {
-    setDataSource(dataSource.filter(u => u.id !== id));
-    message.success('Đã xóa tài khoản');
+    setDataSource(dataSource.filter((u) => u.id !== id));
+    message.success("Đã xóa tài khoản");
   };
 
-  const filteredData = dataSource.filter(u => 
-    u.name.toLowerCase().includes(searchText.toLowerCase()) || u.id.toLowerCase().includes(searchText.toLowerCase())
+  const filteredData = dataSource.filter(
+    (u) =>
+      u.name.toLowerCase().includes(searchText.toLowerCase()) ||
+      u.id.toLowerCase().includes(searchText.toLowerCase()),
   );
 
   const columns = [
-    { title: 'Mã ID', dataIndex: 'id', key: 'id', width: 110, render: (id) => <Tag color="orange">{id}</Tag> },
-    { title: 'Họ tên', dataIndex: 'name', key: 'name', render: t => <b>{t}</b> },
-    { title: 'Email', dataIndex: 'email', key: 'email' },
-    { title: 'Số điện thoại', dataIndex: 'phone', key: 'phone' },
-    { title: 'Địa chỉ', dataIndex: 'address', key: 'address', ellipsis: true },
-    { 
-      title: 'Trạng thái', 
-      dataIndex: 'status', 
-      key: 'status',
-      render: (status) => (
-        <Tag color={status ? 'green' : 'red'}>
-          {status ? 'ĐANG HOẠT ĐỘNG' : 'ĐÃ KHÓA'}
-        </Tag>
-      )
+    {
+      title: "Mã ID",
+      dataIndex: "id",
+      key: "id",
+      width: 110,
+      render: (id) => <Tag color="orange">{id}</Tag>,
     },
     {
-      title: 'Thao tác',
-      key: 'action',
+      title: "Họ tên",
+      dataIndex: "name",
+      key: "name",
+      render: (t) => <b>{t}</b>,
+    },
+    { title: "Email", dataIndex: "email", key: "email" },
+    { title: "Số điện thoại", dataIndex: "phone", key: "phone" },
+    { title: "Địa chỉ", dataIndex: "address", key: "address", ellipsis: true },
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
+      render: (status) => (
+        <Tag color={status ? "green" : "red"}>
+          {status ? "ĐANG HOẠT ĐỘNG" : "ĐÃ KHÓA"}
+        </Tag>
+      ),
+    },
+    {
+      title: "Thao tác",
+      key: "action",
       width: 100,
       render: (_, record) => (
         <Space>
-          <Button type="text" icon={<EditOutlined style={{color: '#1890ff'}} />} onClick={() => { setEditingUser(record); setIsModalOpen(true); }} />
-          <Popconfirm title="Xóa người dùng này?" onConfirm={() => handleDelete(record.id)}>
+          <Button
+            type="text"
+            icon={<EditOutlined style={{ color: "#1890ff" }} />}
+            onClick={() => {
+              setEditingUser(record);
+              setIsModalOpen(true);
+            }}
+          />
+          <Popconfirm
+            title="Xóa người dùng này?"
+            onConfirm={() => handleDelete(record.id)}
+          >
             <Button type="text" danger icon={<DeleteOutlined />} />
           </Popconfirm>
         </Space>
-      )
-    }
+      ),
+    },
   ];
 
   return (
-    <div style={{ padding: '32px 16px 48px', minHeight: '100vh' }}>
+    <div style={{ padding: "32px 16px 48px", minHeight: "100vh" }}>
       <Card
         bordered={false}
         style={{
-          maxWidth: '1280px',
-          margin: '0 auto',
-          borderRadius: '28px',
-          boxShadow: '0 24px 90px rgba(0,0,0,0.28)',
-          background: 'linear-gradient(160deg, rgba(17,35,28,0.94), rgba(8,18,14,0.92))',
-          border: '1px solid rgba(218,238,172,0.14)',
+          maxWidth: "1280px",
+          margin: "0 auto",
+          borderRadius: "28px",
+          boxShadow: "0 20px 60px rgba(0,0,0,0.08)",
+          background: "#ffffff",
+          border: "1px solid #e5e7eb",
         }}
       >
-        
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            marginBottom: "24px",
+          }}
+        >
           <div>
-            <Title level={3} style={{ margin: 0 }}><UserOutlined /> Quản lý người dùng</Title>
-            <div style={{ display: 'flex', gap: '24px', marginTop: '12px' }}>
+            <Title level={3} style={{ margin: 0 }}>
+              <UserOutlined /> Quản lý người dùng
+            </Title>
+            <div style={{ display: "flex", gap: "24px", marginTop: "12px" }}>
               <Space>
-                <UsergroupAddOutlined style={{ color: '#8c8c8c' }} />
+                <UsergroupAddOutlined style={{ color: "#8c8c8c" }} />
                 <Text type="secondary">Tổng số tài khoản:</Text>
                 <Text strong>{dataSource.length}</Text>
               </Space>
               <Space>
-                <CheckCircleOutlined style={{ color: '#52c41a' }} />
+                <CheckCircleOutlined style={{ color: "#52c41a" }} />
                 <Text type="secondary">Đang hoạt động:</Text>
-                <Text strong>{dataSource.filter(u => u.status).length}</Text>
+                <Text strong>{dataSource.filter((u) => u.status).length}</Text>
               </Space>
             </div>
           </div>
 
-          <Button 
-            type="primary" 
-            size="large" 
-            icon={<PlusOutlined />} 
-            onClick={() => { setEditingUser(null); setIsModalOpen(true); }}
+          <Button
+            type="primary"
+            size="large"
+            icon={<PlusOutlined />}
+            onClick={() => {
+              setEditingUser(null);
+              setIsModalOpen(true);
+            }}
             style={{
-              borderRadius: '999px',
-              height: '45px',
-              background: '#d7f56f',
-              borderColor: '#d7f56f',
-              color: '#07110d',
+              borderRadius: "999px",
+              height: "45px",
+              background: "rgb(41,48,50)",
+              borderColor: "rgb(41,48,50)",
+              color: "#ffffff",
               fontWeight: 600,
             }}
           >
@@ -116,19 +195,19 @@ const ManageUser = () => {
           </Button>
         </div>
 
-        <div style={{ marginBottom: '24px' }}>
+        <div style={{ marginBottom: "24px" }}>
           <Input
             placeholder="Tìm theo mã hoặc tên khách hàng..."
-            prefix={<SearchOutlined style={{ color: '#bfbfbf' }} />}
+            prefix={<SearchOutlined style={{ color: "#bfbfbf" }} />}
             allowClear
             size="large"
-            onChange={e => setSearchText(e.target.value)}
-            style={{ width: 450, borderRadius: '8px' }}
+            onChange={(e) => setSearchText(e.target.value)}
+            style={{ width: 450, borderRadius: "8px" }}
           />
         </div>
 
-        <Table 
-          dataSource={filteredData} 
+        <Table
+          dataSource={filteredData}
           columns={columns}
           rowKey="id"
           pagination={{ pageSize: 8, showTotal: (t) => `Tổng ${t} người dùng` }}
