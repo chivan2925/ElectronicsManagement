@@ -22,7 +22,8 @@ public interface AdminWarehouseTransactionService {
     Page<AdminWarehouseTransactionResponseDTO> getAllWarehouseTransactions(String keyword, WarehouseTransactionType type, WarehouseTransactionStatus status, DateFilterType dateType, LocalDate fromDate, LocalDate toDate, Pageable pageable);
     AdminWarehouseTransactionResponseDTO getWarehouseTransactionById(Integer warehouseTransactionId);
 
-    void autoCreateReturnWarehouseTransaction(ReturnRequestEntity returnRequestEntity, Integer staffId);
-    void autoCreateCancelRestockTransaction(OrderEntity order);
-    void autoCreateNewExportWarehouseTransaction(OrderEntity order, Integer staffId);
+    void autoCreateReturnWarehouseTransactionForReturnRequest(ReturnRequestEntity returnRequestEntity, Integer staffId);
+    void autoCreateUnreservedTransactionForOrder(OrderEntity order, Integer staffId);
+    void autoCreateNewExportWarehouseTransactionForOrder(OrderEntity order, Integer staffId);
+    void autoCreateReturnWarehouseTransactionForOrder(OrderEntity order, Integer staffId);
 }

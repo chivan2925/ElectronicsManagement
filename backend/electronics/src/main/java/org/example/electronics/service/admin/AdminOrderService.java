@@ -20,5 +20,5 @@ public interface AdminOrderService {
 
     AdminOrderDetailResponseDTO getOrderById(Integer orderId);
 
-    void cancelSingleExpiredOrder(OrderEntity order);
+    void cancelSingleExpiredOrder(Integer orderId);
 }

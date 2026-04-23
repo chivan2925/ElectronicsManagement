@@ -6,14 +6,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.electronics.dto.request.admin.order.AdminUpdateOrderRequestDTO;
 import org.example.electronics.dto.response.admin.order.AdminOrderDetailResponseDTO;
 import org.example.electronics.dto.response.admin.order.AdminOrderResponseDTO;
-import org.example.electronics.entity.StaffEntity;
 import org.example.electronics.entity.enums.*;
 import org.example.electronics.entity.order.OrderEntity;
 import org.example.electronics.mapper.OrderMapper;
 import org.example.electronics.repository.OrderRepository;
-import org.example.electronics.repository.StaffRepository;
 import org.example.electronics.service.admin.AdminOrderService;
-import org.example.electronics.service.admin.AdminWarehouseService;
 import org.example.electronics.service.admin.AdminWarehouseTransactionService;
 import org.example.electronics.util.DateTimeUtils;
 import org.springframework.data.domain.Page;
@@ -35,9 +32,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
     private final OrderMapper orderMapper;
 
     private final OrderRepository orderRepository;
-    private final StaffRepository staffRepository;
 
-    private final AdminWarehouseService adminWarehouseService;
     private final AdminWarehouseTransactionService adminWarehouseTransactionService;
 
     private static final Map<OrderStatus, Set<OrderStatus>> ALLOWED_ORDER_TRANSITIONS = Map.of(
@@ -74,8 +69,6 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Không tìm thấy đơn hàng với id: " + orderId
                 ));
-
-        checkOrderEditable(existingOrderEntity);
 
         validateAllTransition(existingOrderEntity, adminUpdateOrderRequestDTO);
 
@@ -194,35 +187,47 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         validateShippingTransition(currentOrder, adminUpdateOrderRequestDTO);
     }
 
-    private void checkOrderEditable(OrderEntity order) {
-        if (order.getStatus() != OrderStatus.PENDING) {
-            throw new IllegalStateException(
-                    "Không thể chỉnh sửa nội dung! Đơn hàng đang ở trạng thái " + order.getStatus() + ". Chỉ được phép sửa khi đang PENDING."
-            );
-        }
-    }
-
     private void handleWarehouseActionsOnStatusChange(OrderEntity currentOrder, AdminUpdateOrderRequestDTO requestDTO, Integer staffId) {
         OrderStatus currentStatus = currentOrder.getStatus();
         OrderStatus newStatus = requestDTO.status();
 
-        if (currentStatus != newStatus && (newStatus == OrderStatus.CANCELLED || newStatus == OrderStatus.RETURNED)) {
-            StaffEntity currentStaffProxy = staffRepository.getReferenceById(staffId);
-            adminWarehouseService.processCancelledAndReturnedOrder(currentOrder, currentStaffProxy);
+        if (currentStatus == newStatus) {
+            return;
         }
 
-        if (currentStatus == OrderStatus.PENDING && newStatus == OrderStatus.PROCESSING) {
-            adminWarehouseTransactionService.autoCreateNewExportWarehouseTransaction(currentOrder, staffId);
+        if (currentStatus == OrderStatus.PENDING) {
+            if (newStatus == OrderStatus.PROCESSING) {
+                adminWarehouseTransactionService.autoCreateNewExportWarehouseTransactionForOrder(currentOrder, staffId);
+            }
+            else if (newStatus == OrderStatus.CANCELLED) {
+                adminWarehouseTransactionService.autoCreateUnreservedTransactionForOrder(currentOrder, staffId);
+            }
+        }
+
+        else if ((currentStatus == OrderStatus.PROCESSING && newStatus == OrderStatus.CANCELLED) ||
+                (currentStatus == OrderStatus.COMPLETED && newStatus == OrderStatus.RETURNED)) {
+
+            adminWarehouseTransactionService.autoCreateReturnWarehouseTransactionForOrder(currentOrder, staffId);
         }
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void cancelSingleExpiredOrder(OrderEntity order) {
+    public void cancelSingleExpiredOrder(Integer orderId) {
+        OrderEntity order = orderRepository.findOrderByIdWithDetails(orderId)
+                .orElseThrow(
+                        () -> new EntityNotFoundException("Không tìm thấy đơn hàng ID: " + orderId)
+                );
+
+        if (order.getStatus() != OrderStatus.PENDING) {
+            log.warn("Đơn hàng {} không còn PENDING, bỏ qua việc hủy tự động.", orderId);
+            return;
+        }
+
         order.setStatus(OrderStatus.CANCELLED);
         order.setPaymentStatus(PaymentStatus.FAILED);
         order.setNote("Hệ thống tự động hủy do quá hạn thanh toán 15 phút.");
 
-        adminWarehouseTransactionService.autoCreateCancelRestockTransaction(order);
+        adminWarehouseTransactionService.autoCreateUnreservedTransactionForOrder(order, null);
 
         orderRepository.save(order);
 

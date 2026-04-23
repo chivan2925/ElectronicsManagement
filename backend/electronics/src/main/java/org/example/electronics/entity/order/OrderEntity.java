@@ -78,7 +78,7 @@ public class OrderEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_method", nullable = false)
-    private PaymentMethodType paymentMethod;
+    private PaymentMethodType paymentMethodType;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_status", nullable = false)

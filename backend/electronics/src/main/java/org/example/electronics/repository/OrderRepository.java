@@ -25,7 +25,7 @@ public interface OrderRepository extends JpaRepository<OrderEntity, Integer> {
             ")) " +
 
             "AND (:status IS NULL OR o.status = :status) " +
-            "AND (:type IS NULL OR o.paymentMethod = :method) " +
+            "AND (:paymentMethodType IS NULL OR o.paymentMethodType = :paymentMethodType) " +
             "AND (:paymentStatus IS NULL OR o.paymentStatus = :paymentStatus) " +
             "AND (:provider IS NULL OR o.shippingProvider = :provider) " +
             "AND (:shippingStatus IS NULL OR o.shippingStatus = :shippingStatus) " +
@@ -43,7 +43,7 @@ public interface OrderRepository extends JpaRepository<OrderEntity, Integer> {
     Page<OrderEntity> findOrdersWithFilter(
             @Param("keyword") String keyword,
             @Param("status") OrderStatus status,
-            @Param("method") PaymentMethodType type,
+            @Param("paymentMethodType") PaymentMethodType paymentMethodType,
             @Param("paymentStatus") PaymentStatus paymentStatus,
             @Param("provider") ShippingProvider provider,
             @Param("shippingStatus") ShippingStatus shippingStatus,

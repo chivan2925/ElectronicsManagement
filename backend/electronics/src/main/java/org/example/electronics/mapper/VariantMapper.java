@@ -24,6 +24,7 @@ public interface VariantMapper {
 
     @Mapping(target = "product", ignore = true)
     @Mapping(target = "media", ignore = true)
+    @Mapping(target = "totalStock", ignore = true)
     VariantEntity toNewEntity(AdminVariantRequestDTO adminVariantRequestDTO);
 
     @Mapping(source = "product.id", target = "productId")
@@ -48,6 +49,7 @@ public interface VariantMapper {
 
     @Mapping(target = "product", ignore = true)
     @Mapping(target = "media", ignore = true)
+    @Mapping(target = "totalStock", ignore = true)
     void updateEntityFromRequest(AdminVariantRequestDTO adminVariantRequestDTO,
                                  @MappingTarget VariantEntity VariantEntity);
 

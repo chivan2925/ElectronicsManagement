@@ -71,13 +71,13 @@ public class SystemPaymentServiceImpl implements SystemPaymentService {
             // Khách trả tiền THÀNH CÔNG
             transaction.setStatus(PaymentTransactionStatus.SUCCESS);
 
-            // 👉 ĐÂY! Tự động nhảy bước cho Order
-            order.setPaymentStatus(PaymentStatus.PAID);
-            order.setStatus(OrderStatus.PROCESSING);
+            systemOrderService.confirmSuccessfulPayment(order.getId());
+            log.info("VNPay IPN: Xử lý thành công đơn hàng {}", orderInfo);
         } else {
             // Khách HỦY hoặc LỖI
             transaction.setStatus(PaymentTransactionStatus.FAILED);
             order.setPaymentStatus(PaymentStatus.FAILED);
+            log.info("VNPay IPN: Thanh toán thất bại cho đơn hàng {}. ResponseCode: {}", orderInfo, responseCode);
         }
 
         paymentTransactionRepository.save(transaction);

@@ -25,23 +25,31 @@ public class OrderCleanupScheduler {
     public void scanAndCancelExpiredOrders() {
         LocalDateTime thresholdTime = LocalDateTime.now().minusMinutes(15);
 
-        Pageable pageable = PageRequest.of(0, 50);
+        int page = 0;
+        int size = 50;
 
-        Page<OrderEntity> expiredOrdersPage = orderRepository.findExpiredPendingOrders(thresholdTime, pageable);
+        Page<OrderEntity> expiredOrdersPage;
 
-        if (expiredOrdersPage.isEmpty()) {
-            log.info("✅ Không có đơn hàng nào quá hạn.");
-            return;
-        }
+        do {
+            Pageable pageable = PageRequest.of(page, size);
+            expiredOrdersPage = orderRepository.findExpiredPendingOrders(thresholdTime, pageable);
 
-        log.info("Phát hiện {} đơn hàng quá hạn. Tiến hành hủy...", expiredOrdersPage.getNumberOfElements());
-
-        for (OrderEntity order : expiredOrdersPage.getContent()) {
-            try {
-                adminOrderService.cancelSingleExpiredOrder(order);
-            } catch (Exception e) {
-                log.error("Lỗi khi tự động hủy đơn hàng ID {}: {}", order.getId(), e.getMessage());
+            if (expiredOrdersPage.isEmpty()) {
+                log.info("✅ Không có đơn hàng nào quá hạn.");
+                break;
             }
-        }
+
+            log.info("Phát hiện {} đơn hàng quá hạn ở trang {}. Tiến hành hủy...", expiredOrdersPage.getNumberOfElements(), page);
+
+            for (OrderEntity order : expiredOrdersPage.getContent()) {
+                try {
+                    adminOrderService.cancelSingleExpiredOrder(order.getId());
+                } catch (Exception e) {
+                    log.error("Lỗi khi tự động hủy đơn hàng ID {}: {}", order.getId(), e.getMessage());
+                }
+            }
+
+            page++;
+        } while (expiredOrdersPage.hasNext());
     }
 }

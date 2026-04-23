@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 import org.example.electronics.dto.request.admin.media.AdminNestedMediaRequestDTO;
 import org.example.electronics.entity.enums.ProductStatus;
 
@@ -31,10 +32,12 @@ public record AdminVariantRequestDTO(
         Map<String, Object> specsJson,
 
         @NotNull(message = "Giá biến thể sản phẩm không được để trống")
+        @PositiveOrZero(message = "Giá biến thể sản phẩm không được nhỏ hơn 0")
         BigDecimal price,
 
-        @NotNull(message = "Số lượng biến thể sản phẩm không được để trống")
-        Integer stock,
+        @NotNull(message = "Tổng số lượng tồn kho biến thể sản phẩm không được để trống")
+        @PositiveOrZero(message = "Tổng số lượng tồn kho biến thể sản phẩm không được nhỏ hơn 0")
+        Integer totalStock,
 
         @NotNull(message = "Trạng thái biến thể sản phẩm không được để trống")
         ProductStatus status

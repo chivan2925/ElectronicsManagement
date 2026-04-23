@@ -76,10 +76,12 @@ Enum return_request_status {
 }
 
 Enum warehouse_transaction_type {
+  INTERNAL_TRANSFER
+  RESERVED
   IMPORT
   EXPORT
   RETURN
-  CANCEL_RESTOCK
+  UNRESERVED
 }
 Enum warehouse_transaction_status {
   PENDING

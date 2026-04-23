@@ -66,7 +66,7 @@ public class AdminReturnRequestServiceImpl implements AdminReturnRequestService 
             case COMPLETED:
                 existingReturnRequestEntity.setResolvedAt(LocalDateTime.now());
 
-                adminWarehouseTransactionService.autoCreateReturnWarehouseTransaction(existingReturnRequestEntity, staffId);
+                adminWarehouseTransactionService.autoCreateReturnWarehouseTransactionForReturnRequest(existingReturnRequestEntity, staffId);
 
                 adminPaymentTransactionService.processRefund(returnRequestId, staffId);
 

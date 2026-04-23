@@ -29,8 +29,8 @@ public interface WarehouseTransactionRepository extends JpaRepository<WarehouseT
             "   OR LOWER(wt.code) LIKE LOWER(CONCAT('%', :keyword, '%'))" +
             "))" +
 
-            "AND :type IS NULL OR wt.type = :type " +
-            "AND :status IS NULL OR wt.status = :status " +
+            "AND (:type IS NULL OR wt.type = :type) " +
+            "AND (:status IS NULL OR wt.status = :status) " +
 
             "AND (CAST(:fromDate AS timestamp) IS NULL OR " +
             "    (:dateType = 'CREATED_AT' AND wt.createdAt >= :fromDate) OR " +

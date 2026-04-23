@@ -50,4 +50,6 @@ public interface WarehouseRepository extends JpaRepository<WarehouseEntity, Inte
             "LEFT JOIN FETCH wD.variant " +
             "WHERE w.id = :id")
     Optional<WarehouseEntity> findWarehouseWithDetailsById(@Param("id") Integer warehouseId);
+
+    Optional<WarehouseEntity> findFirstByOrderByIdAsc();
 }

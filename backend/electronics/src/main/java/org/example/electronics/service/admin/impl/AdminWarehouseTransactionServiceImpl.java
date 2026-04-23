@@ -169,7 +169,7 @@ public class AdminWarehouseTransactionServiceImpl implements AdminWarehouseTrans
                                                 (adminUpdateWarehouseTransactionTypeStatusRequestDTO.status() == WarehouseTransactionStatus.COMPLETED);
 
         if(isCompletingWarehouseTransaction) {
-            processWarehouseUpdate(existingWarehouseTransactionEntity);
+            processWarehouseUpdate(existingWarehouseTransactionEntity, false);
         }
 
         existingWarehouseTransactionEntity.setStaff(staffRepository.getReferenceById(staffId));
@@ -267,7 +267,7 @@ public class AdminWarehouseTransactionServiceImpl implements AdminWarehouseTrans
         }
     }
 
-    private void processWarehouseUpdate(WarehouseTransactionEntity existingWarehouseTransactionEntity) {
+    private void processWarehouseUpdate(WarehouseTransactionEntity existingWarehouseTransactionEntity, boolean isInward) {
         WarehouseEntity warehouse = existingWarehouseTransactionEntity.getWarehouse();
         WarehouseTransactionType type = existingWarehouseTransactionEntity.getType();
 
@@ -281,6 +281,50 @@ public class AdminWarehouseTransactionServiceImpl implements AdminWarehouseTrans
             Optional<WarehouseDetailEntity> existingStockOpt = warehouse.getWarehouseDetails().stream()
                     .filter(wd -> wd.getVariant().getId().equals(variant.getId()))
                     .findFirst();
+
+            if (isInward) {
+                totalQuantityChange += transactionQuantity;
+                variant.setTotalStock(variant.getTotalStock() + transactionQuantity);
+
+                if (existingStockOpt.isPresent()) {
+                    existingStockOpt.get().setQuantity(existingStockOpt.get().getQuantity() + transactionQuantity);
+                }
+                else {
+                    warehouse.addWarehouseDetail(
+                            WarehouseDetailEntity.builder()
+                                    .variant(variant)
+                                    .quantity(transactionQuantity)
+                                    .build()
+                    );
+                }
+            }
+            else {
+                totalQuantityChange -= transactionQuantity;
+                WarehouseDetailEntity existingStock = existingStockOpt.orElseThrow(
+                        () -> new IllegalArgumentException("Lỗi: Kho " + warehouse.getName() + " không có hàng để xuất!")
+                );
+
+                if (existingStock.getQuantity() < transactionQuantity) {
+                    throw new IllegalArgumentException("Kho " + warehouse.getName() + " không đủ hàng!");
+                }
+
+                variant.setTotalStock(variant.getTotalStock() - transactionQuantity);
+                existingStock.setQuantity(existingStock.getQuantity() - transactionQuantity);
+
+                if (existingStock.getQuantity() == 0) {
+                    emptyDetailsToRemove.add(existingStock);
+                }
+            }
+
+            for (WarehouseDetailEntity emptyDetail : emptyDetailsToRemove) {
+                warehouse.removeWarehouseDetail(emptyDetail);
+            }
+
+            warehouse.setCurrentStock(warehouse.getCurrentStock() + totalQuantityChange);
+
+            if (warehouse.getCurrentStock() > warehouse.getCapacity()) {
+                throw new IllegalArgumentException("Vượt quá sức chứa của kho " + warehouse.getName());
+            }
 
             if (type == WarehouseTransactionType.IMPORT || type == WarehouseTransactionType.RETURN) {
                 totalQuantityChange += transactionQuantity;
@@ -339,7 +383,7 @@ public class AdminWarehouseTransactionServiceImpl implements AdminWarehouseTrans
 
     @Transactional
     @Override
-    public void autoCreateReturnWarehouseTransaction(ReturnRequestEntity returnRequestEntity, Integer staffId) {
+    public void autoCreateReturnWarehouseTransactionForReturnRequest(ReturnRequestEntity returnRequestEntity, Integer staffId) {
         WarehouseEntity originalWarehouse = warehouseTransactionRepository.findSourceWarehouseForOrderItem(
                 returnRequestEntity.getOrder().getId(),
                 returnRequestEntity.getVariant().getId(),
@@ -350,7 +394,7 @@ public class AdminWarehouseTransactionServiceImpl implements AdminWarehouseTrans
         ));
 
         WarehouseTransactionEntity newWarehouseTransaction = WarehouseTransactionEntity.builder()
-                .code("RETURN-" + returnRequestEntity.getId() + "-" + System.currentTimeMillis())
+                .code("RET-" + returnRequestEntity.getId() + "-" + System.currentTimeMillis())
                 .type(WarehouseTransactionType.RETURN)
                 .staff(staffId != null ? staffRepository.getReferenceById(staffId) : null)
                 .warehouse(originalWarehouse)
@@ -364,7 +408,7 @@ public class AdminWarehouseTransactionServiceImpl implements AdminWarehouseTrans
                 .build();
         newWarehouseTransaction.addWarehouseTransactionDetail(txDetail);
 
-        processWarehouseUpdate(newWarehouseTransaction);
+        processWarehouseUpdate(newWarehouseTransaction, true);
 
         warehouseTransactionRepository.save(newWarehouseTransaction);
 
@@ -372,16 +416,18 @@ public class AdminWarehouseTransactionServiceImpl implements AdminWarehouseTrans
     }
 
     @Transactional
-    public void autoCreateCancelRestockTransaction(OrderEntity order) {
-        WarehouseEntity warehouse = warehouseRepository.findAll().stream()
-                .findFirst().orElseThrow(() -> new IllegalStateException("Hệ thống chưa có kho hàng nào để hoàn trả"));
+    @Override
+    public void autoCreateUnreservedTransactionForOrder(OrderEntity order, Integer staffId) {
+        WarehouseEntity warehouse = warehouseRepository.findFirstByOrderByIdAsc()
+                .orElseThrow(() -> new IllegalStateException("Hệ thống chưa có kho hàng nào để hoàn trả"));
 
-        WarehouseTransactionEntity cancelRestockTx = WarehouseTransactionEntity.builder()
-                .code("CANCEL_RESTOCK-" + order.getId() + "-" + System.currentTimeMillis())
-                .type(WarehouseTransactionType.CANCEL_RESTOCK)
+        WarehouseTransactionEntity unresTx = WarehouseTransactionEntity.builder()
+                .code("UNRES" + order.getId() + "-" + System.currentTimeMillis())
+                .type(WarehouseTransactionType.UNRESERVED)
                 .staff(null)
                 .warehouse(warehouse)
                 .order(order)
+                .staff(staffId != null ? staffRepository.getReferenceById(staffId) : null)
                 .build();
 
         for (OrderDetailEntity orderDetail : order.getOrderDetails()) {
@@ -390,25 +436,42 @@ public class AdminWarehouseTransactionServiceImpl implements AdminWarehouseTrans
                     .quantity(orderDetail.getQuantity())
                     .build();
 
-            cancelRestockTx.addWarehouseTransactionDetail(txDetail);
+            unresTx.addWarehouseTransactionDetail(txDetail);
         }
 
-        processWarehouseUpdate(cancelRestockTx);
+        processWarehouseUpdate(unresTx, true);
 
-        warehouseTransactionRepository.save(cancelRestockTx);
+        warehouseTransactionRepository.save(unresTx);
 
-        log.info("Đã tự động tạo phiếu kho CANCEL_RESTOCK cho đơn hàng ID: {}", order.getId());
+        log.info("Đã tự động tạo phiếu kho UNRESERVED cho đơn hàng ID: {}", order.getId());
     }
 
     @Override
-    public void autoCreateNewExportWarehouseTransaction(OrderEntity order, Integer staffId) {
-        WarehouseEntity warehouse = warehouseRepository.findAll().stream()
-                .findFirst().orElseThrow(() -> new IllegalStateException("Hệ thống chưa có kho hàng nào để xuất"));
+    public void autoCreateNewExportWarehouseTransactionForOrder(OrderEntity order, Integer staffId) {
+        WarehouseEntity targetWarehouse = warehouseRepository.findAll().stream()
+                .max(Comparator.comparingInt(w -> calculateMatchScore(w, order)))
+                .orElseThrow(() -> new IllegalStateException("Không có kho nào trong hệ thống để xuất hàng"));
 
-        WarehouseTransactionEntity newTx = WarehouseTransactionEntity.builder()
-                .code("EXPORT-" + order.getId() + "-" + System.currentTimeMillis())
+        for (OrderDetailEntity orderDetail : order.getOrderDetails()) {
+            int requiredQuantity = orderDetail.getQuantity();
+
+            int availableAtTarget = targetWarehouse.getWarehouseDetails().stream()
+                    .filter(wd -> wd.getVariant().getId().equals(orderDetail.getVariant().getId()))
+                    .mapToInt(WarehouseDetailEntity::getQuantity)
+                    .findFirst()
+                    .orElse(0);
+
+            if (availableAtTarget < requiredQuantity) {
+                int missingQuantity = requiredQuantity - availableAtTarget;
+
+                handleInternalConsolidation(targetWarehouse, orderDetail.getVariant(), missingQuantity, order, staffId);
+            }
+        }
+
+        WarehouseTransactionEntity newExportTx = WarehouseTransactionEntity.builder()
+                .code("EX-" + order.getId() + "-" + System.currentTimeMillis())
                 .type(WarehouseTransactionType.EXPORT)
-                .warehouse(warehouse)
+                .warehouse(targetWarehouse)
                 .order(order)
                 .staff(staffId != null ? staffRepository.getReferenceById(staffId) : null)
                 .build();
@@ -419,14 +482,129 @@ public class AdminWarehouseTransactionServiceImpl implements AdminWarehouseTrans
                     .quantity(orderDetail.getQuantity())
                     .build();
 
-            newTx.addWarehouseTransactionDetail(txDetail);
+            newExportTx.addWarehouseTransactionDetail(txDetail);
         }
 
-        processWarehouseUpdate(newTx);
+        processWarehouseUpdate(newExportTx, false);
 
-        warehouseTransactionRepository.save(newTx);
+        warehouseTransactionRepository.save(newExportTx);
 
         log.info("Đã tự động tạo phiếu xuất kho EXPORT cho đơn hàng ID: {}", order.getId());
+    }
+
+    @Transactional
+    @Override
+    public void autoCreateReturnWarehouseTransactionForOrder(OrderEntity order, Integer staffId) {
+        WarehouseTransactionEntity originExportTx = warehouseTransactionRepository
+                .findByOrderAndType(order, WarehouseTransactionType.EXPORT)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Không tìm thấy phiếu xuất kho gốc của đơn hàng " + order.getCode()
+                ));
+
+        WarehouseEntity originWarehouse = originExportTx.getWarehouse();
+
+        WarehouseTransactionEntity returnTx = WarehouseTransactionEntity.builder()
+                .code("RET-" + order.getId() + "-" + System.currentTimeMillis())
+                .type(WarehouseTransactionType.RETURN)
+                .warehouse(originWarehouse)
+                .staff(staffId != null ? staffRepository.getReferenceById(staffId) : null)
+                .order(order)
+                .status(WarehouseTransactionStatus.COMPLETED)
+                .note("Hoàn trả từ đơn hàng bị huỷ/trả: " + order.getCode())
+                .build();
+
+        for (WarehouseTransactionDetailEntity exportDetail : originExportTx.getWarehouseTransactionDetails()) {
+            returnTx.addWarehouseTransactionDetail(WarehouseTransactionDetailEntity.builder()
+                    .variant(exportDetail.getVariant())
+                    .quantity(exportDetail.getQuantity())
+                    .build());
+        }
+
+        processWarehouseUpdate(returnTx, true);
+
+        warehouseTransactionRepository.save(returnTx);
+        log.info("Đã tự động tạo phiếu RETURN hoàn trả hàng cho đơn ID: {}", order.getId());
+    }
+
+    private void handleInternalConsolidation(WarehouseEntity targetWarehouse, VariantEntity variant, int missingQuantity, OrderEntity order, Integer staffId) {
+        List<WarehouseEntity> otherWarehouses = warehouseRepository.findAll().stream()
+                .filter(w -> !w.getId().equals(targetWarehouse.getId()))
+                .toList();
+
+        int collected = 0;
+        for (WarehouseEntity sourceWarehouse : otherWarehouses) {
+            if (collected > missingQuantity) {
+                break;
+            }
+
+            int stockInSource = sourceWarehouse.getWarehouseDetails().stream()
+                    .filter(wd -> wd.getVariant().getId().equals(variant.getId()))
+                    .mapToInt(WarehouseDetailEntity::getQuantity)
+                    .findFirst()
+                    .orElse(0);
+
+            if (stockInSource > 0) {
+                int take = Math.min(stockInSource, missingQuantity - collected);
+
+                createInternalTransferPair(sourceWarehouse, targetWarehouse, variant, take, order, staffId);
+
+                collected += take;
+            }
+        }
+
+        if (collected < missingQuantity) {
+            throw new IllegalArgumentException("Tổng kho hệ thống không đủ hàng cho biến thể: " + variant.getName());
+        }
+    }
+
+    private void createInternalTransferPair(WarehouseEntity source, WarehouseEntity target, VariantEntity variant, int quantity, OrderEntity order, Integer staffId) {
+        long timestamp = System.currentTimeMillis();
+        String transferCode = "I_TRF-" + order.getId() + "-" + variant.getId();
+
+        WarehouseTransactionEntity outTx = WarehouseTransactionEntity.builder()
+                .code(transferCode + "-OUT-" + timestamp)
+                .type(WarehouseTransactionType.INTERNAL_TRANSFER)
+                .warehouse(source)
+                .order(order)
+                .staff(staffId != null ? staffRepository.getReferenceById(staffId) : null)
+                .build();
+
+        outTx.addWarehouseTransactionDetail(
+                WarehouseTransactionDetailEntity.builder()
+                        .variant(variant)
+                        .quantity(quantity)
+                        .build()
+        );
+
+        processWarehouseUpdate(outTx, false);
+
+        warehouseTransactionRepository.save(outTx);
+
+        WarehouseTransactionEntity inTx = WarehouseTransactionEntity.builder()
+                .code(transferCode + "-IN-" + timestamp)
+                .type(WarehouseTransactionType.INTERNAL_TRANSFER)
+                .warehouse(target)
+                .order(order)
+                .staff(staffId != null ? staffRepository.getReferenceById(staffId) : null)
+                .build();
+
+        inTx.addWarehouseTransactionDetail(
+                WarehouseTransactionDetailEntity.builder()
+                        .variant(variant)
+                        .quantity(quantity)
+                        .build()
+        );
+
+        processWarehouseUpdate(inTx, true);
+
+        warehouseTransactionRepository.save(inTx);
+    }
+
+    private int calculateMatchScore(WarehouseEntity warehouse, OrderEntity order) {
+        return (int) order.getOrderDetails().stream()
+                .filter(orderDetail -> warehouse.getWarehouseDetails().stream()
+                        .anyMatch(wd -> wd.getVariant().getId().equals(orderDetail.getVariant().getId()) && wd.getQuantity() > 0))
+                .count();
     }
 
     private void checkWarehouseTransactionEditableOrDeletable(WarehouseTransactionEntity warehouseTransaction) {
