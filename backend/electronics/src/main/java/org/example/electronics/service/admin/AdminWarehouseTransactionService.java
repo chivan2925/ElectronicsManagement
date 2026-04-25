@@ -26,4 +26,6 @@ public interface AdminWarehouseTransactionService {
     void autoCreateUnreservedTransactionForOrder(OrderEntity order, Integer staffId);
     void autoCreateNewExportWarehouseTransactionForOrder(OrderEntity order, Integer staffId);
     void autoCreateReturnWarehouseTransactionForOrder(OrderEntity order, Integer staffId);
+    void autoCreateReservedWarehouseTransactionForOrder(OrderEntity order, Integer staffId);
+    void convertToExportFromReserved(OrderEntity order, Integer staffId);
 }

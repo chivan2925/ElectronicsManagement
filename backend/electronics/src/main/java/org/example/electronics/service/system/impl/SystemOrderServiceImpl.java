@@ -39,7 +39,7 @@ public class SystemOrderServiceImpl implements SystemOrderService {
         order.setPaidAt(LocalDateTime.now());
         order.setStatus(OrderStatus.PROCESSING);
 
-        adminWarehouseTransactionService.autoCreateNewExportWarehouseTransactionForOrder(order, null);
+        adminWarehouseTransactionService.convertToExportFromReserved(order, null);
 
         orderRepository.save(order);
 
